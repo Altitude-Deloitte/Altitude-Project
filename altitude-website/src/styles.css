@@ -1,0 +1,148 @@
+/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Define custom CSS variables for theme colors */
+:root {
+  /* Light Theme Variables */
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+  --border-color: #e5e7eb;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  /* Component backgrounds */
+  --card-bg: #ffffff;
+  --input-bg: #ffffff;
+  --menu-bg: #ffffff;
+  --dialog-bg: #ffffff;
+
+  /* Gradient colors remain same for both themes */
+  --custom-button-gradient: linear-gradient(135deg, #a247fc 0%, #c63bee 100%);
+  --custom-button-gradient-hover: linear-gradient(
+    135deg,
+    #9333ea 0%,
+    #b91c7c 100%
+  );
+}
+:root.dark {
+  --bg-primary: #040105;
+  --bg-secondary: #0f0f23;
+  --bg-tertiary: #1a1a2e;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-color: rgba(162, 71, 252, 0.3);
+  --shadow-color: rgba(162, 71, 252, 0.2);
+
+  /* Component backgrounds for dark theme */
+  --card-bg: rgba(162, 71, 252, 0.05);
+  --input-bg: rgba(255, 255, 255, 0.05);
+  --menu-bg: #040105;
+  --dialog-bg: #040105;
+}
+/* Custom Tailwind Components */
+@layer components {
+  .btn-custom {
+    background-image: var(--custom-gradient);
+    color: white;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    transition: all 300ms ease-in-out;
+
+    &:hover {
+      background-image: var(--custom-gradient-hover);
+      transform: translateY(-0.125rem);
+      box-shadow: 0 10px 15px -3px rgba(168, 85, 247, 0.3);
+    }
+  }
+
+  .card-custom {
+    background-color: rgba(var(--custom-bg), 0.5);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(168, 85, 247, 0.2);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  }
+
+  .input-custom {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(168, 85, 247, 0.3);
+    color: white;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+
+    &:focus {
+      border-color: var(--custom-primary);
+      box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+      outline: none;
+    }
+  }
+}
+/* Global Styles */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--custom-button-gradient);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--custom-button-gradient-hover);
+}
+
+/* @layer components {
+  .btn-custom {
+    @apply bg-custom-gradient text-white font-semibold py-2 px-4 rounded-lg 
+             hover:bg-custom-gradient-hover hover:-translate-y-0.5 
+             hover:shadow-lg transition-all duration-300 ease-in-out;
+  }
+
+  .card-custom {
+    @apply bg-white dark:bg-white/5 backdrop-blur-sm 
+             border border-gray-200 dark:border-purple-500/20 
+             rounded-lg p-6 shadow-lg
+             text-gray-900 dark:text-white
+             transition-all duration-300;
+  }
+
+  .input-custom {
+    @apply bg-white dark:bg-white/5 
+             border border-gray-300 dark:border-purple-500/30 
+             text-gray-900 dark:text-white 
+             focus:border-custom-primary focus:ring-2 focus:ring-purple-500/20 
+             rounded-lg px-3 py-2
+             transition-all duration-300;
+  }
+
+  .text-themed {
+    @apply text-gray-900 dark:text-white;
+  }
+
+  .bg-themed {
+    @apply bg-white dark:bg-custom-bg-dark;
+  }
+
+  .border-themed {
+    @apply border-gray-200 dark:border-purple-500/20;
+  }
+} */
