@@ -6,10 +6,9 @@
     "altitude-website": {
       "projectType": "application",
       "schematics": {
-        "styles": ["src/styles.css"],
         "@schematics/angular:component": {
-          "style": "css",
-          "standalone": true
+          "standalone": true,
+          "style": "css"
         }
       },
       "root": "",
@@ -22,9 +21,9 @@
             "outputPath": "dist/altitude-website",
             "index": "src/index.html",
             "browser": "src/main.ts",
+
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "inlineStyleLanguage": "css",
             "assets": [
               {
                 "glob": "**/*",
@@ -83,7 +82,6 @@
           "options": {
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "inlineStyleLanguage": "css",
             "assets": [
               {
                 "glob": "**/*",
