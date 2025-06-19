@@ -1,0 +1,84 @@
+<div class="flex w-full h-screen relative bg-white">
+    <!-- Left Panel with Video -->
+    <div class="main-left w-1/2 h-full relative overflow-hidden">
+        <svg class="absolute top-0 right-0 h-full z-10 pointer-events-none" width="60" height="100%"
+            viewBox="0 0 60 1000" fill="none" preserveAspectRatio="none">
+            <path d="M59,0 Q80,500 59,1000" stroke="#B66DFF" stroke-width="2" fill="none" />
+        </svg>
+        <video class="arc-video" autoplay muted loop
+            style="clip-path: url(#curveMask); -webkit-clip-path: url(#curveMask);">
+            <source
+                src="assets/videos/vecteezy_abstract-motion-background-animation-with-a-beautiful-gently_26592035.mp4"
+                type="video/mp4" />
+        </video>
+        <!-- SVG mask definition (hidden) -->
+        <svg width="0" height="0">
+            <clipPath id="curveMask" clipPathUnits="objectBoundingBox">
+                <!-- Outward bulge: control point > 1 on x axis -->
+                <path d="M0,0 H0.98 Q1.12,0.5 0.98,1 H0 V0 Z" />
+            </clipPath>
+        </svg>
+    </div>
+
+    <!-- Right Panel -->
+    <div class="main-right w-1/2 flex flex-col justify-center items-center h-full px-16 relative">
+        <!-- Theme Toggle Switch -->
+        <app-theme-toggler class="absolute top-8 right-8"></app-theme-toggler>
+        <!-- Logo -->
+        <div class="logo mb-8 flex justify-start w-full">
+            <img src="/assets/images/Group1321316956.svg" alt="Logo" class="h-10" />
+        </div>
+        <!-- Welcome Text -->
+        <div class="login-content w-full max-w-md">
+            <h1 class="text-4xl font-light mb-2">Welcome!</h1>
+            <p class="mb-6 text-gray-500">Start your journey with Altitude to create magic.</p>
+            <!-- SSO Button -->
+            <button
+                class="w-full flex items-center justify-center bg-black text-white py-3 rounded-lg shadow-lg mb-4 text-lg font-normal hover:bg-gray-900 transition">
+                <i class="pi pi-user mr-2"></i> Login With SSO
+            </button>
+            <div class="flex items-center my-4">
+                <div class="flex-grow border-t border-gray-300"></div>
+                <span class="mx-2 text-gray-400 text-sm">or continue with e-mail</span>
+                <div class="flex-grow border-t border-gray-300"></div>
+            </div>
+            <!-- Email Input -->
+            <div class="mb-4">
+                <label class="block text-sm mb-1" for="email">Email</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <i class="pi pi-envelope"></i>
+                    </span>
+                    <input id="email" type="email"
+                        class="w-full pl-10 pr-3 py-2 border border-[#B66DFF] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B66DFF] transition"
+                        placeholder="johndoe@deloitte.com" />
+                </div>
+            </div>
+            <!-- Password Input -->
+            <div class="mb-4">
+                <label class="block text-sm mb-1" for="password">Password</label>
+                <div class="relative">
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                        <i class="pi pi-lock"></i>
+                    </span>
+                    <input id="password" type="password"
+                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B66DFF] transition"
+                        placeholder="********" />
+                </div>
+            </div>
+            <!-- Remember Me & Forgot Password -->
+            <div class="flex items-center justify-between mb-6">
+                <label class="flex items-center text-sm">
+                    <input type="checkbox" class="mr-2 accent-[#B66DFF]" />
+                    Remember me
+                </label>
+                <a href="#" class="text-[#B66DFF] text-sm font-medium hover:underline">Forgot Password?</a>
+            </div>
+            <!-- Login Button -->
+            <a routerLink="/home"
+                class="w-24 py-2 px-5 rounded-full cursor-pointer text-white text-lg font-medium shadow-lg transition bg-gradient-to-r from-[#A247FC] to-[#C63BEE] hover:from-[#9333ea] hover:to-[#b91c7c] no-underline">
+                Login
+            </a>
+        </div>
+    </div>
+</div>

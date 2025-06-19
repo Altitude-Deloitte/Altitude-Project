@@ -1,0 +1,33 @@
+.video-container {
+  position: relative;
+}
+
+.main-left {
+  position: relative;
+  overflow: hidden;
+  height: 100vh;
+  background: #fff;
+}
+
+.arc-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  /* The clip-path is set inline for cross-browser support */
+}
+
+.main-right {
+  background: #fff;
+}
+
+.curved-border {
+  position: absolute;
+  top: 0;
+  right: -30px;
+  width: 60px;
+  min-width: 60px;
+  height: 100vh;
+  z-index: 10;
+  pointer-events: none;
+}
