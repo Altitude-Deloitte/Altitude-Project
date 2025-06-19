@@ -1,14 +1,13 @@
-<div class="min-h-screen bg-white flex flex-col">
+<div class="min-h-screen flex flex-col"
+    style="background-color: var(--app-bg-color); color: var(--app-text-color); transition: background-color 0.3s ease;">
     <!-- Header -->
     <app-header></app-header>
 
     <!-- Background SVG Curve -->
-    <div class="absolute left-0 top-0 w-full h-[350px] pointer-events-none z-0">
+    <div class="relative left-0 top-0 w-full h-[350px] pointer-events-none z-0">
         <video class="absolute top-0 left-0 w-full h-full object-cover" autoplay muted loop playsinline
             style="clip-path: url(#curveMask); -webkit-clip-path: url(#curveMask);">
-            <source
-                src="assets/videos/vecteezy_abstract-motion-background-animation-with-a-beautiful-gently_26592035.mp4"
-                type="video/mp4" />
+            <source [src]="source" type="video/mp4" />
         </video>
         <!-- SVG clipPath definition (hidden) -->
         <svg width="0" height="0">
@@ -21,6 +20,14 @@
             preserveAspectRatio="none">
             <path d="M0,245 Q720,350 1440,245" stroke="#B66DFF" stroke-width="2" fill="none" />
         </svg>
+        <div class="absolute top-1/2 text-center left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            <h1 class="text-6xl font-light" style="color: var(--app-text-color);">
+                Content Creation, <span class="italic font-semibold">Reimagined!</span>
+            </h1>
+            <p class="mt-4 text-xl opacity-70 text-gray-700">
+                Review and track your brand deliverables - Faster than ever
+            </p>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -28,25 +35,22 @@
 
 
         <!-- Title & Subtitle -->
-        <div class="text-center mb-8">
-            <h1 class="text-6xl font-light text-black">
-                Content Creation, <span class="italic font-semibold">Reimagined!</span>
-            </h1>
-            <p class="mt-4 text-xl text-gray-500">
-                Review and track your brand deliverables - Faster than ever
-            </p>
-        </div>
+
 
         <!-- Sparkle Icon -->
 
 
         <!-- Card -->
-        <div class="w-full max-w-3xl mx-auto bg-white rounded-2xl border border-[#B66DFF] shadow-lg flex items-center px-8 py-6 gap-6"
-            style="box-shadow: 0 8px 32px 0 rgba(182,109,255,0.15);">
-            <span class="text-lg font-medium text-gray-700">I want to create</span>
-            <p-multiSelect [options]="requestOptions" [(ngModel)]="selectedRequests" defaultLabel="Email Request"
-                class="w-60" optionLabel="name" display="chip" appendTo="body"
-                styleClass="bg-[#232B3A] text-white rounded-lg"></p-multiSelect>
+        <div class="w-full max-w-3xl mx-auto rounded-2xl border border-[#B66DFF] shadow-lg flex items-center px-8 py-6 gap-6"
+            style="background-color: var(--app-surface-color); box-shadow: 0 8px 32px 0 rgba(182,109,255,0.15);">
+            <span class="text-lg font-medium" style="color: var(--app-text-color);">I want to create</span>
+            <p-select [options]="requestOptions" [(ngModel)]="selectedRequests" defaultLabel="Email Request"
+                optionLabel="name" display="chip" appendTo="body" panelStyleClass="custom-select-panel"
+                styleClass="campaign">
+                <!-- <ng-template pTemplate="prefix">
+                    <img class="w-5 h-5 mr-2" src="{{selectedRequests.icon}}" alt="">
+                </ng-template> -->
+            </p-select>
             <div class="border-l border-gray-200 h-10 mx-4"></div>
             <button
                 class="flex items-center px-8 py-3 rounded-lg text-white text-lg font-medium shadow-md transition bg-gradient-to-r from-[#A247FC] to-[#C63BEE] hover:from-[#9333ea] hover:to-[#b91c7c]">

@@ -1,8 +1,8 @@
 <!-- <div class="absolute top-8 right-8"> -->
-<label
-    class="flex items-center cursor-pointer bg-gray-100 border border-gray-200 rounded-full px-2 py-1 shadow-inner w-16 h-9 relative">
-    <input type="checkbox" class="sr-only peer" />
-    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 peer-checked:text-yellow-400 transition-colors">
+<!-- <label
+    class="flex items-center cursor-pointer bg-white border border-gray-200 rounded-full px-2 py-1 shadow-inner w-16 h-9 relative"> -->
+<!-- <input type="checkbox" class="sr-only peer" />
+    <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400 peer-checked:text-gray-400 transition-colors">
         <i class="pi pi-moon text-xl"></i>
     </span>
     <span
@@ -10,6 +10,14 @@
         <i class="pi pi-sun text-xl"></i>
     </span>
     <span
-        class="w-7 h-7 bg-white border border-gray-200 rounded-full shadow absolute left-1 top-1/2 -translate-y-1/2 peer-checked:left-8 transition-all"></span>
-</label>
+        class="w-7 h-7 bg-white border border-gray-200 rounded-full shadow absolute left-1 top-1/2 -translate-y-1/2 peer-checked:left-8 transition-all"></span> -->
+<a class="rounded-full cursor-pointer border-[#D9D9D9] p-2 border-1 bg-white flex justify-center items-center space-x-2"
+    style="background-color: var(--app-bg-color); color: var(--app-text-color); transition: background-color 0.3s ease color 0.3s ease;"
+    (click)="toggleTheme()"><i class="pi pi-moon px-4 py-2 rounded-full"
+        [style]="isDarkMode?'background-color:white;color:black; transition: background-color 0.3s ease color 0.3s ease;':'background-color:##09040E;color:black; transition: background-color 0.3s ease color 0.3s ease;'"></i>
+    <i class="pi pi-sun px-4 py-2" [style]="!isDarkMode?'color:black; transition:color 0.3s ease;':''"></i>
+
+</a>
+
+<!-- </label> -->
 <!-- </div> -->
