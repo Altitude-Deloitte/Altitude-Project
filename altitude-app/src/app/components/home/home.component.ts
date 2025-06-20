@@ -1,15 +1,25 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import {
+  Component,
+  computed,
+  HostBinding,
+  inject,
+  OnInit,
+} from '@angular/core';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { SelectModule } from 'primeng/select';
 import { FormsModule } from '@angular/forms';
 import { ThemeToggleService } from '../../services/theme-toggle.service';
+import { routeAnimations } from '../../shared/route-animations';
+import { CommonModule } from '@angular/common';
 @Component({
   selector: 'app-home',
-  imports: [HeaderComponent, SelectModule, FormsModule],
+  imports: [HeaderComponent, SelectModule, FormsModule, CommonModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
+  animations: [routeAnimations],
 })
 export class HomeComponent implements OnInit {
+  // @HostBinding('@routeAnimations') routeAnimations = true;
   requestOptions = [
     { name: 'Email Request', code: 'email', icon: 'assets/images/email.svg' },
     {
@@ -36,6 +46,7 @@ export class HomeComponent implements OnInit {
   source: any;
   selectedRequests: any;
   theme = inject(ThemeToggleService);
+
   ngOnInit() {
     // Initialize selectedRequests with the first option
     this.theme.source$.subscribe((source) => {

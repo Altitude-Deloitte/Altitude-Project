@@ -1,24 +1,26 @@
-<div class="min-h-screen flex flex-col"
-    style="background-color: var(--app-bg-color); color: var(--app-text-color); transition: background-color 0.3s ease;">
+<div class="min-h-screen theme-bg flex flex-col">
     <!-- Header -->
     <app-header></app-header>
 
     <!-- Background SVG Curve -->
-    <div class="relative left-0 top-0 w-full h-[350px] pointer-events-none z-0">
+
+    <div class="relative top-0 w-full h-[350px] pointer-events-none z-0">
         <video class="absolute top-0 left-0 w-full h-full object-cover" autoplay muted loop playsinline
             style="clip-path: url(#curveMask); -webkit-clip-path: url(#curveMask);">
-            <source [src]="source" type="video/mp4" />
+
+            <source src="assets/videos/dark-particles.mp4" type="video/mp4" />
         </video>
-        <!-- SVG clipPath definition (hidden) -->
+        <!-- SVG clipPath definition - Adjusted to match your SVG path -->
         <svg width="0" height="0">
             <clipPath id="curveMask" clipPathUnits="objectBoundingBox">
-                <!-- This path matches the curve you want at the bottom -->
-                <path d="M0,0 H1 V0.7 Q0.5,1 0,0.7 Z" />
+                <!-- Adjusted to match SVG: starts at 1 (350/350), curves to 0.786 (275/350), ends at 1 -->
+                <path d="M0,0 H1 V1 Q0.5,0.786 0,1 Z" />
             </clipPath>
         </svg>
-        <svg class="absolute left-0 bottom-0 w-full h-full pointer-events-none" viewBox="0 0 1440 350" fill="none"
+        <!-- Your SVG polyline -->
+        <svg class="relative left-0 bottom-0 w-full h-full pointer-events-none" viewBox="0 0 1440 350" fill="none"
             preserveAspectRatio="none">
-            <path d="M0,245 Q720,350 1440,245" stroke="#B66DFF" stroke-width="2" fill="none" />
+            <path d="M0,350 Q720,275 1440,350" stroke="#B66DFF" stroke-width="2" fill="none" />
         </svg>
         <div class="absolute top-1/2 text-center left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
             <h1 class="text-6xl font-light" style="color: var(--app-text-color);">
@@ -31,7 +33,7 @@
     </div>
 
     <!-- Main Content -->
-    <div class="flex flex-col items-center justify-center flex-1 relative z-10 pt-16">
+    <div class="flex flex-col items-center justify-center flex-1 relative z-10 my-16 h-[60vh]">
 
 
         <!-- Title & Subtitle -->
@@ -44,12 +46,24 @@
         <div class="w-full max-w-3xl mx-auto rounded-2xl border border-[#B66DFF] shadow-lg flex items-center px-8 py-6 gap-6"
             style="background-color: var(--app-surface-color); box-shadow: 0 8px 32px 0 rgba(182,109,255,0.15);">
             <span class="text-lg font-medium" style="color: var(--app-text-color);">I want to create</span>
-            <p-select [options]="requestOptions" [(ngModel)]="selectedRequests" defaultLabel="Email Request"
-                optionLabel="name" display="chip" appendTo="body" panelStyleClass="custom-select-panel"
-                styleClass="campaign">
-                <!-- <ng-template pTemplate="prefix">
-                    <img class="w-5 h-5 mr-2" src="{{selectedRequests.icon}}" alt="">
-                </ng-template> -->
+            <p-select [options]="requestOptions" [(ngModel)]="selectedRequests" optionLabel="name" display="chip"
+                appendTo="body" panelStyleClass="custom-select-panel" styleClass="campaign">
+
+                <!-- Template for selected value display -->
+                <ng-template pTemplate="selectedItem">
+                    <div class="flex items-center" *ngIf="selectedRequests">
+                        <img [src]="selectedRequests.icon" [alt]="selectedRequests.name" class="w-5 h-5 mr-2">
+                        <span>{{ selectedRequests.name }}</span>
+                    </div>
+                </ng-template>
+
+                <!-- Template for dropdown options -->
+                <ng-template let-option pTemplate="item">
+                    <div class="flex items-center">
+                        <img [src]="option.icon" [alt]="option.name" class="w-5 h-5 mr-2">
+                        <span>{{ option.name }}</span>
+                    </div>
+                </ng-template>
             </p-select>
             <div class="border-l border-gray-200 h-10 mx-4"></div>
             <button

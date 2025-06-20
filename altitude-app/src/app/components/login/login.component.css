@@ -6,7 +6,7 @@
   position: relative;
   overflow: hidden;
   height: 100vh;
-  background: #fff;
+  /* background: #fff; */
 }
 
 .arc-video {
@@ -17,9 +17,9 @@
   /* The clip-path is set inline for cross-browser support */
 }
 
-.main-right {
+/* .main-right {
   background: #fff;
-}
+} */
 
 .curved-border {
   position: absolute;
