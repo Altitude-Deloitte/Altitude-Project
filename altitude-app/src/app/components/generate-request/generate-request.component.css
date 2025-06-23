@@ -1,0 +1,62 @@
+.email-glow {
+  text-shadow: 0 0 8px #fff, 0 0 16px #b66dff, 0 0 24px #b66dff;
+}
+::ng-deep .p-steppanel {
+  background: transparent !important;
+}
+
+::ng-deep .p-stepper .p-stepper-panel {
+  background: transparent !important;
+}
+
+/* Step title styling */
+::ng-deep .p-stepper .p-stepper-header .p-stepper-title {
+  font-size: calc(1.3rem + 0.2vw) !important;
+  font-weight: normal !important;
+  color: #ffffff !important;
+}
+
+/* Separator styling - this is the key fix */
+::ng-deep .p-stepper .p-stepper-separator {
+  /* background: #ffffff !important; */
+  /* height: 2px !important; */
+  border: 1px solid #ffffff !important;
+  flex: 1 !important;
+  margin: 0 1rem !important;
+}
+
+/* Step number styling */
+::ng-deep .p-stepper .p-stepper-header .p-stepper-number {
+  background: #8d4bff !important;
+  color: #ffffff !important;
+  border: 2px solid #b66dff !important;
+}
+
+/* Active step styling */
+::ng-deep .p-stepper .p-stepper-header.p-highlight .p-stepper-number {
+  background: #b66dff !important;
+  color: #ffffff !important;
+}
+
+/* Completed step styling */
+::ng-deep .p-stepper .p-stepper-header.p-stepper-header-end .p-stepper-number {
+  background: #4caf50 !important;
+  color: #ffffff !important;
+}
+
+/* Ensure stepper header is flex */
+::ng-deep .p-stepper .p-stepper-nav {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 1rem 0 !important;
+}
+
+/* Force separator to show */
+::ng-deep .p-stepper .p-stepper-header:not(:last-child)::after {
+  content: "" !important;
+  flex: 1 !important;
+  height: 2px !important;
+  background: #ffffff !important;
+  margin: 0 1rem !important;
+}

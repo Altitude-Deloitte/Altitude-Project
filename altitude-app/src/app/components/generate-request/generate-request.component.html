@@ -1,0 +1,226 @@
+<app-header>
+
+</app-header>
+<div class="min-h-screen theme-bg mt-5">
+    <div class="max-w-[88%] mx-auto my-0">
+        <h1 class="text-4xl w-full flex items-center">
+            <i class="pi pi-angle-left mr-2 text-2xl"></i>
+            Create <span class="ml-2 email-glow italic">Email Request</span>
+        </h1>
+    </div>
+    <div class="max-w-[90%] mx-auto mt-10">
+        <div class="p-8 border border-[#B66DFF] rounded-2xl">
+            <p-stepper [value]="1">
+                <p-step-item [value]="1">
+                    <p-step style="font-size: calc(1.5rem + 0.2vw);">Choose method to share your idea</p-step>
+                    <p-step-panel>
+                        <ng-template #content let-activateCallback="activateCallback">
+                            <div class="flex flex-col justify-center my-4">
+
+                                <div class="border border-[#363636] rounded-t-lg w-full">
+                                    <div class="flex flex-wrap gap-5 justify-center items-center p-8">
+                                        <a
+                                            class="border border-[#FFFFFF] w-96 h-64 flex flex-wrap items-start justify-start p-6 rounded-2xl relative">
+                                            <p-radioButton class="absolute top-3 right-3" name="details" value="details"
+                                                [(ngModel)]="details"></p-radioButton>
+                                            <img class="w-24 mb-4" src="assets/images/Textbox.svg" alt="textbox">
+                                            <h3 class="text-2xl w-full">Input Details Manually</h3>
+                                            <p class="grey-text w-full">Manually input your details through a form.</p>
+                                        </a>
+                                        <a
+                                            class="border border-[#FFFFFF] w-96 h-64 flex flex-wrap items-start justify-start p-6 rounded-2xl relative">
+                                            <p-radioButton class="absolute top-3 right-3" name="upload" value="upload"
+                                                [(ngModel)]="details"></p-radioButton>
+                                            <img class="w-24 mb-4" src="assets/images/FileArrowUp.svg"
+                                                alt="FileArrowUp">
+                                            <h3 class="text-2xl w-full">Upload Your Documents</h3>
+                                            <p class="grey-text w-full">Upload your documents in pdf, doc, xsl.</p>
+                                        </a>
+                                        <a
+                                            class="border border-[#FFFFFF] w-96 h-64 flex flex-wrap items-start justify-start p-6 rounded-2xl relative">
+                                            <p-radioButton class="absolute top-3 right-3" name="microphone"
+                                                value="microphone" [(ngModel)]="details"></p-radioButton>
+                                            <img class="w-24 mb-4" src="assets/images/Microphone.svg" alt="Microphone">
+                                            <h3 class="text-2xl w-full">Voice based input details</h3>
+                                            <p class="grey-text w-full">Use voice based method to input your idea.</p>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="border border-[#363636] rounded-b-lg border-t-0 p-4">
+                                    <div class="flex justify-between items-center flex-wrap">
+                                        <div class="flex gap-4 items-center justify-center">
+                                            <p class="text-xl"><b class="mr-2">Task Id:</b>{{taskID}}</p>
+                                            <p class="text-xl"><b class="mr-2">Due Date:</b>{{dueDate}}</p>
+                                        </div>
+                                        <p-button styleClass="px-6 py-3 bg-[#8D4BFF] rounded-full" label="Next"
+                                            (onClick)="activateCallback(2)" severity="help" rounded="true"></p-button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </ng-template>
+                    </p-step-panel>
+                </p-step-item>
+                <p-step-item [value]="2">
+                    @switch (details) {
+                    @case ("details") {
+                    <p-step style="font-size: calc(1.5rem + 0.2vw);">Input Details Manually</p-step>
+                    <p-step-panel>
+                        <ng-template #content let-activateCallback="activateCallback">
+                            <div class="flex flex-col justify-center my-4">
+
+                                <div class="border border-[#363636] rounded-t-lg w-full p-4">
+                                    <form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
+                                        <!-- Task Details -->
+                                        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Task Details</h2>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <!-- <div>
+                                                <label class="block text-gray-300 mb-1">Task ID*</label>
+                                                <input pInputText formControlName="taskId" [disabled]="true"
+                                                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                                            </div>
+                                            <div>
+                                                <label class="block text-gray-300 mb-1">Expected Due Date*</label>
+                                                <input pInputText type="date" formControlName="dueDate"
+                                                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                                            </div> -->
+
+                                            <div>
+
+                                                <label class="block text-gray-300 mb-1">Purpose*</label>
+                                                <p-select [options]="purposeArray" formControlName="purpose"
+                                                    placeholder="Select" class="w-full"
+                                                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-gray-300 mb-1">Platform Campaign*</label>
+                                                <p-select [options]="campaignData" formControlName="campaign"
+                                                    placeholder="Select" class="w-full"
+                                                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Content Details -->
+                                        <div>
+                                            <h2 class="text-lg text-white font-semibold mb-4 mt-6">Content Details</h2>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label class="block text-gray-300 mb-1">Brand Name*</label>
+                                                    <input pInputText formControlName="brand"
+                                                        class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                                                </div>
+                                                <div>
+                                                    <label class="block text-gray-300 mb-1">Tone*</label>
+                                                    <p-select [options]="toneOptions" formControlName="Type"
+                                                        placeholder="Select" class="w-full"
+                                                        styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-gray-300 mb-1">Topic*</label>
+                                                    <p-select [options]="toppingList" formControlName="topic"
+                                                        placeholder="Select" class="w-full"
+                                                        styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-gray-300 mb-1">Target Reader*</label>
+                                                    <p-select [options]="reactiveKeywords()" formControlName="readers"
+                                                        placeholder="Select" class="w-full"
+                                                        styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-gray-300 mb-1">Word Limit</label>
+                                                    <input pInputText formControlName="wordLimit"
+                                                        class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                                                </div>
+                                                <div class="col-span-2">
+                                                    <label class="block text-gray-300 mb-1">Additional Details</label>
+                                                    <input pInputText formControlName="imgDesc"
+                                                        class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
+                                                        placeholder="Add details here..." />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Image Details -->
+                                        <div>
+                                            <h2 class="text-lg text-white font-semibold mb-4 mt-6">Image Details</h2>
+                                            <div>
+                                                <label class="block text-gray-300 mb-1">Image Type</label>
+                                                <div class="flex gap-6">
+                                                    <label class="flex items-center text-gray-300">
+                                                        <p-radioButton name="imageOpt" value="N/A"
+                                                            formControlName="imageOpt" class="mr-2"></p-radioButton>
+                                                        No Image
+                                                    </label>
+                                                    <label class="flex items-center text-gray-300">
+                                                        <p-radioButton name="imageOpt" value="AI Generated"
+                                                            formControlName="imageOpt" class="mr-2"></p-radioButton>
+                                                        AI Generated
+                                                    </label>
+                                                    <label class="flex items-center text-gray-300">
+                                                        <p-radioButton name="imageOpt" value="Upload Image"
+                                                            formControlName="imageOpt" class="mr-2"></p-radioButton>
+                                                        Upload Image
+                                                    </label>
+                                                    <label class="flex items-center text-gray-300">
+                                                        <p-radioButton name="imageOpt" value="URL Image"
+                                                            formControlName="imageOpt" class="mr-2"></p-radioButton>
+                                                        URL Image
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Submit Button -->
+
+                                    </form>
+                                </div>
+                                <div class="border border-[#363636] rounded-b-lg border-t-0 p-4">
+                                    <div class="flex justify-end items-center flex-wrap">
+
+                                        <p-button styleClass="px-6 py-3 bg-[#8D4BFF] rounded-full" label="Submit"
+                                            severity="help" rounded="true" (onClick)="onCreateProject()"></p-button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-step-panel>
+                    }@case ("upload") {
+                    <p-step style="font-size: calc(1.5rem + 0.2vw);">Upload Your Documents</p-step>
+                    }@case ("microphone") {
+                    <p-step style="font-size: calc(1.5rem + 0.2vw);">Voice based input details</p-step>
+                    }@default {
+                    <p-step style="font-size: calc(1.5rem + 0.2vw);">Input Details</p-step>
+                    <p-step-panel>
+                        <ng-template #content let-activateCallback="activateCallback">
+                            <div class="flex flex-col justify-center my-4">
+
+                                <div class="border border-[#363636] rounded-t-lg w-full">
+                                    <form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()">
+
+                                    </form>
+                                </div>
+                                <div class="border border-[#363636] rounded-b-lg border-t-0 p-4">
+                                    <div class="flex justify-end items-center flex-wrap">
+
+                                        <p-button styleClass="px-6 py-3 bg-[#8D4BFF] rounded-full" label="Next"
+                                            severity="help" rounded="true"></p-button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </ng-template>
+                    </p-step-panel>
+                    }
+                    }
+
+
+                </p-step-item>
+                <!-- <p-step-item [value]="2">
+                </p-step-item> -->
+            </p-stepper>
+        </div>
+    </div>
+</div>

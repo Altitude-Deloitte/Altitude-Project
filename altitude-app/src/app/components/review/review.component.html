@@ -1,0 +1,132 @@
+<app-header></app-header>
+
+<div class="min-h-screen theme-bg flex flex-col items-center py-8">
+    <div class="w-[95%] max-w-7xl border-2 border-[#B66DFF] rounded-2xl flex flex-col p-0">
+        <!-- Title Bar -->
+        <div class="flex items-center justify-between px-8 py-4 border-b border-[#2D1B3A]">
+            <div class="flex items-center gap-3">
+                <i class="pi pi-angle-left text-2xl text-white"></i>
+                <span class="text-white text-2xl font-light">New Coca Cola Flavours</span>
+                <i class="pi pi-pencil text-[#B66DFF] ml-2 cursor-pointer"></i>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-gray-400 text-sm">April 16, 2025</span>
+                <span class="bg-[#2D1B3A] text-white px-4 py-1 rounded-full text-sm">E-mail Request</span>
+                <button
+                    class="border border-[#B66DFF] text-white px-4 py-1 rounded-full text-sm hover:bg-[#B66DFF]/10">View
+                    all comments</button>
+            </div>
+        </div>
+        <!-- Main Content -->
+        <div class="flex flex-row gap-6 p-6">
+            <!-- Left Panel -->
+            <div class="w-[340px]  rounded-xl border border-[#363636] p-5 flex flex-col gap-6">
+                <!-- Brand Guidelines & Assets Accordion -->
+                <p-accordion [multiple]="true" class="mb-4">
+                    <p-accordionTab header="Brand Guidelines & Assets" [selected]="true">
+                        <div class="mb-4">
+                            <span class="block text-gray-400 text-xs mb-2">Edit Brand Colors</span>
+                            <div class="flex gap-2">
+                                <span
+                                    class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center"
+                                    style="background:#B73B3B"></span>
+                                <span
+                                    class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center"
+                                    style="background:#6C6C6C"></span>
+                                <span
+                                    class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center"
+                                    style="background:#B6A48B"></span>
+                                <span
+                                    class="w-8 h-8 rounded-full border-2 border-white flex items-center justify-center"
+                                    style="background:#4B3C36"></span>
+                            </div>
+                        </div>
+                        <div class="mb-4 flex gap-2">
+                            <div>
+                                <span class="block text-gray-400 text-xs mb-1">Edit Typography</span>
+                                <p-select styleClass="bg-transparent p-2" appendTo="body" [options]="typographyOptions"
+                                    [(ngModel)]="selectedTypography" (onChange)="onTypographyChange($event)"
+                                    placeholder="Inter" class="w-28">
+                                </p-select>
+                            </div>
+                            <div>
+                                <span class="block text-gray-400 text-xs mb-1">Edit Font Size</span>
+                                <p-select styleClass="p-2 bg-transparent" appendTo="body" [options]="fontSizeOptions"
+                                    [(ngModel)]="selectedFontSize" (onChange)="onFontSizeChange($event)"
+                                    placeholder="16px" class="w-20">
+                                </p-select>
+                            </div>
+                        </div>
+                    </p-accordionTab>
+                    <!-- Content Details Accordion -->
+                    <p-accordionTab header="Content Details" [selected]="true">
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-base text-gray-400">
+                            <span>Client Name</span>
+                            <span class="text-white text-right">Coca Cola</span>
+                            <span>Topic</span>
+                            <span class="text-white text-right">Topic</span>
+                            <span>Purpose</span>
+                            <span class="text-white text-right">Purpose</span>
+                            <span>Platform Campaign</span>
+                            <span class="text-white text-right">Platform Campaign</span>
+                            <span>Due Date</span>
+                            <span class="text-white text-right">06/04/2025</span>
+                            <span>Tone</span>
+                            <span class="text-white text-right">Tone</span>
+                            <span>Word Limit</span>
+                            <span class="text-white text-right">600</span>
+                            <span>Additional Details</span>
+                            <span class="text-white text-right">Additional Details</span>
+                            <span>Image Description</span>
+                            <span class="text-white text-right">Image Description</span>
+                        </div>
+                    </p-accordionTab>
+                </p-accordion>
+            </div>
+            <!-- Right Panel -->
+            <div class="flex-1 flex flex-col gap-4">
+                <!-- Generated Results Header -->
+                <div class="flex items-center justify-between bg-[#23202A] rounded-t-xl px-6 py-3">
+                    <div class="flex items-center gap-2">
+                        <i class="pi pi-star-fill text-[#B66DFF]"></i>
+                        <span class="text-white font-semibold text-xl">Generated Results</span>
+                    </div>
+                    <button
+                        class="flex items-center gap-2 text-[#B66DFF] text-sm hover:underline bg-transparent border-none">
+                        <i class="pi pi-search"></i>
+                        Check Plagiarism
+                    </button>
+                </div>
+                <!-- Generated Result Content -->
+                <div class="bg-[#23202A] rounded-b-xl px-6 py-8 flex flex-col items-center">
+                    <img src="assets/images/sample-email.png" alt="Generated Email"
+                        class="rounded-xl border border-[#B66DFF] max-w-[420px] mb-4" />
+                    <div class="flex gap-2 mb-4">
+                        <button
+                            class="bg-[#23202A] border border-[#B66DFF] text-white rounded-full px-4 py-1 text-base">Use
+                            an informal tone for communication</button>
+                        <button
+                            class="bg-[#23202A] border border-[#B66DFF] text-white rounded-full px-4 py-1 text-base">Make
+                            another version</button>
+                    </div>
+                    <div class="flex items-center w-full bg-[#18111B] rounded-lg px-4 py-2 mt-2">
+                        <input pInputText
+                            class="flex-1 bg-transparent border-none text-white focus:ring-0 focus:border-0 text-base"
+                            placeholder="Ask to modify" />
+                        <button class="ml-2 text-[#B66DFF] bg-transparent border-none text-xl">
+                            <i class="pi pi-microphone"></i>
+                        </button>
+                        <button class="ml-2 bg-[#B66DFF] rounded-full p-2 text-white">
+                            <i class="pi pi-send"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button
+                        class="bg-gradient-to-r from-[#8D4BFF] to-[#B66DFF] text-white px-8 py-2 rounded-full text-lg font-semibold shadow-lg">Send
+                        for Approval</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

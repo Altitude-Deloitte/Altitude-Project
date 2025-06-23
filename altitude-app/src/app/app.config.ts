@@ -8,12 +8,14 @@ import {
 } from '@angular/platform-browser';
 import ThemePreset from '../theme-preset';
 import { providePrimeNG } from 'primeng/config';
+import { provideHttpClient } from '@angular/common/http';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
+    provideHttpClient(),
     provideAnimationsAsync(),
     providePrimeNG({
       theme: {

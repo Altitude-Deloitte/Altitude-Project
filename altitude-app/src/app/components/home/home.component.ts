@@ -11,6 +11,8 @@ import { FormsModule } from '@angular/forms';
 import { ThemeToggleService } from '../../services/theme-toggle.service';
 import { routeAnimations } from '../../shared/route-animations';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-home',
   imports: [HeaderComponent, SelectModule, FormsModule, CommonModule],
@@ -20,6 +22,7 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeComponent implements OnInit {
   // @HostBinding('@routeAnimations') routeAnimations = true;
+  router = inject(Router);
   requestOptions = [
     { name: 'Email Request', code: 'email', icon: 'assets/images/email.svg' },
     {
@@ -57,5 +60,8 @@ export class HomeComponent implements OnInit {
       this.selectedRequests = this.requestOptions[0];
     }
     console.log(this.selectedRequests);
+  }
+  generateContent() {
+    this.router.navigate(['/generate-request']);
   }
 }
