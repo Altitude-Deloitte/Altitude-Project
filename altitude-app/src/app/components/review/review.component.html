@@ -1,7 +1,7 @@
 <app-header></app-header>
 
 <div class="min-h-screen theme-bg flex flex-col items-center py-8">
-    <div class="w-[95%] max-w-7xl border-2 border-[#B66DFF] rounded-2xl flex flex-col p-0">
+    <div class="max-w-[95%] mx-auto border-2 border-[#B66DFF] rounded-2xl flex flex-col p-0">
         <!-- Title Bar -->
         <div class="flex items-center justify-between px-8 py-4 border-b border-[#2D1B3A]">
             <div class="flex items-center gap-3">
@@ -60,9 +60,9 @@
                     </p-accordionTab>
                     <!-- Content Details Accordion -->
                     <p-accordionTab header="Content Details" [selected]="true">
-                        <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-base text-gray-400">
+                        <div class="grid grid-cols-2 gap-x-2 gap-y-4 text-base text-gray-400">
                             <span>Client Name</span>
-                            <span class="text-white text-right">Coca Cola</span>
+                            <span class="text-white text-right">Client</span>
                             <span>Topic</span>
                             <span class="text-white text-right">Topic</span>
                             <span>Purpose</span>
@@ -99,8 +99,99 @@
                 </div>
                 <!-- Generated Result Content -->
                 <div class="bg-[#23202A] rounded-b-xl px-6 py-8 flex flex-col items-center">
-                    <img src="assets/images/sample-email.png" alt="Generated Email"
-                        class="rounded-xl border border-[#B66DFF] max-w-[420px] mb-4" />
+                    <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                        style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
+                        <tbody>
+                            <!-- Header Section -->
+                            <tr>
+                                <td
+                                    style="background-color:#ffffff; padding: 20px;display: flex; justify-content: center;align-items: center;">
+                                    <img [src]="this.brandlogoTop" alt="brandlogo">
+                            </tr>
+                            <!-- Banner Section -->
+                            <tr>
+                                <td style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                    <h1
+                                        style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
+                                        <span class="email-content" style="font-weight: bold;"
+                                            [innerHTML]="this.emailHeader"></span>
+                                    </h1>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
+                                    align="center" class="image-width" style="font-size: 1px;line-height: 1px;"
+                                    *ngIf="this.imageUrl && this.editorContentEmail ">
+                                    <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
+                                        <img [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
+                                            border="0" alt="Banner Image" [src]="this.imageUrl" />
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style=" text-align: center; background-color: #ffffff;">
+                                    <ng-container *ngIf="imageOfferUrl && !imageUrl; ">
+                                        <img [src]="this.imageOfferUrl" alt="banner"
+                                            style="max-width: 100%; height: auto;" />
+                                    </ng-container>
+                                    <!-- <ng-template #loadingSpinner>
+                                        <div *ngIf="!this.imageUrl" class="image-spinner-container">
+                                            <mat-spinner color="accent" diameter="40"></mat-spinner>
+                                        </div>
+                                    </ng-template> -->
+                                </td>
+                            </tr>
+
+
+
+                            <!-- Content Section -->
+                            <tr>
+                                <td style="background-color: #ffffff; padding: 30px 20px;">
+                                    <div *ngIf="!contentDisabled"
+                                        style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6;"
+                                        [innerHTML]="this.editorContentEmail"></div>
+                                    <!-- <div *ngIf="contentDisabled" style="display: flex; justify-content: center; padding: 40px 0;">
+                                        <mat-spinner style="display: inline-flex;  justify-content: center; ">
+                                        </mat-spinner>
+                                    </div> -->
+                                </td>
+                            </tr>
+
+                            <!-- Call to Action Section -->
+                            <tr>
+                                <td style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
+
+                                    <a [href]="this.showMore" target="_blank"
+                                        style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                                        Know More
+                                    </a>
+                                </td>
+                            </tr>
+
+                            <!-- Footer Section -->
+                            <tr>
+                                <td
+                                    style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                    <p style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
+                                        www.{{formData?.brand }} | INFO{{'@'+formData?.brand}}
+
+                                    </p>
+                                    <p
+                                        style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
+                                        As a valued subscriber, we greatly appreciate your time. Thank you for your
+                                        continued attention
+                                        to
+                                        our company news.
+                                        You may unsubscribe from our email updates at any time.
+                                    </p>
+                                    <p
+                                        style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
+                                        Copyright © 2025 {{formData?.brand}} All Rights Reserved.
+                                    </p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                     <div class="flex gap-2 mb-4">
                         <button
                             class="bg-[#23202A] border border-[#B66DFF] text-white rounded-full px-4 py-1 text-base">Use

@@ -40,7 +40,7 @@ import { Router } from '@angular/router';
   styleUrl: './generate-request.component.css',
 })
 export class GenerateRequestComponent implements OnInit {
-  details: any;
+  details: any = 'details';
   fb = inject(FormBuilder);
   socialwebsite!: FormGroup;
   taskID: any = ''; // Initialize with an empty string
@@ -287,6 +287,7 @@ The html tags are separate and it should not be part of word count`;
 
   generateTaskId(): string {
     const timestamp = Date.now();
+    this.taskID = `EM-2203-${timestamp}`;
     return `EM-2203-${timestamp}`;
   }
 
