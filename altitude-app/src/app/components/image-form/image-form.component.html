@@ -1,0 +1,70 @@
+<form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
+    <!-- Task Details -->
+    <h2 class="text-lg font-semibold mb-4 mt-6">Task
+        Details</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+        <div>
+            <label class="block text-gray-300 mb-1">Image URL 1*</label>
+            <input pInputText formControlName="url1" panelStyleClass="custom-select-panel"
+                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+        </div>
+        <div>
+            <label class="block text-gray-300 mb-1">Image URL 2*</label>
+            <input pInputText formControlName="url2" panelStyleClass="custom-select-panel"
+                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+        </div>
+
+
+        <!-- Content Details -->
+
+
+
+        <div>
+            <label class="block text-gray-300 mb-1">Image URL 3</label>
+            <input pInputText formControlName="url3" panelStyleClass="custom-select-panel"
+                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+        </div>
+
+        <div>
+            <label class="block text-gray-300 mb-1">Image URL 4</label>
+            <input pInputText formControlName="url4" panelStyleClass="custom-select-panel"
+                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+        </div>
+
+        <div>
+            <label class="block text-gray-300 mb-1">Format*</label>
+            <p-select [options]="formatArray" formControlName="format" placeholder="Select" class="w-full"
+                panelStyleClass="custom-select-panel"
+                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+        </div>
+        <div>
+            <label class="block text-gray-300 mb-1">Frame Per Second*</label>
+            <p-select [options]="fpsArray" formControlName="fps" placeholder="Select" class="w-full"
+                panelStyleClass="custom-select-panel"
+                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+        </div>
+        <div class="col-span-2">
+            <label class="block text-gray-300 mb-1">Resolution*</label>
+            <p-select [options]="positonData" formControlName="position" placeholder="Select" class="w-full"
+                panelStyleClass="custom-select-panel"
+                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+        </div>
+
+
+    </div>
+    <!-- Image Details -->
+
+
+    <!-- Submit Button -->
+
+    <div class="flex justify-end items-center flex-wrap">
+
+        <p-button [ngClass]="{ 'opacity-70': !socialwebsite.valid }" class="px-6 py-3 rounded-full bg-[#8D4BFF]"
+            label="Submit" severity="help" rounded="true" (onClick)="onCreateProject()"
+            [disabled]="socialwebsite.invalid"></p-button>
+    </div>
+
+
+</form>

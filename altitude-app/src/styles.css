@@ -25,6 +25,18 @@
   --app-bg-color: #09040e;
   --app-text-color: #ffffff;
   --app-surface-color: #1a1625;
+  --p-stepper-step-title-active-color: var(--app-text-color) !important;
+  --p-stepper-step-number-active-color: #000000 !important;
+  --p-stepper-step-number-active-background: #ffffff !important;
+  --p-stepper-step-number-color: #8d8d8d;
+  --p-stepper-step-number-background: #000000;
+  --p-stepper-step-number-border: #8d8d8d;
+  --p-stepper-step-title-color: #8d8d8d;
+  --bg-upload: #1a1a1a;
+  --p-select-option-focus-color: var(--app-text-color);
+  --bg-success: #56e691;
+  --app-text-secondary: #686868;
+  --app-text-tertiary: #9b9b9b;
 }
 
 /* Global theme application */
@@ -38,6 +50,9 @@ body {
   min-height: 100vh;
 }
 
+.p-accordionheader {
+  color: var(--app-text-color);
+}
 /* Utility classes for consistent theming */
 @layer components {
   .theme-bg {
@@ -67,7 +82,7 @@ body {
   transition: color 0.3s ease, background-color 0.3s ease;
 }
 
-h1,
+/* h1,
 h2,
 h3,
 h4,
@@ -78,19 +93,19 @@ span,
 div,
 a {
   color: inherit;
-}
+} */
 
 /* Ensure all components inherit theme colors */
 .p-component {
   color: var(--app-text-color);
 }
 
-.p-select-option {
+/* .p-select-option {
   color: white !important;
 }
 .p-select-option:hover {
   background-color: var(--p-surface-200) !important;
-}
+} */
 /* Custom select panel theming */
 .p-select-panel {
   background-color: var(--app-surface-color) !important;
@@ -99,7 +114,7 @@ a {
     0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
 }
 .p-select-label {
-  color: white !important;
+  color: var(--app-text-color) !important;
 }
 
 .p-select-items {
@@ -121,4 +136,20 @@ a {
 
 .grey-text {
   color: #9b9b9b !important;
+}
+.custom-select-panel {
+  background-color: var(--app-bg-color) !important;
+  color: var(--app-text-color) !important;
+}
+.p-selectitem {
+  background-color: var(--app-bg-color) !important;
+}
+.p-select-option {
+  padding: 10px !important;
+  border-bottom: 1px solid #4d4d4d !important;
+  color: var(--app-text-color) !important;
+}
+.p-select-option.p-select-option-selected {
+  padding: 10px !important;
+  border-bottom: 1px solid #4d4d4d !important;
 }

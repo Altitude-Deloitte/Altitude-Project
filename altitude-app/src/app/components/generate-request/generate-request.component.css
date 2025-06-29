@@ -1,10 +1,12 @@
 .email-glow {
-  text-shadow: 0 0 8px #fff, 0 0 16px #b66dff, 0 0 24px #b66dff;
+  text-shadow: 0 0 4px #fafafa3b, 0 0 16px #fbb2ff99;
 }
 ::ng-deep .p-steppanel {
   background: transparent !important;
 }
-
+.bgDarkButton {
+  opacity: 0.7;
+}
 ::ng-deep .p-stepper .p-stepper-panel {
   background: transparent !important;
 }
@@ -59,4 +61,53 @@
   height: 2px !important;
   background: #ffffff !important;
   margin: 0 1rem !important;
+}
+.up-btn {
+  background-color: var(--app-bg-color) !important;
+}
+
+::ng-deep .p-step-number {
+  border: 1px solid #363636 !important;
+}
+::ng-deep .p-step-active .p-step-number {
+  border: none !important;
+}
+
+/* Custom radio button green styling */
+/* ::ng-deep .custom-radio-success .p-radiobutton-box {
+  border: 2px solid #4afc97 !important; 
+  background: transparent !important;
+}
+
+::ng-deep .custom-radio-success .p-radiobutton-box.p-highlight {
+  border: 2.5px solid #4afc97 !important; 
+  background: transparent !important;
+}
+
+::ng-deep .custom-radio-success .p-radiobutton-icon {
+  background: #4afc97 !important; 
+}
+
+
+::ng-deep .custom-radio-success .p-radiobutton-box:hover,
+::ng-deep .custom-radio-success .p-radiobutton-box:focus {
+  box-shadow: 0 0 0 2px #4afc9780 !important;
+  border-color: #4afc97 !important;
+} */
+::ng-deep .custom-radio-success.p-radiobutton-checked .p-radiobutton-box {
+  background: var(--bg-success);
+}
+/* ::ng-deep .p-radiobutton-checked .p-radiobutton-box .p-radiobutton-icon {
+  background: var(--bg-success);
+} */
+::ng-deep
+  .custom-radio-success.p-radiobutton-checked
+  .p-radiobutton-box
+  .p-radiobutton-icon {
+  background: var(--bg-success);
+  border: 1px solid var(--app-bg-color);
+}
+::ng-deep .custom-radio-success .p-radiobutton-box {
+  background: var(--app-bg-color);
+  border: 1px solid #686868;
 }

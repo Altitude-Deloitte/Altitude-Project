@@ -12,7 +12,7 @@ import { ThemeToggleService } from '../../services/theme-toggle.service';
 import { routeAnimations } from '../../shared/route-animations';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-
+import { SelectionStore } from '../../store/campaign.store';
 @Component({
   selector: 'app-home',
   imports: [HeaderComponent, SelectModule, FormsModule, CommonModule],
@@ -23,6 +23,7 @@ import { Router } from '@angular/router';
 export class HomeComponent implements OnInit {
   // @HostBinding('@routeAnimations') routeAnimations = true;
   router = inject(Router);
+  store = inject(SelectionStore);
   requestOptions = [
     { name: 'Email Request', code: 'email', icon: 'assets/images/email.svg' },
     {
@@ -37,7 +38,7 @@ export class HomeComponent implements OnInit {
     },
     {
       name: 'Website Blog',
-      code: 'website',
+      code: 'blog',
       icon: 'assets/images/FileText.svg',
     },
     { name: 'Virtual Try On', code: 'virtual', icon: 'assets/images/cube.svg' },
@@ -62,6 +63,9 @@ export class HomeComponent implements OnInit {
     console.log(this.selectedRequests);
   }
   generateContent() {
+    if (this.selectedRequests) {
+      this.store.setCampaignType(this.selectedRequests);
+    }
     this.router.navigate(['/generate-request']);
   }
 }

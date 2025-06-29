@@ -42,7 +42,7 @@ const ThemePreset = definePreset(Aura, {
       },
       dark: {
         surface: {
-          0: '#09040E',
+          0: 'ffffff',
           50: '#1a1625',
           100: '#2a1f3d',
           200: '#3a2954',
@@ -52,7 +52,7 @@ const ThemePreset = definePreset(Aura, {
           600: '#7a4fb2',
           700: '#8a58ca',
           800: '#9a62e1',
-          900: '#aa6bf9',
+          900: '#09040E',
           950: '#ba75ff',
         },
         primary: {
@@ -60,6 +60,7 @@ const ThemePreset = definePreset(Aura, {
           contrastColor: '#09040E',
           hoverColor: '#d8b4fe',
           activeColor: '#e9d5ff',
+          backgroundColor: '#8D4BFF',
         },
       },
     },

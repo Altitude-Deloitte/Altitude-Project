@@ -1,0 +1,292 @@
+{
+  "Primary": {
+    "Primary 20": {
+      "value": "#d1b7ff",
+      "type": "color"
+    },
+    "Primary 30": {
+      "value": "#bb93ff",
+      "type": "color"
+    },
+    "Primary 10": {
+      "value": "#e8dbff",
+      "type": "color"
+    },
+    "Primary 40": {
+      "value": "#a46fff",
+      "type": "color"
+    },
+    "Primary 50": {
+      "value": "#8d4bff",
+      "type": "color"
+    }
+  },
+  "Neutrals": {
+    "Grey 100": {
+      "value": "#09040e",
+      "type": "color"
+    },
+    "Grey 10": {
+      "value": "#fafafa",
+      "type": "color"
+    },
+    "Grey 30": {
+      "value": "#b3b3b3",
+      "type": "color"
+    },
+    "Grey 50": {
+      "value": "#8d8d8d",
+      "type": "color"
+    },
+    "Grey 40": {
+      "value": "#9b9b9b",
+      "type": "color"
+    },
+    "Grey 60": {
+      "value": "#686868",
+      "type": "color"
+    },
+    "Grey 80": {
+      "value": "#363636",
+      "type": "color"
+    },
+    "Grey 70": {
+      "value": "#4d4d4d",
+      "type": "color"
+    },
+    "Grey 20": {
+      "value": "#d9d9d9",
+      "type": "color"
+    },
+    "Grey 90": {
+      "value": "#1a1a1a",
+      "type": "color"
+    }
+  },
+  "White & Black": {
+    "White": {
+      "value": "#ffffff",
+      "type": "color"
+    },
+    "Black": {
+      "value": "#000000",
+      "type": "color"
+    }
+  },
+  "Surface": {
+    "Static - Disabled": {
+      "value": "{Neutrals.Grey 60}",
+      "type": "color"
+    },
+    "Static - Hover": {
+      "value": "{Neutrals.Grey 80}",
+      "type": "color"
+    },
+    "Static - Active": {
+      "value": "{Neutrals.Grey 90}",
+      "type": "color"
+    },
+    "Brand - Secondary": {
+      "value": "{Primary.Primary 30}",
+      "type": "color"
+    },
+    "Brand - Active": {
+      "value": "{Primary.Primary 50}",
+      "type": "color"
+    },
+    "Disable": {
+      "value": "{Neutrals.Grey 80}",
+      "type": "color"
+    },
+    "Primary": {
+      "value": "{Neutrals.Grey 100}",
+      "type": "color"
+    },
+    "Secondary": {
+      "value": "{Neutrals.Grey 90}",
+      "type": "color"
+    },
+    "Brand - Hover": {
+      "value": "{Primary.Primary 40}",
+      "type": "color"
+    },
+    "Inverted": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    }
+  },
+  "Content": {
+    "Inverted": {
+      "value": "{White & Black.Black}",
+      "type": "color"
+    },
+    "Static": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    },
+    "Secondary": {
+      "value": "{Neutrals.Grey 40}",
+      "type": "color"
+    },
+    "Disable": {
+      "value": "{Neutrals.Grey 50}",
+      "type": "color"
+    },
+    "Primary": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    },
+    "Brand": {
+      "value": "{Primary.Primary 50}",
+      "type": "color"
+    }
+  },
+  "Status": {
+    "Error": {
+      "value": "#ff6261",
+      "type": "color"
+    },
+    "Pending": {
+      "value": "#ffd147",
+      "type": "color"
+    },
+    "Warning": {
+      "value": "#e26f20",
+      "type": "color"
+    },
+    "Success": {
+      "value": "#56e691",
+      "type": "color"
+    }
+  },
+  "Borders": {
+    "Inverted": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    },
+    "Brand": {
+      "value": "{Primary.Primary 50}",
+      "type": "color"
+    },
+    "Disable": {
+      "value": "{Neutrals.Grey 60}",
+      "type": "color"
+    },
+    "Primary": {
+      "value": "{Neutrals.Grey 80}",
+      "type": "color"
+    },
+    "Secondary": {
+      "value": "{Neutrals.Grey 70}",
+      "type": "color"
+    }
+  },
+  "Surface": {
+    "Static - Disabled": {
+      "value": "{Neutrals.Grey 50}",
+      "type": "color"
+    },
+    "Static - Hover": {
+      "value": "{Neutrals.Grey 80}",
+      "type": "color"
+    },
+    "Static - Active": {
+      "value": "{Neutrals.Grey 90}",
+      "type": "color"
+    },
+    "Brand - Secondary": {
+      "value": "{Primary.Primary 40}",
+      "type": "color"
+    },
+    "Brand - Active": {
+      "value": "{Primary.Primary 50}",
+      "type": "color"
+    },
+    "Disable": {
+      "value": "{Neutrals.Grey 20}",
+      "type": "color"
+    },
+    "Primary": {
+      "value": "{Neutrals.Grey 10}",
+      "type": "color"
+    },
+    "Secondary": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    },
+    "Brand - Hover": {
+      "value": "{Primary.Primary 40}",
+      "type": "color"
+    },
+    "Inverted": {
+      "value": "{White & Black.Black}",
+      "type": "color"
+    }
+  },
+  "Content": {
+    "Inverted": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    },
+    "Static": {
+      "value": "{White & Black.White}",
+      "type": "color"
+    },
+    "Secondary": {
+      "value": "{Neutrals.Grey 60}",
+      "type": "color"
+    },
+    "Disable": {
+      "value": "{Neutrals.Grey 40}",
+      "type": "color"
+    },
+    "Primary": {
+      "value": "{White & Black.Black}",
+      "type": "color"
+    },
+    "Brand": {
+      "value": "{Primary.Primary 50}",
+      "type": "color"
+    }
+  },
+  "Status": {
+    "Error": {
+      "value": "#cc2726",
+      "type": "color"
+    },
+    "Pending": {
+      "value": "#b98b01",
+      "type": "color"
+    },
+    "Warning": {
+      "value": "#d96312",
+      "type": "color"
+    },
+    "Success": {
+      "value": "#088e3f",
+      "type": "color"
+    }
+  },
+  "Borders": {
+    "Inverted": {
+      "value": "{White & Black.Black}",
+      "type": "color"
+    },
+    "Brand": {
+      "value": "{Primary.Primary 50}",
+      "type": "color"
+    },
+    "Disable": {
+      "value": "{Neutrals.Grey 40}",
+      "type": "color"
+    },
+    "Primary": {
+      "value": "{Neutrals.Grey 20}",
+      "type": "color"
+    },
+    "Secondary": {
+      "value": "{Neutrals.Grey 20}",
+      "type": "color"
+    }
+  }
+}

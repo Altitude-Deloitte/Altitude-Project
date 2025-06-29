@@ -6,9 +6,11 @@ import {
   provideClientHydration,
   withEventReplay,
 } from '@angular/platform-browser';
+
 import ThemePreset from '../theme-preset';
 import { providePrimeNG } from 'primeng/config';
 import { provideHttpClient } from '@angular/common/http';
+import { SelectionStore } from './store/campaign.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -29,5 +31,6 @@ export const appConfig: ApplicationConfig = {
         },
       },
     }),
+    SelectionStore,
   ],
 };

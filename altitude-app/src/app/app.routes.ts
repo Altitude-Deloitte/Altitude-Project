@@ -28,4 +28,11 @@ export const routes: Routes = [
         (m) => m.ReviewComponent
       ),
   },
+  {
+    path: 'client-remark',
+    loadComponent: () =>
+      import('./components/client-remark/client-remark.component').then(
+        (m) => m.ClientRemarkComponent
+      ),
+  },
 ];

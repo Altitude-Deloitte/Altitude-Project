@@ -1,0 +1,117 @@
+<form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
+    <!-- Task Details -->
+    <h2 class="text-lg font-semibold mb-4 mt-6">Task
+        Details</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+        <div>
+
+            <label class="block text-gray-300 mb-1">Purpose*</label>
+            <p-select [options]="purposeArray" formControlName="purpose" placeholder="Select" class="w-full"
+                panelStyleClass="custom-select-panel"
+                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+        </div>
+        <!-- <div>
+            <label class="block text-gray-300 mb-1">Platform Campaign*</label>
+            <p-select [options]="campaignData" formControlName="campaign" placeholder="Select" class="w-full"
+                panelStyleClass="custom-select-panel"
+                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+        </div> -->
+        <div>
+            <label class="block text-gray-300 mb-1">Brand Name*</label>
+            <input pInputText formControlName="brand" panelStyleClass="custom-select-panel"
+                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+        </div>
+    </div>
+
+    <!-- Content Details -->
+    <div>
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Content Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- <div>
+                <label class="block text-gray-300 mb-1">Brand Name*</label>
+                <input pInputText formControlName="brand" panelStyleClass="custom-select-panel"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div> -->
+            <div>
+                <label class="block text-gray-300 mb-1">Outline*</label>
+                <input pInputText formControlName="outline" panelStyleClass="custom-select-panel"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Format*</label>
+                <p-select [options]="formats" formControlName="format" placeholder="Select" class="w-full"
+                    panelStyleClass="custom-select-panel"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Keywords*</label>
+                <input pInputText formControlName="keywords"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Word Count*</label>
+                <input pInputText formControlName="wordLimit"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Target Audience*</label>
+                <input pInputText formControlName="target"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Tone*</label>
+                <p-select [options]="toneOptions" formControlName="Type" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div class="col-span-2">
+                <label class="block text-gray-300 mb-1">Additional Details</label>
+                <input pInputText formControlName="imgDesc"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
+                    placeholder="Add details here..." />
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Details -->
+    <div>
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Image Details</h2>
+        <div>
+            <label class="block text-gray-300 mb-1">Image Type</label>
+            <div class="flex gap-6">
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="N/A" formControlName="imageOpt" class="mr-2"></p-radioButton>
+                    No Image
+                </label>
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="AI Generated" formControlName="imageOpt"
+                        class="mr-2"></p-radioButton>
+                    AI Generated
+                </label>
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="Upload Image" formControlName="imageOpt"
+                        class="mr-2"></p-radioButton>
+                    Upload Image
+                </label>
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="URL Image" formControlName="imageOpt"
+                        class="mr-2"></p-radioButton>
+                    URL Image
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+
+    <div class="flex justify-end items-center flex-wrap">
+
+        <p-button [ngClass]="{ 'opacity-70': !socialwebsite.valid }" class="px-6 py-3 rounded-full bg-[#8D4BFF]"
+            label="Submit" severity="help" rounded="true" (onClick)="onCreateProject()"
+            [disabled]="socialwebsite.invalid"></p-button>
+    </div>
+
+
+</form>

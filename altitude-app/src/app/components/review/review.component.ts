@@ -11,7 +11,7 @@ import { ButtonModule } from 'primeng/button';
 import { AccordionModule } from 'primeng/accordion';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { ContentGenerationService } from '../../services/content-generation.service';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { CommonModule } from '@angular/common';
 
@@ -25,6 +25,7 @@ import { CommonModule } from '@angular/common';
     AccordionModule,
     FormsModule,
     CommonModule,
+    RouterLink,
   ],
   templateUrl: './review.component.html',
   styleUrl: './review.component.css',
@@ -59,6 +60,7 @@ export class ReviewComponent {
   posts: any[] = [];
   video: any = null;
   errorMessage: string | null = null;
+  brand: any;
 
   plagiarismCount: string | undefined;
   plagrismCheck: any;
@@ -146,6 +148,8 @@ export class ReviewComponent {
       this.formData = data;
       console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
     });
+
+    console.log(this.brand);
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {
       console.log('getImagegetImage', data);
@@ -169,7 +173,8 @@ export class ReviewComponent {
         this.imageEventUrl = data;
       }
     });
-
+    this.brand = this.formData?.brand?.replace('.com', ' ');
+    console.log('brand', this.brand);
     let brandName = this.formData?.brand?.trim();
     brandName = brandName?.replace(/\s+/g, '');
     this.showMore = 'https://www.' + brandName;
