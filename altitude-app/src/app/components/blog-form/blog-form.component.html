@@ -57,8 +57,9 @@
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Target Audience*</label>
-                <input pInputText formControlName="target"
-                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                <p-select [options]="toppingList" formControlName="target" placeholder="Select" class="w-full"
+                    panelStyleClass="custom-select-panel"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Tone*</label>
@@ -76,33 +77,7 @@
     </div>
 
     <!-- Image Details -->
-    <div>
-        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Image Details</h2>
-        <div>
-            <label class="block text-gray-300 mb-1">Image Type</label>
-            <div class="flex gap-6">
-                <label class="flex items-center text-gray-300">
-                    <p-radioButton name="imageOpt" value="N/A" formControlName="imageOpt" class="mr-2"></p-radioButton>
-                    No Image
-                </label>
-                <label class="flex items-center text-gray-300">
-                    <p-radioButton name="imageOpt" value="AI Generated" formControlName="imageOpt"
-                        class="mr-2"></p-radioButton>
-                    AI Generated
-                </label>
-                <label class="flex items-center text-gray-300">
-                    <p-radioButton name="imageOpt" value="Upload Image" formControlName="imageOpt"
-                        class="mr-2"></p-radioButton>
-                    Upload Image
-                </label>
-                <label class="flex items-center text-gray-300">
-                    <p-radioButton name="imageOpt" value="URL Image" formControlName="imageOpt"
-                        class="mr-2"></p-radioButton>
-                    URL Image
-                </label>
-            </div>
-        </div>
-    </div>
+
 
     <!-- Submit Button -->
 

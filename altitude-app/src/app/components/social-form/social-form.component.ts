@@ -20,7 +20,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ButtonModule } from 'primeng/button';
-
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ContentGenerationService } from '../../services/content-generation.service';
 import { Router, RouterLink } from '@angular/router';
 import { SelectionStore } from '../../store/campaign.store';
@@ -33,6 +33,7 @@ import { SelectionStore } from '../../store/campaign.store';
     ButtonModule,
     ReactiveFormsModule,
     SelectModule,
+    MultiSelectModule,
   ],
   templateUrl: './social-form.component.html',
   styleUrl: './social-form.component.css',
@@ -286,7 +287,7 @@ export class SocialFormComponent {
   }
 
   navigateToForm(): void {
-    this.route.navigateByUrl('review-social-post');
+    this.route.navigateByUrl('review');
   }
 
   aiContentGeneration(prompt: string, type: string): void {

@@ -30,6 +30,7 @@ import { SocialFormComponent } from '../social-form/social-form.component';
 import { BlogFormComponent } from '../blog-form/blog-form.component';
 import { ImageFormComponent } from '../image-form/image-form.component';
 import { VirtualFormComponent } from '../virtual-form/virtual-form.component';
+import { ProductDescComponent } from '../product-desc/product-desc.component';
 @Component({
   selector: 'app-generate-request',
   imports: [
@@ -47,6 +48,7 @@ import { VirtualFormComponent } from '../virtual-form/virtual-form.component';
     BlogFormComponent,
     ImageFormComponent,
     VirtualFormComponent,
+    ProductDescComponent,
   ],
   templateUrl: './generate-request.component.html',
   styleUrl: './generate-request.component.css',

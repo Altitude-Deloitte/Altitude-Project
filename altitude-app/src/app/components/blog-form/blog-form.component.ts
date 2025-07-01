@@ -120,8 +120,7 @@ export class BlogFormComponent {
     private fb: FormBuilder,
     // private dialog: MatDialog,
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService,
-    private datePipe: DatePipe
+    private aiContentGenerationService: ContentGenerationService
   ) {}
 
   urlImage: any;
@@ -204,7 +203,7 @@ export class BlogFormComponent {
   }
 
   navigateToForm(): void {
-    this.route.navigateByUrl('review-blog');
+    this.route.navigateByUrl('review');
   }
 
   aiContentGeneration(prompt: string, type: string): void {

@@ -4,7 +4,7 @@
     <div
         class="max-w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
 
-        <div class="flex w-full  justify-between items-center">
+        <div class="flex w-full flex-wrap  justify-between items-center">
             <a routerLink="/generate-request" class="text-2xl"><i class="pi pi-angle-left mr-1"></i>New Coca Cola
                 Flavours <i class="pi pi-pencil ml-1"></i></a>
             <div class="flex items-center gap-4">
@@ -19,8 +19,8 @@
                     Comments</button>
             </div>
         </div>
-        <div class="flex mt-5 gap-4 w-full">
-            <div class="flex-1">
+        <div class="flex flex-wrap mt-5 gap-4 w-full">
+            <div class="md:flex-1">
                 <div class="">
                     <p-accordion value="0">
                         <p-accordion-panel value="0">
@@ -48,12 +48,12 @@
                                     </div>
                                 </div>
                                 <div class="flex justify-between mt-4 items-center gap-2">
-                                    <div class="flex-2">
+                                    <div class="md:flex-2">
                                         <label for="" class="text-[#9B9B9B] ">Edit Typography</label>
                                         <p-select [options]="typographyOptions" optionLabel="label"
                                             class="w-full border-1 p-3 mt-2 border-[#4D4D4D] bg-[#1A1A1A]"></p-select>
                                     </div>
-                                    <div class="flex-1">
+                                    <div class="md:flex-1">
                                         <label for="" class="text-[#9B9B9B] ">Edit Font Size</label>
                                         <p-select [options]="fontSizeOptions" optionLabel="label"
                                             class="w-full border-1 p-3 mt-2 border-[#4D4D4D] bg-[#1A1A1A]"></p-select>
@@ -98,7 +98,7 @@
                 </div>
             </div>
 
-            <div class="flex-2">
+            <div class="md:flex-2">
                 <div class="flex flex-col">
                     <div class="rounded-t-xl bg-[#363636]">
 
@@ -108,6 +108,15 @@
                                         class="pi pi-sparkles"></i></button>
                                 <h2 class="text-2xl font-bold">Generated Results</h2>
                             </div>
+                            <!-- @if (selection.code == 'social') {
+
+                             <p-tabview [(activeIndex)]="activeTabIndex">
+                                <p-tabpanel header="Facebook"></p-tabpanel>
+                                <p-tabpanel header="Instagram"></p-tabpanel>
+                            </p-tabview> 
+
+                            } -->
+
                             <div class="flex items-center gap-2">
                                 <img src="assets/images/ListMagnifyingGlass.svg" alt="">
                                 <p class="font-semibold text-lg">Check Plagiarism</p>
@@ -117,97 +126,21 @@
                     </div>
                     <div class="border-t-1 border-[#686868] bg-[#363636] p-5 rounded-b-xl">
                         <div class="flex my-4 flex-col justify-center items-center">
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
-                                <tbody>
 
-                                    <tr>
-                                        <td class="rounded-t-xl"
-                                            style="background-color:#ffffff; padding: 20px;display: flex; justify-content: center;align-items: center;">
-                                            <img [src]="this.brandlogoTop" alt="brandlogo">
-                                    </tr>
-
-                                    <tr>
-                                        <td
-                                            style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
-                                            <h1
-                                                style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
-                                                <span class="email-content" style="font-weight: bold;"
-                                                    [innerHTML]="this.emailHeader"></span>
-                                            </h1>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
-                                            align="center" class="image-width" style="font-size: 1px;line-height: 1px;"
-                                            *ngIf="this.imageUrl && this.editorContentEmail ">
-                                            <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
-                                                <img [style.height]="imageContainerHeight"
-                                                    [style.width]="imageContainerWidth" border="0" alt="Banner Image"
-                                                    [src]="this.imageUrl" />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style=" text-align: center; background-color: #ffffff;">
-                                            <ng-container *ngIf="imageOfferUrl && !imageUrl; ">
-                                                <img [src]="this.imageOfferUrl" alt="banner"
-                                                    style="max-width: 100%; height: auto;" />
-                                            </ng-container>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-                                    <tr>
-                                        <td style="background-color: #ffffff; padding: 30px 20px;">
-                                            <div *ngIf="!contentDisabled"
-                                                style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6;"
-                                                [innerHTML]="this.editorContentEmail"></div>
-
-                                        </td>
-                                    </tr>
-
-
-                                    <tr>
-                                        <td style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
-
-                                            <a [href]="this.showMore" target="_blank"
-                                                style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
-                                                Know More
-                                            </a>
-                                        </td>
-                                    </tr>
-
-
-                                    <tr>
-                                        <td class="rounded-b-xl"
-                                            style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
-                                            <p
-                                                style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
-                                                www.{{formData?.brand }} | INFO{{'@'+formData?.brand}}
-
-                                            </p>
-                                            <p
-                                                style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
-                                                As a valued subscriber, we greatly appreciate your time. Thank you for
-                                                your
-                                                continued attention
-                                                to
-                                                our company news.
-                                                You may unsubscribe from our email updates at any time.
-                                            </p>
-                                            <p
-                                                style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
-                                                Copyright © 2025 {{formData?.brand}} All Rights Reserved.
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-
+                            @switch (selection.code) {
+                            @case ('email') {
+                            <app-email-review></app-email-review>
+                            }
+                            @case ('social') {
+                            <app-social-review></app-social-review>
+                            }
+                            @case('product'){
+                            <app-product-review></app-product-review>
+                            }
+                            @case ('blog') {
+                            <app-blog-review></app-blog-review>
+                            }
+                            }
 
                         </div>
                         <div class="flex items-center gap-2 mt-4">

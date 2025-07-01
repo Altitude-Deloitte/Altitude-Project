@@ -1,1 +1,8 @@
-<p>social-review works!</p>
+<p-tabView [(activeIndex)]="activeTabIndex">
+    @if (activeTabIndex === 0) {
+    <p-tabPanel>Facebook</p-tabPanel>
+    }@else {
+    <p-tabPanel>Instagram</p-tabPanel>
+    }
+
+</p-tabView>

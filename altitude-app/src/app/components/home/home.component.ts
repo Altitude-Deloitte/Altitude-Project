@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
     },
     {
       name: 'Product Description',
-      code: 'Product',
+      code: 'product',
       icon: 'assets/images/FileText.svg',
     },
     {

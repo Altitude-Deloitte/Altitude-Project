@@ -141,10 +141,16 @@ a {
   background-color: var(--app-bg-color) !important;
   color: var(--app-text-color) !important;
 }
+
 .p-selectitem {
   background-color: var(--app-bg-color) !important;
 }
 .p-select-option {
+  padding: 10px !important;
+  border-bottom: 1px solid #4d4d4d !important;
+  color: var(--app-text-color) !important;
+}
+.p-multiselect-option {
   padding: 10px !important;
   border-bottom: 1px solid #4d4d4d !important;
   color: var(--app-text-color) !important;
