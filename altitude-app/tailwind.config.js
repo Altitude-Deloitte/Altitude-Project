@@ -7,7 +7,6 @@ module.exports = {
       colors: {
         darkbg: "#09040E",
         darktext: "#FFFFFF",
-        // darkbutton: "#8D4BFF",
         darksecondary: "#8D4BFF",
         lightbg: "#FAFAFA",
         lighttext: "#121212",

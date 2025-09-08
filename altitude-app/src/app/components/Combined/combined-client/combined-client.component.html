@@ -1,0 +1,528 @@
+<app-header></app-header>
+<div class="relative">
+    <p-tabs value="0">
+        <div class="max-w-[90%] mt-4 mx-auto p-4">
+
+            <div class="flex justify-between items-center flex-wrap">
+                <div class="flex flex-col justify-center gap-2">
+                    <div class="flex items-center text-[#9B9B9B] gap-2">
+                        <a routerLink="/review">
+                            <i class="pi pi-angle-left"></i>
+                            Back to Client Dashboard</a>
+                    </div>
+                    <h3 class="text-3xl">Combined</h3>
+                    <div class="flex items-center gap-2">
+                        <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2"><img
+                                src="assets/images/InstagramLogo.svg">Combined</a>
+                        <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April
+                            16,
+                            2025</a>
+                    </div>
+                </div>
+                <div class="flex justify-center items-center gap-3">
+                    <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center bg-[#363636]">
+                        <div class="flex gap-4 items-center justify-center bg-[#363636]">
+                            <p-tab value="0" class="text-white"><i class="pi pi-envelope text-white"></i>Email</p-tab>
+                            <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
+                                Media</p-tab>
+                            <p-tab value="2" class="text-white"><img src="assets/images/Browser.svg" alt="">Website
+                                Blog</p-tab>
+                        </div>
+
+                    </p-tablist>
+                    <button class="text-[#BB93FF] border-[#BB93FF] border-1 p-3 rounded-full">View All Comments</button>
+                </div>
+
+            </div>
+            <p-tabpanels>
+                <p-tabpanel value="0">
+                    <div class="flex justify-center items-start gap-8 mt-8">
+                        <div class="flex-2 rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
+
+                            <div class="w-full text-center mb-8">
+                                <h1 class="text-3xl">{{this.selectedSubject}}</h1>
+                            </div>
+                            <div (click)="onPanelClick($event)" class="relative cursor-pointer">
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                    style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
+
+                                    <tbody>
+
+                                        <tr>
+                                            <td class="rounded-t-xl"
+                                                style="background-color:#ffffff; padding: 20px;display: flex; justify-content: center;align-items: center;">
+                                                <img [src]="this.brandlogoTop" alt="brandlogo">
+                                        </tr>
+
+                                        <tr>
+                                            <td
+                                                style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                                <h1
+                                                    style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
+                                                    <span class="email-content" style="font-weight: bold;"
+                                                        [innerHTML]="this.emailHeader"></span>
+                                                </h1>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td [style.height]="imageContainerHeight"
+                                                [style.width]="imageContainerWidth" align="center" class="image-width"
+                                                style="font-size: 1px;line-height: 1px;"
+                                                *ngIf="this.imageUrl && this.editorContentEmail ">
+                                                <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
+                                                    <img [style.height]="imageContainerHeight"
+                                                        [style.width]="imageContainerWidth" border="0"
+                                                        alt="Banner Image" [src]="this.imageUrl" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style=" text-align: center; background-color: #ffffff;">
+                                                <ng-container *ngIf="imageOfferUrl && !imageUrl; ">
+                                                    <img [src]="this.imageOfferUrl" alt="banner"
+                                                        style="max-width: 100%; height: auto;" />
+                                                </ng-container>
+
+                                            </td>
+                                        </tr>
+
+
+
+
+                                        <tr>
+                                            <td style="background-color: #ffffff; padding: 30px 20px;">
+                                                <div style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6;"
+                                                    [innerHTML]="this.editorContentEmail"></div>
+
+                                            </td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td
+                                                style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
+
+                                                <a [href]="this.showMore" target="_blank"
+                                                    style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                                                    Know More
+                                                </a>
+                                            </td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td class="rounded-b-xl"
+                                                style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                                <p
+                                                    style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
+                                                    www.{{formData?.brand }} | INFO{{'@'+formData?.brand}}
+
+                                                </p>
+                                                <p
+                                                    style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
+                                                    As a valued subscriber, we greatly appreciate your time. Thank you
+                                                    for
+                                                    your
+                                                    continued attention
+                                                    to
+                                                    our company news.
+                                                    You may unsubscribe from our email updates at any time.
+                                                </p>
+                                                <p
+                                                    style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
+                                                    Copyright © 2025 {{formData?.brand}} All Rights Reserved.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <p-overlayPanel #commentPanel [dismissable]="false" [appendTo]="'body'"
+                                    (onShow)="positionPanel($event)">
+                                    <div class="absolute" [ngStyle]="panelStyle">
+                                        <textarea name="commentBox"
+                                            class="bg-[#2C2C2C] text-white rounded-tr-lg rounded-tl-lg rounded-br-lg"
+                                            [(ngModel)]="commentBox" rows="3" cols="30" id="">
+
+                                                            </textarea>
+                                        <div class="flex gap-4">
+                                            <p-button class="text-white rounded-full bg-[#8D4BFF] p-3" label="Save"
+                                                (onClick)="saveComment()"></p-button>
+                                            <p-button class="border-1 p-3 border-[#8D4BFF] rounded-full" label="cancel"
+                                                (onClick)="commentPanel.hide()"></p-button>
+                                        </div>
+
+                                    </div>
+                                </p-overlayPanel>
+                            </div>
+
+                        </div>
+                        <div class="flex flex-1">
+                            <div class="">
+
+
+                                <h2 class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636] text-xl font-bold">
+                                    Brand Guidelines & Assets
+                                </h2>
+                                <div class="p-4 border-1 border-[#363636]">
+                                    <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
+                                    <div class="flex justify-center gap-4 items-center">
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#E41E28]"></a>
+                                            <p>Primary</p>
+                                        </div>
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#CBEBFC]"></a>
+                                            <p>Secondary</p>
+                                        </div>
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#3F3F3F]"></a>
+                                            <p>Tertiary</p>
+                                        </div>
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#B5876D]"></a>
+                                            <p>Accent</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <h2 class="border-1 border-t-0 p-4 border-b-0 border-[#363636] text-xl font-bold">
+                                    Content Details
+                                </h2>
+
+                                <div class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                    <div class="flex flex-col gap-3">
+                                        <h4 class="text-[#9b9b9b]">Client Name</h4>
+                                        <p>{{this.brand}}</p>
+                                        <h4 class="text-[#9b9b9b]">Purpose</h4>
+                                        <p>{{this.formData?.purpose}}</p>
+                                        <h4 class="text-[#9b9b9b]">Due Date</h4>
+                                        <p>{{this.formData?.dueDate}}</p>
+                                        <h4 class="text-[#9b9b9b]">Word Limit</h4>
+                                        <p>{{this.formData?.wordLimit || ''}}</p>
+                                        <h4 class="text-[#9b9b9b]">Additional Details</h4>
+                                        <p>{{this.formData?.Additional || ''}}</p>
+                                        <h4 class="text-[#9b9b9b]">Image Description</h4>
+                                        <p>{{this.formData?.image || ''}}</p>
+
+                                    </div>
+                                    <div class="flex flex-col gap-3">
+                                        <h4 class="text-[#9b9b9b]">Topic</h4>
+                                        <p>{{this.formData?.topic || ''}}</p>
+                                        <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
+                                        <p>{{this.formData?.campaign || ''}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+                        style="background-color:rgba(0, 0, 0, 0.5)">
+                        <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
+                            Rework</button>
+                        <button (click)="publishContent1()"
+                            class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
+                    </div>
+                </p-tabpanel>
+                <p-tabpanel value="1">
+                    <p-tabs value="1">
+                        <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center bg-[#363636] w-46">
+                            <div class="flex gap-4 items-center justify-center bg-[#363636]">
+                                <p-tab value="0" class="bg-transparent text-decoration-none"
+                                    style="color:var(--app-text-color);">Facebook</p-tab>
+                                <p-tab value="1" class="bg-transparent text-decoration-none"
+                                    style="color:var(--app-text-color);">Instagram</p-tab>
+                            </div>
+
+                        </p-tablist>
+                        <div class="flex justify-center items-start gap-8 mt-8">
+                            <div class="flex-2 rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
+
+
+                                <div (click)="onPanelClick($event)" class="relative cursor-pointer">
+                                    <div class="flex my-4 flex-col justify-center items-center">
+                                        <div class="flex justify-center items-center min-h-screen py-8">
+                                            <p-tabpanels
+                                                class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
+
+
+                                                <p-tabpanel value="0">
+                                                    <div>
+                                                        <p class="post-caption text-black"
+                                                            style="color: var(--app-bg-color);">
+                                                            {{
+                                                            this.editorContentSocialMedia1 }}</p>
+                                                        <!-- @if (hyperUrl) {
+                                                            <p class="post-caption text-black">For more details, visit our website:
+                                                                <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
+                                                                    {{this.hyperUrl}}
+                                                                </a>
+                                                            </p>
+                                                            } -->
+
+                                                        <!--<p *ngIf="formData?.Hashtags"> <b>Link : </b><a [href]="formData?.Hashtags" style="text-decoration: underline; color: #1717c5 !important;outline: none;" target="_blank"  > {{formData?.Hashtags}}</a></p>-->
+                                                        @if (imageUrl) {
+                                                        <img [src]="imageUrl" alt="Facebook Post" class="post-image" />
+                                                        }
+
+                                                    </div>
+                                                </p-tabpanel>
+                                                <p-tabpanel value="1">
+                                                    <div class="instagram-post">
+                                                        @if (imageUrl) {
+                                                        <img [src]="imageUrl" alt="Instagram Post" class="post-image" />
+                                                        }
+                                                        <p class="post-caption text-black">{{
+                                                            this.editorContentSocialMedia2 }}</p>
+                                                        <!-- <p class="post-caption text-black   ">For more details, visit our
+                                                                website:
+                                                                <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
+                                                                    {{this.hyperUrl}}
+                                                                </a>
+                                                            </p> -->
+                                                    </div>
+                                                </p-tabpanel>
+                                            </p-tabpanels>
+                                        </div>
+                                    </div>
+                                    <p-overlayPanel #commentPanel [dismissable]="false" [appendTo]="'body'"
+                                        (onShow)="positionPanel($event)">
+                                        <div class="absolute" [ngStyle]="panelStyle">
+                                            <textarea name="commentBox"
+                                                class="bg-[#2C2C2C] text-white rounded-tr-lg rounded-tl-lg rounded-br-lg"
+                                                [(ngModel)]="commentBox" rows="3" cols="30" id="">
+
+                                                        </textarea>
+                                            <div class="flex gap-4">
+                                                <p-button class="text-white rounded-full bg-[#8D4BFF] p-3" label="Save"
+                                                    (onClick)="saveComment()"></p-button>
+                                                <p-button class="border-1 p-3 border-[#8D4BFF] rounded-full"
+                                                    label="cancel" (onClick)="commentPanel.hide()"></p-button>
+                                            </div>
+
+                                        </div>
+                                    </p-overlayPanel>
+                                </div>
+
+                            </div>
+                            <div class="flex flex-1">
+                                <div class="">
+
+                                    <p-accordion value="0">
+                                        <p-accordion-panel value="0">
+                                            <p-accordion-header
+                                                class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                                Brand Guidelines & Assets
+                                            </p-accordion-header>
+                                            <p-accordion-content class="p-4 border-1 border-[#363636]">
+                                                <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
+                                                <div class="flex justify-center gap-4 items-center">
+                                                    <div
+                                                        class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                                        <a class="p-4 mb-1 rounded-full bg-[#E41E28]"></a>
+                                                        <p>Primary</p>
+                                                    </div>
+                                                    <div
+                                                        class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                                        <a class="p-4 mb-1 rounded-full bg-[#CBEBFC]"></a>
+                                                        <p>Secondary</p>
+                                                    </div>
+                                                    <div
+                                                        class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                                        <a class="p-4 mb-1 rounded-full bg-[#3F3F3F]"></a>
+                                                        <p>Tertiary</p>
+                                                    </div>
+                                                    <div
+                                                        class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                                        <a class="p-4 mb-1 rounded-full bg-[#B5876D]"></a>
+                                                        <p>Accent</p>
+                                                    </div>
+                                                </div>
+
+                                            </p-accordion-content>
+                                        </p-accordion-panel>
+                                    </p-accordion>
+
+                                    <p-accordion value="1">
+                                        <p-accordion-panel value="1">
+                                            <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
+                                                Task Details
+                                            </p-accordion-header>
+
+                                            <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                                <div class="flex justify-between items-start">
+
+
+                                                    <div class="flex flex-col gap-3">
+                                                        <h4 class="text-[#9b9b9b]">Client Name</h4>
+                                                        <p>{{this.brand}}</p>
+                                                        <h4 class="text-[#9b9b9b]">Purpose</h4>
+                                                        <p>{{this.formData?.purpose}}</p>
+                                                        <h4 class="text-[#9b9b9b]">Due Date</h4>
+                                                        <p>{{this.formData?.dueDate}}</p>
+                                                        <h4 class="text-[#9b9b9b]">Word Limit</h4>
+                                                        <p>{{this.formData?.wordLimit || ''}}</p>
+                                                        <h4 class="text-[#9b9b9b]">Additional Details</h4>
+                                                        <p>{{this.formData?.Additional || ''}}</p>
+                                                        <h4 class="text-[#9b9b9b]">Image Description</h4>
+                                                        <p>{{this.formData?.image || ''}}</p>
+
+                                                    </div>
+                                                    <div class="flex flex-col gap-3">
+                                                        <h4 class="text-[#9b9b9b]">Topic</h4>
+                                                        <p>{{this.formData?.topic || ''}}</p>
+                                                        <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
+                                                        <p>{{this.formData?.campaign || ''}}</p>
+                                                    </div>
+
+
+
+
+                                                </div>
+
+                                            </p-accordion-content>
+                                        </p-accordion-panel>
+                                    </p-accordion>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+                            style="background-color:rgba(0, 0, 0, 0.5)">
+                            <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
+                                Rework</button>
+                            <button (click)="publishContent3()"
+                                class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
+                        </div>
+
+                    </p-tabs>
+
+                </p-tabpanel>
+                <p-tabpanel value="2">
+                    <div class="flex justify-center items-start gap-8 mt-8">
+                        <div class="flex-2 flex rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
+                            <div class="bg-[#F6F5EF] rounded-2xl border-4 shadow-xl max-w-3xl w-full overflow-hidden">
+                                <!-- Article Content -->
+
+                                <div class="px-10 py-8">
+                                    <div>
+                                        <div class="text-black" [innerHTML]="blogContent"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="flex flex-1">
+                            <div class="">
+
+
+                                <h2 class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636] text-xl font-bold">
+                                    Brand Guidelines & Assets
+                                </h2>
+                                <div class="p-4 border-1 border-[#363636]">
+                                    <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
+                                    <div class="flex justify-center gap-4 items-center">
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#E41E28]"></a>
+                                            <p>Primary</p>
+                                        </div>
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#CBEBFC]"></a>
+                                            <p>Secondary</p>
+                                        </div>
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#3F3F3F]"></a>
+                                            <p>Tertiary</p>
+                                        </div>
+                                        <div
+                                            class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                            <a class="p-4 mb-1 rounded-full bg-[#B5876D]"></a>
+                                            <p>Accent</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+
+
+
+
+                                <h2 class="border-1 border-t-0 p-4 border-b-0 border-[#363636] text-xl font-bold">
+                                    Content Details
+                                </h2>
+
+                                <div class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                    <div class="flex justify-between items-start">
+                                        <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                                                <span class="font-semibold">{{ formData?.clientName || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                                                <span class="font-semibold">{{ formData?.purpose || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col col-span-2">
+                                                <span class="text-[#9b9b9b] text-sm">Outline</span>
+                                                <span class="font-semibold">{{ formData?.outline || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Format</span>
+                                                <span class="font-semibold">{{ formData?.format || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Status</span>
+                                                <span
+                                                    class="inline-block text-center w-28 px-4 py-3 rounded-full bg-[#E26F20] text-white font-semibold text-sm mt-1">
+                                                    {{ formData?.status || 'In-Progress' }}
+                                                </span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                                <span class="font-semibold">{{ formData?.dueDate || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                                <span class="font-semibold">{{ formData?.tone || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Keywords</span>
+                                                <span class="font-semibold">{{ formData?.keywords || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                                                <span class="font-semibold">{{ formData?.wordLimit || '-' }}</span>
+                                            </div>
+                                            <div class="flex flex-col col-span-2">
+                                                <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                                <span class="font-semibold">{{ formData?.target || '-' }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+                        style="background-color:rgba(0, 0, 0, 0.5)">
+                        <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
+                            Rework</button>
+                        <button (click)="publishContent2()"
+                            class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
+                    </div>
+                </p-tabpanel>
+            </p-tabpanels>
+
+
+        </div>
+
+    </p-tabs>
+</div>

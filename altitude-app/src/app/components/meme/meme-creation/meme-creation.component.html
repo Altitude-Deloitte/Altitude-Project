@@ -1,0 +1,94 @@
+<app-header></app-header>
+<div class="min-h-screen mt-5">
+    <div class="max-w-[88%] mx-auto">
+        <a routerLink="/home" class="text-4xl w-full flex items-center">
+            <i class="pi pi-angle-left mt-1 mr-2 text-2xl cursor-pointer"></i>
+            Create <span class="ml-2 email-glow">Meme</span>
+        </a>
+        <div class="my-5 border-1 border-[#8D4BFF] rounded-xl p-5">
+            <div class="">
+                <div class="border-1 border-[#363636] border-b-0 rounded-t-xl p-4">
+                    <div class="flex gap-4 ">
+                        <div class="trends">
+                            <h3 class="text-xl">Today's Top Trends</h3>
+                            <div class="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4">
+                                @for (item of hashtags; track $index) {
+                                <div (click)="selectHashtags(item)" class="flex justify-between items-center border border-[#4D4D4D] rounded-xl p-3 md:p-4 cursor-pointer w-full 
+                                        h-14 sm:h-16 md:h-18 lg:h-20 
+                                        hover:border-[#B66DFF] hover:bg-gray-800/20"
+                                    ngClass="{{selectedHashtags?.includes(item) ? 'bg-[#B66DFF]' : ''}}">
+                                    <div
+                                        class="flex-shrink-0 rounded-xl border border-[#4D4D4D] p-2 w-10 h-8 flex items-center justify-center text-sm font-medium bg-gray-800/50">
+                                        #{{$index+1}}
+                                    </div>
+                                    <div class="flex-1 mx-4 min-w-0">
+                                        <h4
+                                            class="p-0 m-0 text-sm md:text-base font-medium text-white truncate leading-tight">
+                                            {{item}}
+                                        </h4>
+                                    </div>
+                                </div>
+                                }
+                            </div>
+                        </div>
+                        <div class="meme-template">
+                            <h3 class="text-xl">Meme Template</h3>
+                            <div class="mt-4 grid grid-cols-1 space-x-2 space-y-2 md:grid-cols-4">
+                                @for (item of images; track $index) {
+                                <div class="flex flex-col items-center justify-center">
+
+
+
+                                    <img class="w-40 rounded-xl h-40 cursor-pointer" [src]="item.url" alt="textbox"
+                                        ngClass="{{selectedImage?.id === item?.id ? 'border-3 border-[#B66DFF]' : ''}}"
+                                        (click)="selectTemplate(item)" />
+
+
+                                </div>
+                                }
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="border-1 border-[#363636] rounded-b-0 p-4">
+                    <div class="flex flex-col">
+                        <h3 class="text-2xl">Brand Information</h3>
+                        <form class="my-4" [formGroup]="memeForm">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-300 mb-1">Brand Name*</label>
+                                    <input pInputText formControlName="slogan" panelStyleClass="custom-select-panel"
+                                        class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                                </div>
+                                <div>
+                                    <label class="block text-gray-300 mb-1">Tone*</label>
+                                    <p-select [options]="toneOptions" formControlName="tone"
+                                        panelStyleClass="custom-select-panel" placeholder="Select" class="w-full"
+                                        styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+                                </div>
+                                <div class="col-span-2">
+                                    <label class="block text-gray-300 mb-1">Additional Details</label>
+                                    <input pInputText formControlName="desc"
+                                        class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
+                                        placeholder="Add details here..." />
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="border-1 border-[#363636] rounded-b-xl border-t-0 p-4">
+                    <div class="max-w-90% mx-auto">
+                        <div class="flex justify-end items-center">
+                            <p-button class="px-6 py-3 rounded-full bg-[#8D4BFF]" label="Next" severity="help"
+                                rounded="true" (onClick)="onGenerateMeme()"></p-button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

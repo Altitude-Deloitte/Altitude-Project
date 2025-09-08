@@ -1,5 +1,5 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Injectable, signal } from '@angular/core';
 import axios from 'axios';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
@@ -94,9 +94,29 @@ export class ContentGenerationService {
   // style selected
   private styleSelected = new BehaviorSubject<any>(null); // Initialize with null or an initial value
   styleSelected$ = this.styleSelected.asObservable();
-
+  private templateId = signal('');
+  private memeFormData = signal(null);
+  private hashTags = signal(null);
   constructor(private http: HttpClient) {}
 
+  getTemplateId(): string {
+    return this.templateId();
+  }
+  getHashTags(): any {
+    return this.hashTags();
+  }
+  setHashTags(value: any): void {
+    this.hashTags.set(value);
+  }
+  getMemeFormData(): any {
+    return this.memeFormData();
+  }
+  setMemeFormData(data: any): void {
+    this.memeFormData.set(data);
+  }
+  setTemplateId(value: string): void {
+    this.templateId.set(value);
+  }
   // Method to set data
   setData(data: any): void {
     this.dataSubject.next(data);
@@ -885,5 +905,24 @@ export class ContentGenerationService {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const body = { videoscript_id: videoId };
     return this.http.post(this.apiVoiceGeneration, body, { headers });
+  }
+  private memeApiUrl = 'http://localhost:3000/api';
+  getMemeTemplates(): Observable<any> {
+    return this.http.get<any>(`${this.memeApiUrl}/meme-templates`);
+  }
+  getTrendingHashtags(): Observable<any> {
+    return this.http.get<any>(`${this.memeApiUrl}/trending-hashtags`);
+  }
+  generateMeme(
+    tone: string,
+    templateId: string,
+    hashtags: string
+  ): Observable<any> {
+    const requestBody = {
+      tone: tone,
+      templateId: templateId,
+      hashtags: hashtags,
+    };
+    return this.http.post<any>(`${this.memeApiUrl}/generate-meme`, requestBody);
   }
 }

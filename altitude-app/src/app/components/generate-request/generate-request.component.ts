@@ -25,12 +25,15 @@ import { sign } from 'crypto';
 import { ContentGenerationService } from '../../services/content-generation.service';
 import { Router, RouterLink } from '@angular/router';
 import { SelectionStore } from '../../store/campaign.store';
-import { EmailFormComponent } from '../email-form/email-form.component';
-import { SocialFormComponent } from '../social-form/social-form.component';
-import { BlogFormComponent } from '../blog-form/blog-form.component';
-import { ImageFormComponent } from '../image-form/image-form.component';
-import { VirtualFormComponent } from '../virtual-form/virtual-form.component';
-import { ProductDescComponent } from '../product-desc/product-desc.component';
+import { EmailFormComponent } from '../email/email-form/email-form.component';
+import { SocialFormComponent } from '../social/social-form/social-form.component';
+import { BlogFormComponent } from '../blog/blog-form/blog-form.component';
+import { ImageFormComponent } from '../image-generation/image-form/image-form.component';
+import { VirtualFormComponent } from '../virtual/virtual-form/virtual-form.component';
+import { ProductDescComponent } from '../product/product-desc/product-desc.component';
+import { VideoFormComponent } from '../video/video-form/video-form.component';
+import { CombinedFormComponent } from '../Combined/combined-form/combined-form.component';
+import { InputTextModule } from 'primeng/inputtext';
 @Component({
   selector: 'app-generate-request',
   imports: [
@@ -49,6 +52,9 @@ import { ProductDescComponent } from '../product-desc/product-desc.component';
     ImageFormComponent,
     VirtualFormComponent,
     ProductDescComponent,
+    VideoFormComponent,
+    CombinedFormComponent,
+    InputTextModule,
   ],
   templateUrl: './generate-request.component.html',
   styleUrl: './generate-request.component.css',
@@ -87,6 +93,7 @@ export class GenerateRequestComponent implements OnInit {
     return `EM-2203-${timestamp}`;
   }
   ngOnInit(): void {
+    this.generateTaskId();
     this.selection = this.store.campaignType();
 
     console.log('store: ', this.store.campaignType());

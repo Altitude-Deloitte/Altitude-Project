@@ -1,6 +1,3 @@
-.email-glow {
-  text-shadow: 0 0 4px #fafafa3b, 0 0 16px #fbb2ff99;
-}
 ::ng-deep .p-steppanel {
   background: transparent !important;
 }

@@ -1,0 +1,214 @@
+<form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
+    <!-- Task Details -->
+    <h2 class="text-lg font-semibold mb-4 mt-6">Task
+        Details</h2>
+
+
+    <!-- Content Details -->
+    <div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-gray-300 mb-1">Brand Name*</label>
+                <input pInputText formControlName="brand"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Topic*</label>
+                <input pInputText formControlName="brand"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+
+        </div>
+
+    </div>
+    <div class="border-t-1 border-[#4D4D4D]">
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Email Content Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div>
+                <label class="block text-gray-300 mb-1">Platform Campaign*</label>
+                <p-select [options]="campaignData" formControlName="campaign" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Word Limit*</label>
+                <input pInputText formControlName="wordLimit"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Purpose*</label>
+                <p-select [options]="purposeArray" formControlName="purpose" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Target Readers*</label>
+                <p-select [options]="toppingList" formControlName="readers" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+
+
+
+        </div>
+    </div>
+    <div class="border-t-1 border-[#4D4D4D]">
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Social Media Content Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-gray-300 mb-1">Purpose*</label>
+                <p-select [options]="purposeArray" formControlName="purpose" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Platform*</label>
+                <p-select [options]="socialCampaignData" formControlName="campaign2"
+                    panelStyleClass="custom-select-panel" placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Character Limit*</label>
+                <input pInputText formControlName="wordLimit2"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+
+            <div>
+                <label class="block text-gray-300 mb-1">Links</label>
+                <input pInputText formControlName="Hashtags"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+        </div>
+    </div>
+    <div class="border-t-1 border-[#4D4D4D]">
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Blog Content Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-gray-300 mb-1">Purpose*</label>
+                <p-select [options]="blogPurposeArray" formControlName="purpose3" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Format*</label>
+                <p-select [options]="formats" formControlName="format" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Keywords</label>
+                <input pInputText formControlName="keywords"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Word Count*</label>
+                <input pInputText formControlName="wordLimit3"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+
+            <div>
+                <label class="block text-gray-300 mb-1">Target Audience*</label>
+                <input pInputText formControlName="target3"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Tone*</label>
+                <p-select [options]="toneOptions" formControlName="Type" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+        </div>
+    </div>
+
+    <div class="border-t-1 border-[#4D4D4D]">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="col-span-2 mt-6">
+                <label class="block text-gray-300 mb-1">Additional Details</label>
+                <input pInputText formControlName="imgDesc"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
+                    placeholder="Add details here..." />
+            </div>
+        </div>
+    </div>
+    <!-- Image Details -->
+    <div>
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Image Details</h2>
+        <div>
+            <label class="block text-gray-300 mb-1">Image Type</label>
+            <div class="flex gap-6">
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="N/A" formControlName="imageOpt" class="mr-2"></p-radioButton>
+                    No Image
+                </label>
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="AI Generated" formControlName="imageOpt"
+                        class="mr-2"></p-radioButton>
+                    AI Generated
+                </label>
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="Upload Image" formControlName="imageOpt"
+                        class="mr-2"></p-radioButton>
+                    Upload Image
+                </label>
+                <label class="flex items-center text-gray-300">
+                    <p-radioButton name="imageOpt" value="URL Image" formControlName="imageOpt"
+                        class="mr-2"></p-radioButton>
+                    URL Image
+                </label>
+            </div>
+        </div>
+    </div>
+    @switch (socialwebsite.get('imageOpt')?.value) {
+    @case ('na') {
+    }
+    @case ('AI Generated') {
+    <div class="flex flex-col">
+        <label for="imagedesc">
+            Image Description
+        </label>
+        <input
+            class="bg-transparent border border-[#363636] w-1/2 rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
+            formControlName="imgDesc" placeholder="Please enter the image description" />
+    </div>
+
+    }@case ('URL Image') {
+    <div class="flex flex-col">
+        <label for="url">Image URL</label>
+        <input id="url"
+            class="bg-transparent border border-[#363636] w-1/2 rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
+            formControlName="url" placeholder="please enter the url" />
+    </div>
+
+    }
+    @case ('Upload Image') {
+    <!-- Use PrimeNG FileUpload for modern file upload UI -->
+    <!-- <div class="mb-6">
+                    <label class="block text-gray-300 mb-1 font-medium">Upload File</label>
+                    <p-fileUpload name="uploadedImage" url="" mode="advanced" [auto]="false" [multiple]="true"
+                        accept=".xlsx,.xls,.csv" maxFileSize="52428800" chooseLabel="Choose or Drag & Drop" uploadLabel="Upload"
+                        cancelLabel="Cancel" [customUpload]="true" (uploadHandler)="onFileSelected($event)" class="w-full p-0"
+                        [style]="{ 'background': 'transparent', 'border': '1px dashed #363636', 'border-radius': '0.75rem' }">
+                        <ng-template pTemplate="content">
+                            <div class="flex flex-col items-center py-8">
+                                <i class="pi pi-cloud-upload text-4xl text-[#8D4BFF] mb-3"></i>
+                                <span class="block text-white text-base mb-1">Choose a file or drag & drop it here</span>
+                                <span class="text-gray-400 text-sm">Excel formats, up to 50MB</span>
+                            </div>
+                        </ng-template>
+                    </p-fileUpload>
+                </div> -->
+    } }
+
+    <!-- Submit Button -->
+
+    <div class="flex justify-end items-center flex-wrap">
+
+        <p-button [ngClass]="{ 'opacity-70': !socialwebsite.valid }" class="px-6 py-3 rounded-full bg-[#8D4BFF]"
+            label="Submit" severity="help" rounded="true" (onClick)="onCreateProject()"
+            [disabled]="socialwebsite.invalid"></p-button>
+    </div>
+
+
+</form>

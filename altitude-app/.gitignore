@@ -40,3 +40,10 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Node package files
+/altitude-app/package.json
+/altitude-app/package-lock.json
+
+/altitude-app/angular.json
+/*.zip

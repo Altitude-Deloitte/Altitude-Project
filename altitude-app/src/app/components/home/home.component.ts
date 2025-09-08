@@ -39,12 +39,17 @@ export class HomeComponent implements OnInit {
     {
       name: 'Website Blog',
       code: 'blog',
-      icon: 'assets/images/FileText.svg',
+      icon: 'assets/images/Browser.svg',
     },
-    { name: 'Virtual Try On', code: 'virtual', icon: 'assets/images/cube.svg' },
+    {
+      name: 'Virtual Try On',
+      code: 'virtual',
+      icon: 'assets/images/CubeFocus.svg',
+    },
     { name: 'AI Video', code: 'video', icon: 'assets/images/Video.svg' },
     { name: 'Image Animation', code: 'image', icon: 'assets/images/icon.svg' },
     { name: 'Combined', code: 'combined', icon: 'assets/images/cube.svg' },
+    { name: 'Meme Generation', code: 'meme', icon: 'assets/images/meme.svg' },
     // Add more options as needed
   ];
   source: any;
@@ -66,6 +71,10 @@ export class HomeComponent implements OnInit {
     if (this.selectedRequests) {
       this.store.setCampaignType(this.selectedRequests);
     }
-    this.router.navigate(['/generate-request']);
+    if (this.selectedRequests.code === 'meme') {
+      this.router.navigate(['/meme-creation']);
+    } else {
+      this.router.navigate(['/generate-request']);
+    }
   }
 }

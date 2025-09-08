@@ -1,1 +1,127 @@
-<p>dashboard works!</p>
+<div class="min-h-screen theme-bg flex flex-col">
+    <!-- Header -->
+    <app-header></app-header>
+
+    <!-- Background SVG Curve -->
+
+    <div class="relative top-0 w-full h-[350px] pointer-events-none z-0">
+        <video class="absolute top-0 left-0 w-full h-full object-cover" autoplay muted loop playsinline
+            style="clip-path: url(#curveMask); -webkit-clip-path: url(#curveMask);">
+
+            <source src="assets/videos/dark-particles.mp4" type="video/mp4" />
+        </video>
+        <!-- SVG clipPath definition - Adjusted to match your SVG path -->
+        <svg width="0" height="0">
+            <clipPath id="curveMask" clipPathUnits="objectBoundingBox">
+                <!-- Adjusted to match SVG: starts at 1 (350/350), curves to 0.786 (275/350), ends at 1 -->
+                <path d="M0,0 H1 V1 Q0.5,0.786 0,1 Z" />
+            </clipPath>
+        </svg>
+        <!-- Your SVG polyline -->
+        <svg class="relative left-0 bottom-0 w-full h-full pointer-events-none" viewBox="0 0 1440 350" fill="none"
+            preserveAspectRatio="none">
+            <path d="M0,350 Q720,275 1440,350" stroke="#B66DFF" stroke-width="2" fill="none" />
+        </svg>
+        <div class="absolute top-1/2 text-center left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+            <h1 class="text-6xl font-light" style="color: var(--app-text-color);">
+                Your <span class="italic font-semibold">Dashboard</span>
+            </h1>
+            <p class="mt-4 text-xl text-[#9B9B9B]">
+                A snapshot of your latest activity and action items
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col items-center justify-center flex-1 relative z-10 my-16 h-[60vh] max-w-[90%] mx-auto">
+        <div class="flex justify-center gap-24 items-center w-full">
+            <div *ngFor="let card of cardList; let i = index"
+                class="relative w-56 h-36 rounded-2xl bg-gradient-to-br from-[#23272F] to-[#181A1F] shadow-xl flex flex-col justify-between p-6 transition-all duration-200"
+                [ngClass]="[
+                        i === 1 ? 'ring-2 ring-[#FF8C32]/40 shadow-orange-500/20' : '',
+                        i === 2 ? 'ring-2 ring-[#FFD600]/40 shadow-yellow-500/20' : '',
+                        i === 3 ? 'ring-2 ring-[#FF4B4B]/40 shadow-red-500/20' : '',
+                        i === 4 ? 'ring-2 ring-[#4afc97]/40 shadow-green-500/20' : '',
+                        i === 0 ? 'ring-2 ring-[#6C6C6C]/30 shadow-slate-500/10' : ''
+                      ]"
+                style="background-image: url('assets/images/card-bg.svg'); background-size: cover; background-repeat: no-repeat;">
+                <div>
+                    <div class="text-3xl font-extrabold text-[#F6F6F6] drop-shadow-lg mb-2">
+                        {{ card.number || card.title }}
+                    </div>
+                    <div class="text-lg font-medium" [ngClass]="{
+                            'text-[#F6F6F6]': i === 0,
+                            'text-[#FF8C32]': i === 1,
+                            'text-[#FFD600]': i === 2,
+                            'text-[#FF4B4B]': i === 3,
+                            'text-[#4afc97]': i === 4
+                          }">
+                        {{ card.description }}
+                    </div>
+                </div>
+                <div class="absolute bottom-4 right-4">
+                    <ng-container [ngSwitch]="i">
+                        <span *ngSwitchCase="1"
+                            class="w-9 h-9 flex items-center justify-center rounded-full bg-[#FF8C32]/80 shadow-orange-500/30">
+                            <i class="pi pi-exclamation-circle text-white text-2xl"></i>
+                        </span>
+                        <span *ngSwitchCase="2"
+                            class="w-9 h-9 flex items-center justify-center rounded-full bg-[#FFD600]/80 shadow-yellow-500/30">
+                            <i class="pi pi-clock text-[#23202A] text-2xl"></i>
+                        </span>
+                        <span *ngSwitchCase="3"
+                            class="w-9 h-9 flex items-center justify-center rounded-full bg-[#FF4B4B]/80 shadow-red-500/30">
+                            <i class="pi pi-times text-white text-2xl"></i>
+                        </span>
+                        <span *ngSwitchCase="4"
+                            class="w-9 h-9 flex items-center justify-center rounded-full bg-[#4afc97]/80 shadow-green-500/30">
+                            <i class="pi pi-check text-[#23202A] text-2xl"></i>
+                        </span>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+        <div class="w-full mt-16">
+            <div class="robot-banner rounded-2xl border border-[#3F3F3F] flex items-center min-h-[220px] overflow-hidden relative"
+                style="height: 220px;">
+                <!-- Left Content -->
+                <div class="z-10 px-10 py-8 flex flex-col gap-4 max-w-[800px]">
+                    <h1 class="text-3xl font-semibold text-white mb-1">Agents of Smarter Content</h1>
+                    <p class="text-white text-base leading-relaxed mb-2">
+                        Meet your virtual creative team—AI agents that collaborate, test, and deliver high-impact
+                        content
+                        automatically. From A/B testing emails to crafting dynamic video productions —our agents use
+                        advanced
+                        workflows to build speed, consistency, and creative intelligence at scale.
+                    </p>
+                    <button
+                        class="flex items-center gap-2 bg-white text-black font-medium rounded-full px-6 py-2 shadow hover:bg-gray-100 transition w-fit mt-2">
+                        <i class="pi pi-sparkles text-lg"></i>
+                        Let's get Started
+                    </button>
+                </div>
+                <!-- Robot Image (background handled by .robot-banner) -->
+                <!-- No extra markup needed for the image, it's in the CSS background -->
+                <!-- Optional: overlay for extra darkening on left for text clarity -->
+                <div
+                    class="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent pointer-events-none rounded-2xl">
+                </div>
+            </div>
+        </div>
+        <!-- <div class="flex justify-center items-center gap-4">
+            @for (card of cardList; track $index) {}
+            <div class="card">
+
+            </div>
+
+        </div> -->
+        <!-- Title & Subtitle -->
+
+
+        <!-- Sparkle Icon -->
+
+
+        <!-- Card -->
+
+    </div>
+</div>

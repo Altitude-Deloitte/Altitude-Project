@@ -1,0 +1,15 @@
+a.active {
+  /* background: rgba(77, 27, 104, 0.3); */
+  background: transparent;
+}
+a.active .blur-effect {
+  content: "";
+  position: absolute;
+
+  top: -10px;
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  background-image: radial-gradient(circle, #8d4bff, #8d4bff, #8d4bff, #242424);
+  filter: blur(50px);
+}

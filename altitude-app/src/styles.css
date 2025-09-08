@@ -1,30 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
-@layer tailwind-base {
-  @tailwind base;
-}
 
-@tailwind components;
-
-@layer tailwind-utilities {
-  @tailwind utilities;
-}
+@custom-variant dark (&:where(.dark, .dark *));
 
 /* @import "tailwindcss/preflight";
 @import "tailwindcss/utilities"; */
 @import "primeicons/primeicons.css";
 
 /* CSS Variables for theme colors */
-:root {
+/* :root {
   --app-bg-color: #ffffff;
   --app-text-color: #121212;
   --app-surface-color: #fafafa;
-}
+} */
 
 .dark {
-  --app-bg-color: #09040e;
-  --app-text-color: #ffffff;
-  --app-surface-color: #1a1625;
+  
   --p-stepper-step-title-active-color: var(--app-text-color) !important;
   --p-stepper-step-number-active-color: #000000 !important;
   --p-stepper-step-number-active-background: #ffffff !important;
@@ -37,13 +28,15 @@
   --bg-success: #56e691;
   --app-text-secondary: #686868;
   --app-text-tertiary: #9b9b9b;
+  --p-skeleton-background: #f6f5ef;
+  --p-skeleton-animation-background: rgba(255, 255, 255, 0.5);
 }
 
 /* Global theme application */
 html,
 body {
-  background-color: var(--app-bg-color);
-  color: var(--app-text-color);
+  /* background-color: var(--app-bg-color);
+  color: var(--app-text-color); */
   transition: background-color 0.3s ease, color 0.3s ease;
   margin: 0;
   padding: 0;
@@ -96,9 +89,9 @@ a {
 } */
 
 /* Ensure all components inherit theme colors */
-.p-component {
+/* .p-component {
   color: var(--app-text-color);
-}
+} */
 
 /* .p-select-option {
   color: white !important;
@@ -114,7 +107,7 @@ a {
     0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
 }
 .p-select-label {
-  color: var(--app-text-color) !important;
+  color: var(--app-bg-color) !important;
 }
 
 .p-select-items {
@@ -137,10 +130,10 @@ a {
 .grey-text {
   color: #9b9b9b !important;
 }
-.custom-select-panel {
+/* .custom-select-panel {
   background-color: var(--app-bg-color) !important;
   color: var(--app-text-color) !important;
-}
+} */
 
 .p-selectitem {
   background-color: var(--app-bg-color) !important;
@@ -158,4 +151,13 @@ a {
 .p-select-option.p-select-option-selected {
   padding: 10px !important;
   border-bottom: 1px solid #4d4d4d !important;
+}
+
+.email-glow {
+  text-shadow: 0 0 4px #fafafa3b, 0 0 16px #fbb2ff99;
+}
+.p-slider-horizontal .p-slider-handle {
+  inset-block-start: 50%;
+  margin-block-start: calc(-1 * calc(var(--p-slider-handle-height) / 2));
+  margin-inline-start: calc(-1 * calc(var(--p-slider-handle-width) / 2));
 }

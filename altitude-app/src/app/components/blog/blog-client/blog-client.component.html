@@ -1,0 +1,131 @@
+<app-header></app-header>
+<div class="relative">
+    <div class="max-w-[90%] mt-4 mx-auto p-4">
+        <div class="flex justify-between items-center flex-wrap">
+            <div class="flex flex-col justify-center gap-2">
+                <div class="flex items-center text-[#9B9B9B] gap-2">
+                    <a routerLink="/blog-review">
+                        <i class="pi pi-angle-left"></i>
+                        Back to Client Dashboard</a>
+                </div>
+                <h3 class="text-3xl">New Coca Cola Flavours</h3>
+                <div class="flex items-center gap-2">
+                    <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636]"><i
+                            class="pi pi-envelope mr-2"></i>E-mail Request</a>
+                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
+                        2025</a>
+                </div>
+            </div>
+            <button class="text-[#BB93FF] border-[#BB93FF] border-1 p-3 rounded-full">View All Comments</button>
+        </div>
+        <div class="flex justify-center items-start gap-8 mt-8">
+            <div class="flex-2 flex rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
+                <div class="bg-[#F6F5EF] rounded-2xl border-4 shadow-xl max-w-3xl w-full overflow-hidden">
+                    <!-- Article Content -->
+
+                    <div class="px-10 py-8">
+                        <div>
+                            <div class="text-black" [innerHTML]="blogContent"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="flex flex-1">
+                <div class="">
+
+
+                    <h2 class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636] text-xl font-bold">
+                        Brand Guidelines & Assets
+                    </h2>
+                    <div class="p-4 border-1 border-[#363636]">
+                        <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
+                        <div class="flex justify-center gap-4 items-center">
+                            <div class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                <a class="p-4 mb-1 rounded-full bg-[#E41E28]"></a>
+                                <p>Primary</p>
+                            </div>
+                            <div class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                <a class="p-4 mb-1 rounded-full bg-[#CBEBFC]"></a>
+                                <p>Secondary</p>
+                            </div>
+                            <div class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                <a class="p-4 mb-1 rounded-full bg-[#3F3F3F]"></a>
+                                <p>Tertiary</p>
+                            </div>
+                            <div class="flex w-20 flex-col items-center justify-center rounded-xl bg-[#1A1A1A] p-3">
+                                <a class="p-4 mb-1 rounded-full bg-[#B5876D]"></a>
+                                <p>Accent</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+
+
+                    <h2 class="border-1 border-t-0 p-4 border-b-0 border-[#363636] text-xl font-bold">
+                        Content Details
+                    </h2>
+
+                    <div class="p-4 border-1 border-[#363636] rounded-b-xl">
+                        <div class="flex justify-between items-start">
+                            <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                                    <span class="font-semibold">{{ formData?.clientName || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                                    <span class="font-semibold">{{ formData?.purpose || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col col-span-2">
+                                    <span class="text-[#9b9b9b] text-sm">Outline</span>
+                                    <span class="font-semibold">{{ formData?.outline || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Format</span>
+                                    <span class="font-semibold">{{ formData?.format || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Status</span>
+                                    <span
+                                        class="inline-block text-center w-28 px-4 py-3 rounded-full bg-[#E26F20] text-white font-semibold text-sm mt-1">
+                                        {{ formData?.status || 'In-Progress' }}
+                                    </span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                    <span class="font-semibold">{{ formData?.dueDate || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                    <span class="font-semibold">{{ formData?.tone || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Keywords</span>
+                                    <span class="font-semibold">{{ formData?.keywords || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col">
+                                    <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                                    <span class="font-semibold">{{ formData?.wordLimit || '-' }}</span>
+                                </div>
+                                <div class="flex flex-col col-span-2">
+                                    <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                    <span class="font-semibold">{{ formData?.target || '-' }}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+        style="background-color:rgba(0, 0, 0, 0.5)">
+        <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for Rework</button>
+        <button (click)="publishContent()"
+            class="p-3 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
+    </div>
+</div>

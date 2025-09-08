@@ -1,0 +1,73 @@
+<form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
+    <!-- Task Details -->
+    <h2 class="text-lg font-semibold mb-4 mt-6">Task
+        Details</h2>
+
+
+    <!-- Content Details -->
+    <div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <div>
+                <label class="block text-gray-300 mb-1">Tone*</label>
+                <p-select [options]="toneOptions" formControlName="Type" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+
+
+            <div>
+                <label class="block text-gray-300 mb-1">Word Limit*</label>
+                <input pInputText formControlName="wordLimit"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+            </div>
+
+            <div>
+                <label class="block text-gray-300 mb-1">Choose Global Campaign Language*</label>
+                <p-select [options]="languageArrays" formControlName="lang" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Choose Global Campaign Language*</label>
+                <p-select [options]="vocabularyArrays" formControlName="language" panelStyleClass="custom-select-panel"
+                    placeholder="Select" class="w-full"
+                    styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Details -->
+    <div>
+        <div class="flex justify-between items-center">
+            <h2 class="text-lg text-white font-semibold mb-4 mt-6">Product Details</h2>
+            <p-button icon="pi pi-download" styleClass="rounded-full p-5 bg-[#FFFFFF] dark:bg-[#000000]"
+                label="Download Template" (onClick)="downloadCSV()"></p-button>
+        </div>
+
+        <div class="border border-dashed border-[#363636] rounded-xl p-16" style="background: var(--bg-upload);">
+            <div class="flex flex-col items-center justify-center">
+                <p-fileupload styleClass="rounded-full p-5 bg-[#FFFFFF] dark:bg-[#000000]" chooseIcon="pi pi-upload"
+                    (onSelect)="onFileSelected($event)" mode="basic" accept=".xlsx,.xls"
+                    [multiple]="true"></p-fileupload>
+                <h3>Click or drag to upload files</h3>
+                <p class="text-[#9B9B9B] text-sm">Supported file types: pdf, .ppt, .doc, .txt, .eml, .jpg, .jpeg, .png
+                    (Max
+                    Size
+                    4MB)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Submit Button -->
+
+    <div class="flex justify-end items-center flex-wrap">
+
+        <p-button [ngClass]="{ 'opacity-70': !socialwebsite.valid }" class="px-6 py-3 rounded-full bg-[#8D4BFF]"
+            label="Submit" severity="help" rounded="true" (onClick)="onCreateProject()"
+            [disabled]="socialwebsite.invalid"></p-button>
+    </div>
+
+
+</form>

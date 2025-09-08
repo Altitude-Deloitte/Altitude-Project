@@ -19,7 +19,7 @@
                             <div class="flex flex-col justify-center my-4">
 
                                 <div class="border border-[#363636] rounded-t-lg w-full">
-                                    <div class="flex flex-wrap gap-5 justify-between items-center p-12">
+                                    <div class="flex gap-4 justify-center items-center p-8">
                                         @for (item of radiobtn; track $index) {
                                         <a class="border  w-96 h-64 flex flex-wrap items-start justify-start p-8 rounded-2xl relative"
                                             [ngClass]="details === item.value ? 'border-[#FFFFFF]' : 'border-[#363636]'">
@@ -36,7 +36,11 @@
                                 <div class="border border-[#363636] rounded-b-lg border-t-0 p-4">
                                     <div class="flex justify-between items-center flex-wrap">
                                         <div class="flex gap-4 items-center justify-center">
-                                            <p class="text-xl"><b class="mr-2">Task Id:</b>{{taskID}}</p>
+                                            <label for="taskId">
+                                                Task Id
+                                            </label>
+                                            <input type="text" pInputText [value]="taskID" disabled
+                                                class="bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]">
                                             <p class="text-xl"><b class="mr-2">Due Date:</b>{{dueDate}}</p>
                                         </div>
                                         <p-button styleClass="px-6 py-3 bg-[#8D4BFF] rounded-full" label="Next"
@@ -68,6 +72,9 @@
                                     @case('blog'){
                                     <app-blog-form></app-blog-form>
                                     }
+                                    @case ('video') {
+                                    <app-video-form></app-video-form>
+                                    }
                                     @case ('image') {
                                     <app-image-form></app-image-form>
                                     }
@@ -77,6 +84,8 @@
                                     @case ('product') {
                                     <app-product-desc></app-product-desc>
                                     }
+                                    @case ('combined') {
+                                    <app-combined-form></app-combined-form> }
                                     }
                                 </div>
 

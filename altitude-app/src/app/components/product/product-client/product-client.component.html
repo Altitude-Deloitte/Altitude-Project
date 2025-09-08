@@ -1,0 +1,133 @@
+<app-header></app-header>
+<div class="relative min-h-screen">
+    <div class="max-w-[90%] mt-4 mx-auto p-4">
+        <div class="flex justify-between items-center flex-wrap">
+            <div class="flex flex-col justify-center gap-2">
+                <div class="flex items-center text-[#9B9B9B] gap-2">
+                    <a routerLink="/product-review">
+                        <i class="pi pi-angle-left"></i>
+                        Back to Client Dashboard</a>
+                </div>
+                <h3 class="text-3xl">Product Description</h3>
+                <div class="flex items-center gap-2">
+                    <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636]"><i
+                            class="pi pi-envelope mr-2"></i>Product Description</a>
+                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
+                        2025</a>
+                </div>
+            </div>
+            <button class="text-[#BB93FF] border-[#BB93FF] border-1 p-3 rounded-full">View All Comments</button>
+        </div>
+        <div class="flex flex-wrap justify-center items-start gap-8 mt-8">
+            <div class="md:flex-2 rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
+
+
+                <div (click)="onPanelClick($event)" class="relative cursor-pointer">
+                    <div class="flex my-4 flex-col justify-center items-center">
+
+                        <div class="bg-[#F6F5EF] rounded-2xl p-8 text-black" *ngIf="currentResponse; else noData">
+                            <div class="w-full flex justify-center items-center mb-6">
+                                <img [src]="imageUrl" alt="Product Image" width="300">
+                            </div>
+                            <div class="content-container">
+                                <h2 class="text-2xl text-bold" [innerHTML]="productTitle"></h2>
+                                <br>
+                                <h3 [innerHTML]="productDescription"></h3>
+                            </div>
+                            <div class="flex gap-2 flex-wrap">
+                                <p-button styleClass="text-[#8D4BFF]" [ngClass]="currentIndex === 0 ? 'opacity-70':''"
+                                    (click)="previousResponse()" [disabled]="currentIndex === 0">
+                                    Previous
+                                </p-button>
+                                <p-button styleClass="text-[#8D4BFF]"
+                                    [ngClass]="currentIndex === productResponses.length - 1?'opacity-70':''"
+                                    (click)="nextResponse()" [disabled]="currentIndex === productResponses.length - 1">
+                                    Next
+                                </p-button>
+                            </div>
+                        </div>
+
+                        <ng-template #noData>
+                            <p>No data available. Please upload a file and process it first.</p>
+                        </ng-template>
+
+
+
+                    </div>
+                    <p-overlayPanel #commentPanel [dismissable]="false" [appendTo]="'body'"
+                        (onShow)="positionPanel($event)">
+                        <div class="absolute" [ngStyle]="panelStyle">
+                            <textarea name="commentBox"
+                                class="bg-[#2C2C2C] text-white rounded-tr-lg rounded-tl-lg rounded-br-lg"
+                                [(ngModel)]="commentBox" rows="3" cols="30" id="">
+
+                            </textarea>
+                            <div class="flex gap-4">
+                                <p-button class="text-white rounded-full bg-[#8D4BFF] p-3" label="Save"
+                                    (onClick)="saveComment()"></p-button>
+                                <p-button class="border-1 p-3 border-[#8D4BFF] rounded-full" label="cancel"
+                                    (onClick)="commentPanel.hide()"></p-button>
+                            </div>
+
+                        </div>
+                    </p-overlayPanel>
+                </div>
+
+            </div>
+            <div class="md:flex-1">
+                <div class="">
+
+
+
+                    <p-accordion value="0">
+                        <p-accordion-panel value="0">
+                            <p-accordion-header class="border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
+                                Task Details
+                            </p-accordion-header>
+
+                            <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                <!-- <div class="flex justify-between items-start"> -->
+                                <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Status</span>
+                                        <span
+                                            class="text-center px-4 py-3 rounded-full bg-[#E26F20] text-white font-semibold text-sm mt-1">
+                                            {{ formData?.status || 'In-Progress' }}
+                                        </span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                        <span class="font-semibold">{{ formData?.dueDate || '-' }}</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                        <span class="font-semibold">{{ formData?.Type || '-' }}</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                                        <span class="font-semibold">{{ formData?.wordLimit || '-' }}</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Typography</span>
+                                        <span class="font-semibold">Inter</span>
+                                    </div>
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Font Size</span>
+                                        <span class="font-semibold">16px</span>
+                                    </div>
+                                </div>
+                                <!-- </div> -->
+                            </p-accordion-content>
+                        </p-accordion-panel>
+                    </p-accordion>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+        style="background-color:rgba(0, 0, 0, 0.5)">
+        <button (click)="downloadExcel()" class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Download
+            Excel</button>
+    </div>
+</div>
