@@ -36,10 +36,15 @@
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div> -->
             <div>
-                <label class="block text-gray-300 mb-1">Topic*</label>
-                <p-select [options]="toppingList" formControlName="topic" placeholder="Select" class="w-full"
+                <label class="block text-gray-300 mb-1">Traget Readers*</label>
+                <p-select [options]="toppingList" formControlName="readers" placeholder="Select" class="w-full"
                     panelStyleClass="custom-select-panel"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
+            </div>
+            <div>
+                <label class="block text-gray-300 mb-1">Topic*</label>
+                <input pInputText formControlName="topic" panelStyleClass="custom-select-panel"
+                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>
             <!-- <div>
                 <label class="block text-gray-300 mb-1">Target Reader*</label>
@@ -48,7 +53,7 @@
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div> -->
             <div>
-                <label class="block text-gray-300 mb-1">Character Limit</label>
+                <label class="block text-gray-300 mb-1">Word Limit</label>
                 <input pInputText formControlName="wordLimit"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>

@@ -70,7 +70,7 @@ export class SocialReviewComponent {
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
     private chnge: ChangeDetectorRef
-  ) {}
+  ) { }
 
   formData: any;
   ngOnInit(): void {
@@ -91,7 +91,7 @@ export class SocialReviewComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        this.editorContentSocialMedia = data?.content;
+        this.editorContentSocialMedia = data.result.generation.content;
         this.editorContentSocialMedia = this.editorContentSocialMedia
           ?.replace(/"/g, '')
           .trim();
@@ -132,7 +132,7 @@ export class SocialReviewComponent {
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
-        this.editorContentSocialMedia1 = data?.content;
+        this.editorContentSocialMedia1 = data.result.generation.content;
         this.editorContentSocialMedia1 = this.editorContentSocialMedia1
           .replace(/"/g, '')
           .trim();
@@ -174,7 +174,7 @@ export class SocialReviewComponent {
     this.aiContentGenerationService
       .getAudianceResponseData1()
       .subscribe((data) => {
-        this.audianceData1 = data?.content;
+        this.audianceData1 = data.result.generation.content;
         console.log('audiance string 1: ', this.audianceData1);
         // this.chnge.detectChanges();
       });
@@ -182,7 +182,7 @@ export class SocialReviewComponent {
     this.aiContentGenerationService
       .getAudianceResponseData2()
       .subscribe((data) => {
-        this.audianceData2 = data?.content;
+        this.audianceData2 = data.result.generation.content;
         console.log('audiance string2 : ', this.audianceData2);
         // this.chnge.detectChanges();
       });

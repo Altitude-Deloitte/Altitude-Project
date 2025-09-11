@@ -168,7 +168,7 @@ export class EmailReviewComponent {
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService // private dialog: MatDialog,
-  ) {}
+  ) { }
   ngOnInit() {
     this.imageUrl = null;
     this.loading = true;
@@ -214,11 +214,12 @@ export class EmailReviewComponent {
       .getEmailHeadResponsetData()
       .subscribe((data) => {
         console.log('get headering for email ', data);
-
+        this.contentDisabled = false;
+        this.loading = false;
         let emailContent =
-          typeof data.content === 'string'
-            ? data.content
-            : JSON.parse(data.content);
+          typeof data.result.generation.content === 'string'
+            ? data.result.generation.content
+            : JSON.parse(data.result.generation.content);
         console.log('get header email heading content', emailContent);
         this.emailHeader = emailContent;
         console.log('get email header', this.emailHeader);
@@ -230,10 +231,11 @@ export class EmailReviewComponent {
       .subscribe((data) => {
         if (data?.content) {
           // Determine if the content is a string or JSON and parse accordingly
+          this.contentDisabled = false;
           let emailContent =
-            typeof data.content === 'string'
-              ? data.content
-              : JSON.parse(data.content);
+            typeof data.result.generation.content === 'string'
+              ? data.result.generation.content
+              : JSON.parse(data.result.generation.content);
           emailContent = emailContent.replace(/"/g, '').trim();
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
           console.log('email para : ', this.editorContentEmail);
@@ -265,8 +267,8 @@ export class EmailReviewComponent {
           this.brandlogoTop =
             brandName !== 'babycheramy.lk'
               ? 'https://img.logo.dev/' +
-                brandName +
-                '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+              brandName +
+              '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
               : 'https://www.babycheramy.lk/images/logo.webp';
           console.log('logo:', this.brandlogoTop);
         }

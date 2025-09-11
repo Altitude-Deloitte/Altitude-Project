@@ -111,7 +111,7 @@ export class EmailFormComponent {
   store = inject(SelectionStore);
   imageOption: string = '';
   imageBox: string = '';
-  constructor(private aiContentGenerationService: ContentGenerationService) {}
+  constructor(private aiContentGenerationService: ContentGenerationService) { }
   ngOnInit(): void {
     console.log('store: ', this.store.campaignType());
     const currentDate = new Date();
@@ -205,7 +205,7 @@ export class EmailFormComponent {
 
     var offerImage = `Create an "${formValues.brand}" brand offer/quote heading for a "${formValues.topic}" with an attractive, short, and brand-aligned title in an <h1> tag and a subtitle in an <h2> tag. Ensure the output includes only the <h1> and <h2> tags with the content. Avoid adding extra HTML or markdown. The font style and color should align with Nike's branding.`;
     this.aiContentGenerationService
-      .generateContent(offerImage, 'emailer')
+      .generateContent(formValues, 'emailer')
       .subscribe({
         next: (data) => {
           console.log(`email heading prompt :`, offerImage);
@@ -232,7 +232,7 @@ export class EmailFormComponent {
       this.contentTypes.forEach((contentType) => {
         const prompt = this.constructPrompt(formValues, contentType);
         console.log('Prompt :', prompt);
-        this.aiContentGeneration(prompt, contentType);
+        // this.aiContentGeneration(prompt, contentType);
       });
       if (this.uploadedIamges) {
         this.aiContentGenerationService.setImage(this.uploadedIamges);
@@ -450,7 +450,7 @@ The html tags are separate and it should not be part of word count`;
   //   event.chipInput!.clear();
   // }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   addImageFromURL(): void {
     const url = this.socialwebsite.get('url')?.value;

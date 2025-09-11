@@ -7,7 +7,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class ContentGenerationService {
-  private apiUrl = 'http://18.116.64.253:3000/generate-content';
+  private apiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-content';
   private campaignUrl = 'http://18.116.64.253:3301/campaign/2676';
   private publishMarketoUrl = 'http://18.116.64.253:5000/update-email';
   private imageGenerationUrl = 'http://18.116.64.253:4000/generate-image';
@@ -97,7 +97,7 @@ export class ContentGenerationService {
   private templateId = signal('');
   private memeFormData = signal(null);
   private hashTags = signal(null);
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getTemplateId(): string {
     return this.templateId();
@@ -324,13 +324,19 @@ export class ContentGenerationService {
   }
 
   // Method to generate content
-  generateContent(prompt: string, type: string): Observable<any> {
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-    const body = { prompt, type };
-
-    return this.http
-      .post(this.apiUrl, body, { headers })
-      .pipe(catchError(this.handleError('generateContent', {})));
+  generateContent(formFieldData: any, type: string): Observable<any> {
+    const formData = new FormData();
+    formData.append('use_case', type);
+    formData.append('purpose', formFieldData?.purpose);
+    formData.append('brand', formFieldData?.brand);
+    if (type !== 'social_media') {
+      formData.append('tone', formFieldData?.Type);
+    }
+    formData.append('platform_campaign', formFieldData?.campaign);
+    formData.append('topic', formFieldData?.topic);
+    formData.append('target_reader', formFieldData?.readers);
+    formData.append('word_limit', formFieldData?.wordLimit);
+    return this.http.post(this.apiUrl, formData);
   }
 
   // Method to fetch campaign data

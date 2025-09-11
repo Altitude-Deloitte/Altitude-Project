@@ -135,7 +135,7 @@ export class SocialFormComponent {
 
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
 
   urlImage: any;
   onCreateProject(): void {
@@ -217,7 +217,7 @@ export class SocialFormComponent {
       if (this.instaFlag) {
         var audiancePrompt = `Generate 3 Instagram audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and with the Instagram format . Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
         this.aiContentGenerationService
-          .generateContent(audiancePrompt, 'emailer')
+          .generateContent(formValues, 'emailer')
           .subscribe({
             next: (data: any) => {
               console.log(`instagram audiance prompt :`, audiancePrompt);
@@ -238,7 +238,7 @@ export class SocialFormComponent {
       // var facebookPrompt = `Create a social media post for the platform "Facebook" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type1}". The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target1}". The content should be detailed and informative, with a length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. This is the hyper link "${formValues.Hashtags}" add it at the end of the post which is shown as hyperlink and clickable if there is not link, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var facebookPrompt = `Generate a Facebook post on "${formValues.topic}" in "${formValues.lang}" with a "${formValues.Type1}" tone for "${formValues.target1}". The purpose is "${formValues.purpose}". Keep the post within "${this.fbLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant. Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
       this.aiContentGenerationService
-        .generateContent(facebookPrompt, 'social_media')
+        .generateContent(formValues, 'social_media')
         .subscribe({
           next: (data: any) => {
             console.log(`social_media facebook prompt :`, facebookPrompt);
@@ -253,18 +253,18 @@ export class SocialFormComponent {
       console.log('Insta limit: ', this.inLimit);
       // var instaPrompt = `Create a social media post for the platform "Instagram" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type2}" and intractive description and caption. The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target2}". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var instaPrompt = `Generate a Instagram post on "${formValues.topic}" in "${formValues.lang}" with a "${formValues.Type2}" tone for "${formValues.target2}". The purpose is "${formValues.purpose}". Keep the post within "${this.inLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant.Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
-      this.aiContentGenerationService
-        .generateContent(instaPrompt, 'social_media')
-        .subscribe({
-          next: (data: any) => {
-            console.log(`social_media insta prompt :`, instaPrompt);
-            this.aiContentGenerationService.setSocialResponseData1(data);
-            console.log(`social_media insta from API for :`, data);
-          },
-          error: (error: any) => {
-            console.error(`Error occurred for :social_media`, error);
-          },
-        });
+      // this.aiContentGenerationService
+      //   .generateContent(instaPrompt, 'social_media')
+      //   .subscribe({
+      //     next: (data: any) => {
+      //       console.log(`social_media insta prompt :`, instaPrompt);
+      //       this.aiContentGenerationService.setSocialResponseData1(data);
+      //       console.log(`social_media insta from API for :`, data);
+      //     },
+      //     error: (error: any) => {
+      //       console.error(`Error occurred for :social_media`, error);
+      //     },
+      //   });
       if (this.uploadedIamges) {
         this.aiContentGenerationService.setImage(this.uploadedIamges);
       }
@@ -290,19 +290,19 @@ export class SocialFormComponent {
     this.route.navigateByUrl('social-review');
   }
 
-  aiContentGeneration(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateContent(prompt, type).subscribe({
-      next: (data: any) => {
-        if (type == 'social_media') {
-          this.aiContentGenerationService.setSocialResponseData(data);
-        }
-        console.log(`Response from API for ${type}:`, data);
-      },
-      error: (error: any) => {
-        console.error(`Error occurred for ${type}:`, error);
-      },
-    });
-  }
+  // aiContentGeneration(prompt: string, type: string): void {
+  //   this.aiContentGenerationService.generateContent(prompt, type).subscribe({
+  //     next: (data: any) => {
+  //       if (type == 'social_media') {
+  //         this.aiContentGenerationService.setSocialResponseData(data);
+  //       }
+  //       console.log(`Response from API for ${type}:`, data);
+  //     },
+  //     error: (error: any) => {
+  //       console.error(`Error occurred for ${type}:`, error);
+  //     },
+  //   });
+  // }
 
   uploadedIamges: any;
   previewImage(file: File): void {
@@ -321,7 +321,7 @@ export class SocialFormComponent {
     }
   }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
