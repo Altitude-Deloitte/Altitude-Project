@@ -569,7 +569,7 @@ Output the entire blog in HTML format, followed by:
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-      debugger;
+       
       if (files.length) {
         files.forEach((file) => {
           if (file instanceof File) {

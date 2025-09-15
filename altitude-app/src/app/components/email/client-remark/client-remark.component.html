@@ -48,13 +48,18 @@
                             <tr>
                                 <td [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
                                     align="center" class="image-width" style="font-size: 1px;line-height: 1px;"
-                                    *ngIf="this.imageUrl && this.editorContentEmail ">
+                                    *ngIf="this.editorContentEmail ">
                                     <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
                                         <img [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
                                             border="0" alt="Banner Image" [src]="this.imageUrl" />
                                     </div>
                                 </td>
                             </tr>
+                             <tr>
+                                        <td>
+                                            <h1>{{this.emailSubject}}</h1>
+                                        </td>
+                                    </tr>
                             <tr>
                                 <td style=" text-align: center; background-color: #ffffff;">
                                     <ng-container *ngIf="imageOfferUrl && !imageUrl; ">

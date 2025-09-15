@@ -191,10 +191,10 @@
 
 
                                         <p-tabpanel value="0">
-                                            <!-- <div *ngIf="!contentDisabled"> -->
-                                            <p class="post-caption text-black" class="dark:text-black text-white">
+                                            <img [src]="this.imageUrlSocialmedia" />
+                                            <h3 class="post-caption text-black" class="dark:text-black text-white">
                                                 {{
-                                                this.editorContentSocialMedia }}</p>
+                                                this.editorContentSocialMedia }}</h3>
                                             @if (hyperUrl) {
                                             <p class="post-caption text-black">For more details, visit our website:
                                                 <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer"

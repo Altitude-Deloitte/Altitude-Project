@@ -44,10 +44,11 @@
 
 
                                     <p-tabpanel value="0">
+                                         <img [src]="this.imageUrlSocialmedia" />
                                         <div>
-                                            <p class="post-caption text-black" style="color: var(--app-bg-color);">
+                                            <h3 class="post-caption text-black" style="color: #333333;">
                                                 {{
-                                                this.editorContentSocialMedia }}</p>
+                                                this.editorContentSocialMedia }}</h3>
                                             <!-- @if (hyperUrl) {
                                 <p class="post-caption text-black">For more details, visit our website:
                                     <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
