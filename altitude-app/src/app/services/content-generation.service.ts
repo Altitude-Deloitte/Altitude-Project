@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import axios from 'axios';
 import { BehaviorSubject, Observable, of } from 'rxjs';
@@ -329,13 +329,16 @@ export class ContentGenerationService {
     formData.append('use_case', type);
     formData.append('purpose', formFieldData?.purpose);
     formData.append('brand', formFieldData?.brand);
-    if (type === 'Blog Generation') {
-      formData.append('tone', 'Formal');    
+    if (type === 'Social Media Posting') {
+       
+    }else{
+      formData.append('target_reader', formFieldData?.readers);
+      formData.append('tone', 'Formal'); 
     }
-      formData.append('image_details', formFieldData?.imageOpt);
+    formData.append('image_details', formFieldData?.imageOpt);
     formData.append('platform_campaign', formFieldData?.campaign);
     formData.append('topic', formFieldData?.topic);
-    formData.append('target_reader', formFieldData?.readers);
+    
     formData.append('word_limit', formFieldData?.wordLimit);
     return this.http.post(this.apiUrl, formData);
   }
