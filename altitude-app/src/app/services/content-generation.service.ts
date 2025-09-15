@@ -329,9 +329,10 @@ export class ContentGenerationService {
     formData.append('use_case', type);
     formData.append('purpose', formFieldData?.purpose);
     formData.append('brand', formFieldData?.brand);
-    if (type !== 'social_media') {
-      formData.append('tone', formFieldData?.Type);
+    if (type === 'Blog Generation') {
+      formData.append('tone', 'Formal');    
     }
+      formData.append('image_details', formFieldData?.imageOpt);
     formData.append('platform_campaign', formFieldData?.campaign);
     formData.append('topic', formFieldData?.topic);
     formData.append('target_reader', formFieldData?.readers);

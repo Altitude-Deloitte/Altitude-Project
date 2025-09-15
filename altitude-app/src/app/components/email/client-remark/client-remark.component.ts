@@ -1,29 +1,21 @@
 import {
-  AfterViewInit,
   ChangeDetectorRef,
   Component,
-  ElementRef,
   inject,
-  OnInit,
   ViewChild,
 } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { ButtonModule } from 'primeng/button';
-// import { InputTextarea } from  'primeng/inputtextarea';
 
 import { TextareaModule } from 'primeng/textarea';
 
 import {
-  FormBuilder,
   FormGroup,
   FormsModule,
-  FormControl,
-  ReactiveFormsModule,
 } from '@angular/forms';
-// import { QuillModule } from 'ngx-quill';
 import { Router, RouterLink } from '@angular/router';
 
-import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
+import { EditorComponent } from '@tinymce/tinymce-angular';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule } from '@angular/common';
 import { SelectModule } from 'primeng/select';
@@ -70,8 +62,6 @@ export class ClientRemarkComponent {
     { src: 'assets/chair3.png', checked: false },
     { src: 'assets/chair4.png', checked: false },
   ];
-  // @ViewChild(MatAccordion)
-  // accordion!: MatAccordion;
 
   @ViewChild(EditorComponent) editorComponent!: EditorComponent;
   editorContent: string = 'Hi , this is desc';
@@ -178,15 +168,25 @@ export class ClientRemarkComponent {
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        console.log('get headering for email ', data);
+        this.emailSubject =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');  
+        this.emailHeader = data.result.generation.email_header;
+       const emailContent =
+            typeof  data.result.generation.content === 'string'
+              ? data.result.generation.content
+              : JSON.parse(data.result.generation.content);
 
-        let emailContent =
-          typeof data.content === 'string'
-            ? data.content
-            : JSON.parse(data.content);
-        console.log('get header email heading content', emailContent);
-        this.emailHeader = emailContent;
-        console.log('get email header', this.emailHeader);
+          this.editorContentEmail = emailContent.replace(/\\n\\n/g, '<br>');
+        this.imageUrl = data.result.generation.image_url;
+        this.subjctEmail =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');
+          this.contentWithImage = `
+    <div  style="padding:40px;">
+    <div><b>${this.subjctEmail}</b></div>
+    <div style="text-align: center; padding:40px;">
+      <img class="size-image" alt="" src="${data.result.generation.image_url}" />
+    </div><br/>
+    <div>${this.editorContentEmail}</div>
+    </div>
+  `;
       });
 
     //fetch subject
@@ -216,8 +216,6 @@ export class ClientRemarkComponent {
       .getBrandData(this.formData?.brand)
       .subscribe({
         next: (response) => {
-          // Extracting links and logo
-          console.log('brands response', response);
           this.brandLinks = response.links;
           console.log('brands links', this.brandLinks);
           this.brandlogo = response.logos[0]?.formats[0]?.src; // First logo's SVG src
@@ -242,16 +240,15 @@ export class ClientRemarkComponent {
     this.aiContentGenerationService
       .getEmailResponsetData()
       .subscribe((data) => {
-        if (data?.content) {
+          
+        if ( data.result.generation.content) {
           // Determine if the content is a string or JSON and parse accordingly
           const emailContent =
-            typeof data.content === 'string'
-              ? data.content
-              : JSON.parse(data.content);
+            typeof  data.result.generation.content === 'string'
+              ? data.result.generation.content
+              : JSON.parse(data.result.generation.content);
 
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '<br>');
-
-          console.log('email para : ', this.editorContentEmail);
 
           this.contentWithImage = `
     <div  style="padding:40px;">
@@ -284,6 +281,7 @@ export class ClientRemarkComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
+         
         this.isSocialMediaPromptDisabled = false;
         this.editorContentSocialMedia = data?.content;
         this.chnge.detectChanges();
@@ -294,6 +292,7 @@ export class ClientRemarkComponent {
 
     this.aiContentGenerationService.storeImage(this.imageUrl).subscribe(
       (response) => {
+          
         console.log('Response banner:', response);
         this.imageUrlS3 = response.s3Url;
         console.log('bammer image:', this.imageUrlS3);
@@ -359,14 +358,7 @@ export class ClientRemarkComponent {
       this.editorComponent.editor.setContent(this.editorContentBlog);
     }
   }
-  onCreateProject() {
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
-    // dialogConfig.autoFocus = true;
-    // dialogConfig.width = '400px';
-    // this.dialog.open(SuccessDialogComponent, dialogConfig);
-  }
-
+ 
   inputChange(fileInputEvent: any) {
     console.log(fileInputEvent.target.files[0]);
   }
@@ -375,10 +367,6 @@ export class ClientRemarkComponent {
     this.route.navigateByUrl('client-remark');
     this.chnge.detectChanges();
   }
-
-  // navigateToSuccess(): void {
-  //   this.route.navigateByUrl('success');
-  // }
 
   aiContentGeneration(prompt: string, type: string): void {
     if (type === 'blog') {
@@ -417,22 +405,6 @@ export class ClientRemarkComponent {
       });
   }
 
-  // ngAfterViewInit() {
-  //   const img = new Image();
-  //   img.src = this.imageUrl;
-  //   console.log('Image load : ', img.src);
-  //   img.onload = () => {
-  //     const width = img.width;
-  //     const height = img.height;
-
-  //     if (width === height) {
-  //       this.setImageDimensions('640px', '640px');
-  //     } else if (height > width) {
-  //       this.setImageDimensions('640px', '240px');
-  //     }
-  //   };
-  // }
-
   setImageDimensions(height: string, width: string) {
     this.imageContainerHeight = height;
     this.imageContainerWidth = width;
@@ -455,12 +427,7 @@ export class ClientRemarkComponent {
     var contentWithImages = this.contentWithImage.replace(/\n+/g, '').trim();
     contentWithImages?.replace(/\\n/g, '<br>');
 
-    //html format content
-    var subjectEmail = this.selectedSubject.replace(/"/g, '');
-    console.log('email body client :', this.editorContentEmail);
-    console.log('baner body :', this.emailHeader);
-    console.log('subject mail :', subjectEmail);
-    const emailhtmlUrl: string = `http://18.116.64.253:3434/send-email?to=masoomithakar@gmail.com,mthakar@deloitte.com,shrirangp@gmail.com,mandeepsingh.1998@outlook.com&subject=${subjectEmail}`;
+    const emailhtmlUrl: string = `http://18.116.64.253:3434/send-email?to=masoomithakar@gmail.com,mthakar@deloitte.com,shrirangp@gmail.com,mandeepsingh.1998@outlook.com&subject=${this.emailSubject}`;
     const emailHtmlBody: string = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -597,18 +564,13 @@ export class ClientRemarkComponent {
       .sendHtmlEmail(emailhtmlUrl, emailHtmlBody)
       .subscribe({
         next: (response) => {
-          console.log('Email sent successfully:', response);
           this.ispublisLoaderDisabled = false;
-          // Remove the dialog opening code since it's commented out
         },
         error: (error) => {
-          console.error('Error sending email:', error);
           this.ispublisLoaderDisabled = false;
-          // Navigate to success even if email fails (optional)
           this.navigateToSuccess();
         },
         complete: () => {
-          // Always navigate to success when the observable completes
           this.navigateToSuccess();
         },
       });
@@ -637,4 +599,5 @@ export class ClientRemarkComponent {
     }
   }
   saveComment() {}
+  
 }

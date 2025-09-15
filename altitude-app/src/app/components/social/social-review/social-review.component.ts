@@ -40,6 +40,7 @@ export class SocialReviewComponent {
   editorContentSocialMedia: any;
   characterCount: number = 0;
   imageUrl: any;
+  imageUrlSocialmedia: any;
   imageContainerHeight = '0px';
   imageContainerWidth = '0px';
   imageHeight = '0px';
@@ -75,6 +76,7 @@ export class SocialReviewComponent {
   formData: any;
   ngOnInit(): void {
     this.imageUrl = null;
+    this.imageUrlSocialmedia = null;
     // this.isContentLoaded = true;
     this.aiContentGenerationService.getImage().subscribe((data) => {
       console.log('getImagegetImage', data);
@@ -92,6 +94,7 @@ export class SocialReviewComponent {
       .getSocialResponsetData()
       .subscribe((data) => {
         this.editorContentSocialMedia = data.result.generation.content;
+         this.imageUrlSocialmedia = data.result.generation.image_url;
         this.editorContentSocialMedia = this.editorContentSocialMedia
           ?.replace(/"/g, '')
           .trim();
@@ -132,6 +135,7 @@ export class SocialReviewComponent {
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
+        this.imageUrlSocialmedia = data.result.generation.image_url;
         this.editorContentSocialMedia1 = data.result.generation.content;
         this.editorContentSocialMedia1 = this.editorContentSocialMedia1
           .replace(/"/g, '')

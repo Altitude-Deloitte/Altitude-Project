@@ -169,13 +169,13 @@ export class EmailReviewComponent {
     private route: Router,
     private aiContentGenerationService: ContentGenerationService // private dialog: MatDialog,
   ) { }
+  
   ngOnInit() {
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
     });
 
     console.log(this.brand);
@@ -210,26 +210,16 @@ export class EmailReviewComponent {
 
     //heading
     this.contentDisabled = true;
+    this.isLoading = true;
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
         console.log('get headering for email ', data);
-        this.contentDisabled = false;
-        this.loading = false;
-        let emailContent =
-          typeof data.result.generation.content === 'string'
-            ? data.result.generation.content
-            : JSON.parse(data.result.generation.content);
-        console.log('get header email heading content', emailContent);
-        this.emailHeader = emailContent;
-        console.log('get email header', this.emailHeader);
-      });
-
-    this.contentDisabled = true;
-    this.aiContentGenerationService
-      .getEmailResponsetData()
-      .subscribe((data) => {
-        if (data?.content) {
+        this.contentDisabled = false;    
+        this.emailHeader = data.result.generation.email_header;
+        this.imageUrl = data.result.generation.image_url;
+        this.subjctEmail =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');
+        if (data.result.generation.content) {
           // Determine if the content is a string or JSON and parse accordingly
           this.contentDisabled = false;
           let emailContent =
@@ -257,8 +247,6 @@ export class EmailReviewComponent {
           this.isImageRefineDisabled = false;
 
           this.contentDisabled = false;
-          console.log('Total word count:', this.totalWordCount);
-          // this.chnge.detectChanges();
         }
 
         let brandName = this.formData?.brand?.trim();
@@ -272,69 +260,31 @@ export class EmailReviewComponent {
               : 'https://www.babycheramy.lk/images/logo.webp';
           console.log('logo:', this.brandlogoTop);
         }
+      });
 
-        //brand logo and links
+   
+    this.aiContentGenerationService
+      .getEmailResponsetData()
+      .subscribe((data) => {
         this.aiContentGenerationService
           .getBrandData(this.formData?.brand)
           .subscribe({
             next: (response) => {
-              // Extracting links and logo
-              console.log('brands response', response);
               this.brandLinks = response.links;
-              console.log('brands links', this.brandLinks);
               this.brandlogo = response.logos[0]?.formats[0]?.src; // First logo's SVG src
               this.theme = response.logos[0]?.tags.theme;
-              console.log('brands logo', this.theme);
               this.brandColor = response.colors;
-              console.log('brands logo', this.brandColor);
-              console.log('brands logo', this.brandlogo);
 
               // Example usage
               this.darkHexCode = this.fetchHexCodeByType('dark');
               this.lightHexCode = this.fetchHexCodeByType('accent');
 
-              console.log(this.darkHexCode); // Output: #0a0a5f
-              console.log(this.lightHexCode); // Output: #ffcd39
             },
             error: (err) => {
               console.error(err);
             },
           });
       });
-
-    /* this.aiContentGenerationService.getLatestPosts()
-    .subscribe(
-      posts => {
-        this.posts = this.aiContentGenerationService.filterPosts(posts);
-      },
-      error => (this.errorMessage = error.message)
-);*/
-
-    /* this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-    // Extract content from the response
-    this.editorContentBlog = data?.content;
-    // Format the content
-    if (this.editorContentBlog) {
-      this.isBlogPromptDisabled = false;
-      const updatedContent = this.editorContentBlog?.replace(/<\/?p>/g, '');
-      const parts = updatedContent.split(':');
-
-      let formattedContent: string;
-
-      if (parts.length > 2) {
-        const title = parts[0].trim();
-        const heading = parts[1].trim();
-        const body = parts.slice(2).join(':').trim();
-        formattedContent = `<strong>${title}:</strong> ${heading}<p>${body}</p>`;
-      } else {
-        formattedContent = `<p>${this.editorContentBlog}</p>`;
-      }
-      this.editorContentBlog = formattedContent;
-    }
-
-    this.chnge.detectChanges();
-  });
-*/
 
     this.aiContentGenerationService
       .getSocialResponsetData()
@@ -358,25 +308,8 @@ export class EmailReviewComponent {
           const replaceSub = this.selectedSubject?.replace(/\n/g, '');
           this.onSubjectChange(replaceSub);
         }
-        // this.chnge.detectChanges();
       });
-    // this.chnge.detectChanges();
-    //fetch images
-    //this.fetchMedia(this.formData?.brand);
   }
-
-  //fetch images
-  /* fetchMedia(brand: string) {
-  this.aiContentGenerationService.getImages(brand).subscribe(
-    (response) => {
-      this.posts = response.photos; // Get the latest 4 images
-      console.error('Email fetching images :', this.posts);
-    },
-    (error) => {
-      console.error('Error fetching images:', error);
-    }
-  );
-}*/
 
   ngAfterViewInit() {
     const img = new Image();
@@ -439,13 +372,6 @@ export class EmailReviewComponent {
       this.editorComponent.editor.setContent(this.editorContentBlog);
     }
   }
-  onCreateProject() {
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
-    // dialogConfig.autoFocus = true;
-    // dialogConfig.width = '400px';
-    // this.dialog.open(SuccessDialogComponent, dialogConfig);
-  }
 
   inputChange(fileInputEvent: any) {
     console.log(fileInputEvent.target.files[0]);
@@ -453,15 +379,6 @@ export class EmailReviewComponent {
 
   navigateToForm(): void {
     this.route.navigateByUrl('client-remark');
-
-    // this.chnge.detectChanges();
-  }
-
-  navigateToSave(): void {
-    // const dialogRef = this.dialog.open(ReviewDialogComponent, {
-    //   width: '574px',
-    //   height: '346px',
-    // });
   }
 
   aiContentGeneration(prompt: string, type: string): void {
@@ -520,7 +437,6 @@ The html tags are separate and it should not be part of word count.`;
       next: (data) => {
         this.aiContentGenerationService.setImage(data[0].url);
         this.isImageRegenrateDisabled = false;
-        //this.loadImage(data[0].url);
       },
       error: (err) => {
         console.error('Error generating image:', err);
@@ -535,8 +451,6 @@ The html tags are separate and it should not be part of word count.`;
     console.log('offer prompt : ', offerImage);
     this.aiContentGenerationService.eventImageGeneration(eventImage).subscribe({
       next: (data) => {
-        console.log('event image : ', data);
-
         this.aiContentGenerationService.setEventImage(data[0].url);
       },
       error: (er) => {
@@ -545,8 +459,6 @@ The html tags are separate and it should not be part of word count.`;
     });
     this.aiContentGenerationService.offerImageGeneration(offerImage).subscribe({
       next: (data) => {
-        console.log('offer image : ', data);
-
         this.aiContentGenerationService.setOfferImage(data[0].url);
       },
       error: (er) => {
@@ -557,10 +469,7 @@ The html tags are separate and it should not be part of word count.`;
 
   onImageRefine(prompt: string, type: string): void {
     this.isImageRefineDisabled = true;
-    /*var topicPropmt =  `This is the existing image topic "${this.formData?.topic}". It should be refine based on the user input in this propt ${prompt} that aligns with Deloitte's brand guidelines. Color palette:
-      Use shades of green (primary) and black (secondary) and Don't use text in image.
-      Style:Maintain a professional, trustworthy, innovative aesthetic and image size should be width and height as 640 * 640 px`;*/
-    var topicPropmt = `This is the existing image url "${this.imageUrl}" and topic "${this.formData?.topic}". It should be refine image based on the user input in this propt "${prompt}". But , not change whole image and image should have white or grey back ground`;
+   var topicPropmt = `This is the existing image url "${this.imageUrl}" and topic "${this.formData?.topic}". It should be refine image based on the user input in this propt "${prompt}". But , not change whole image and image should have white or grey back ground`;
     this.aiContentGenerationService.imageGeneration(topicPropmt).subscribe({
       next: (data) => {
         console.log('image:', data);
@@ -575,49 +484,6 @@ The html tags are separate and it should not be part of word count.`;
     });
   }
 
-  // showToast():void{
-  //   this.isToastVisible=true;
-
-  // }
-  // hideToast():void{
-  //   this.isToastVisible=false;
-  //   this.navigateToForm();
-  // }
-
-  // async plagrismContent() {
-  //   this.aiContentGenerationService
-  //     .checkPlagiarism(this.editorContentEmail)
-  //     .subscribe(
-  //       (result) => {
-  //         this.plagiarismCount = result;
-  //         const regex = /<title>(.*?)<\/title>/i;
-  //         const match = this.plagiarismCount.match(regex);
-
-  //         // If a match is found, return the content inside the <title> tag, otherwise return a default message
-  //         if (match && match[1]) {
-  //           this.plagiarismCount = match[1].trim();
-  //         } else {
-  //           this.plagiarismCount = '0'; // Default if no title tag is found
-  //         }
-
-  //         this.aiContentGenerationService.setplagrism(this.plagiarismCount);
-  //         console.log('Plagris value :', this.plagiarismCount);
-  //       },
-  //       (error) => {
-  //         console.error('Error checking plagiarism', error);
-  //       }
-  //     );
-
-  //   this.aiContentGenerationService.getplagrism().subscribe((data) => {
-  //     this.plagrismCheck = data; // Use the data received from the service
-  //     console.log('plagrism data received:', this.plagrismCheck);
-  //   });
-
-  //   const dialogRef = this.dialog.open(PlagrismComponent, {
-  //     width: '494px',
-  //     height: '280px',
-  //   });
-  // }
   onTypographyChange(event: any) {
     this.selectedTypography = event.value;
     this.applyChanges();
@@ -633,4 +499,5 @@ The html tags are separate and it should not be part of word count.`;
     body.style.fontFamily = this.selectedTypography;
     body.style.fontSize = this.selectedFontSize;
   }
+
 }

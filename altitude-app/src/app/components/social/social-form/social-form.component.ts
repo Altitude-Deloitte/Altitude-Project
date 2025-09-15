@@ -198,7 +198,7 @@ export class SocialFormComponent {
       if (this.facebookFlag) {
         var audiancePrompt = `Generate Facebook 3 audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and with the Facebook format . Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
         this.aiContentGenerationService
-          .generateContent(audiancePrompt, 'emailer')
+          .generateContent(audiancePrompt, 'Blog Generation')
           .subscribe({
             next: (data: any) => {
               console.log(`facebook audiance prompt :`, audiancePrompt);
@@ -217,7 +217,7 @@ export class SocialFormComponent {
       if (this.instaFlag) {
         var audiancePrompt = `Generate 3 Instagram audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and with the Instagram format . Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
         this.aiContentGenerationService
-          .generateContent(formValues, 'emailer')
+          .generateContent(formValues, 'Blog Generation')
           .subscribe({
             next: (data: any) => {
               console.log(`instagram audiance prompt :`, audiancePrompt);
@@ -238,7 +238,7 @@ export class SocialFormComponent {
       // var facebookPrompt = `Create a social media post for the platform "Facebook" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type1}". The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target1}". The content should be detailed and informative, with a length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. This is the hyper link "${formValues.Hashtags}" add it at the end of the post which is shown as hyperlink and clickable if there is not link, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var facebookPrompt = `Generate a Facebook post on "${formValues.topic}" in "${formValues.lang}" with a "${formValues.Type1}" tone for "${formValues.target1}". The purpose is "${formValues.purpose}". Keep the post within "${this.fbLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant. Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
       this.aiContentGenerationService
-        .generateContent(formValues, 'social_media')
+        .generateContent(formValues, 'Blog Generation')
         .subscribe({
           next: (data: any) => {
             console.log(`social_media facebook prompt :`, facebookPrompt);
@@ -453,7 +453,7 @@ export class SocialFormComponent {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-      debugger;
+       
       if (files.length) {
         files.forEach((file) => {
           if (file instanceof File) {

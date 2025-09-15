@@ -205,7 +205,7 @@ export class EmailFormComponent {
 
     var offerImage = `Create an "${formValues.brand}" brand offer/quote heading for a "${formValues.topic}" with an attractive, short, and brand-aligned title in an <h1> tag and a subtitle in an <h2> tag. Ensure the output includes only the <h1> and <h2> tags with the content. Avoid adding extra HTML or markdown. The font style and color should align with Nike's branding.`;
     this.aiContentGenerationService
-      .generateContent(formValues, 'emailer')
+      .generateContent(formValues, 'Email Campaign')
       .subscribe({
         next: (data) => {
           console.log(`email heading prompt :`, offerImage);
@@ -361,7 +361,7 @@ The html tags are separate and it should not be part of word count`;
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-      debugger;
+       
       if (files.length) {
         files.forEach((file) => {
           if (file instanceof File) {

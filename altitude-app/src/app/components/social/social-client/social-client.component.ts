@@ -1,8 +1,5 @@
 import {
-  ChangeDetectorRef,
   Component,
-  Input,
-  input,
   ViewChild,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -47,6 +44,7 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 })
 export class SocialClientComponent {
   editorContentSocialMedia: any;
+  imageUrlSocialmedia:any;
   imageUrl: any;
   brand: any;
   brandlogo!: string;
@@ -69,15 +67,14 @@ export class SocialClientComponent {
   ) {}
 
   formData: any;
+
   ngOnInit(): void {
     this.ispublisLoaderDisabled = false;
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
     });
 
     this.aiContentGenerationService.getImage().subscribe((data) => {
-      console.log('getImagegetImage', data);
       if (data) {
         this.imageUrl = data;
       }
@@ -85,21 +82,22 @@ export class SocialClientComponent {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data; // Use the data received from the service
-      console.log('Form data received:', this.formData);
     });
 
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        this.editorContentSocialMedia = data?.content;
-        // this.chnge.detectChanges();
+         
+        this.imageUrlSocialmedia = data.result.generation.image_url;
+        this.editorContentSocialMedia = data.result.generation.content;
       });
 
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
-        this.editorContentSocialMedia1 = data?.content;
-        // this.chnge.detectChanges();
+           
+          this.imageUrlSocialmedia= data.result.generation.image_url;
+        this.editorContentSocialMedia1 = data.result.generation.content;
       });
     this.brand = this.formData?.brand.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
@@ -109,52 +107,38 @@ export class SocialClientComponent {
         'https://img.logo.dev/' +
         brandName +
         '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-      console.log('logo:', this.brandlogo);
     }
 
     this.aiContentGenerationService
       .getAudianceResponseData1()
       .subscribe((data) => {
-        this.audianceData1 = data?.content;
-        console.log('audiance string1 : ', this.audianceData1);
-        // this.chnge.detectChanges();
+           
+        this.audianceData1 = data.result.generation.content;
       });
 
     this.aiContentGenerationService
       .getAudianceResponseData2()
       .subscribe((data) => {
         this.audianceData2 = data?.content;
-        console.log('audiance string 2: ', this.audianceData2);
-        // this.chnge.detectChanges();
       });
   }
 
   async publishContent() {
     this.ispublisLoaderDisabled = true;
     const link = this.formData?.Hashtags;
-    console.log(
-      'Face psot api : image:',
-      this.imageUrl,
-      ' content : ',
-      this.editorContentSocialMedia,
-      ' link :',
-      link
-    );
-
     this.aiContentGenerationService.postFacebook(
       this.imageUrl,
       this.editorContentSocialMedia,
       link
     );
     this.navigateToSuccess();
-
     this.ispublisLoaderDisabled = false;
-    console.log('successfully');
   }
+
   navigateToDashboard(): void {
     this.route.navigateByUrl('dashboard');
-    // this.chnge.detectChanges();
   }
+
   navigateToSuccess(): void {
     this.route
       .navigate(['/success-page'])
@@ -165,6 +149,7 @@ export class SocialClientComponent {
         console.error('Navigation error:', error);
       });
   }
+
   onPanelClick(event: MouseEvent) {
     this.clickEvent = event;
     this.commentPanel.show(event);
