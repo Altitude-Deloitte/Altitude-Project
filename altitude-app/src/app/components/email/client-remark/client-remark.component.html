@@ -45,7 +45,7 @@
                                     </h1>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr *ngIf="imageUrl">
                                 <td [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
                                     align="center" class="image-width" style="font-size: 1px;line-height: 1px;"
                                     *ngIf="this.editorContentEmail ">
@@ -55,11 +55,6 @@
                                     </div>
                                 </td>
                             </tr>
-                             <tr>
-                                        <td>
-                                            <h1>{{this.emailSubject}}</h1>
-                                        </td>
-                                    </tr>
                             <tr>
                                 <td style=" text-align: center; background-color: #ffffff;">
                                     <ng-container *ngIf="imageOfferUrl && !imageUrl; ">
@@ -69,10 +64,6 @@
 
                                 </td>
                             </tr>
-
-
-
-
                             <tr>
                                 <td style="background-color: #ffffff; padding: 30px 20px;">
                                     <div style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6;"

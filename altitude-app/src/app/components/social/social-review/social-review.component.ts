@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, input } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { TabsModule } from 'primeng/tabs';
@@ -40,7 +40,8 @@ export class SocialReviewComponent {
   editorContentSocialMedia: any;
   characterCount: number = 0;
   imageUrl: any;
-  imageUrlSocialmedia: any;
+  imageFBUrlSocialmedia: any;
+  imageInstaUrlSocialmedia: any;
   imageContainerHeight = '0px';
   imageContainerWidth = '0px';
   imageHeight = '0px';
@@ -67,57 +68,57 @@ export class SocialReviewComponent {
   inLimit: number | null | undefined;
   loading = true;
   @Input() activeTabIndex = 0;
+  formData: any;
+
   constructor(
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService,
-    private chnge: ChangeDetectorRef
-  ) { }
+    private aiContentGenerationService: ContentGenerationService
+  ) {}
 
-  formData: any;
   ngOnInit(): void {
     this.imageUrl = null;
-    this.imageUrlSocialmedia = null;
-    // this.isContentLoaded = true;
+    this.imageFBUrlSocialmedia = null;
+    this.imageInstaUrlSocialmedia = null;
     this.aiContentGenerationService.getImage().subscribe((data) => {
-      console.log('getImagegetImage', data);
       if (data) {
         this.imageUrl = data;
       }
     });
 
     this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data; // Use the data received from the service
-      console.log('Form data received:', this.formData);
+      this.formData = data;
     });
+
     this.contentDisabled = true;
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        this.editorContentSocialMedia = data.result.generation.content;
-         this.imageUrlSocialmedia = data.result.generation.image_url;
+        if (data.result.generation.Facebook) {
+          this.editorContentSocialMedia = data.result.generation.Facebook.text;
+          this.imageFBUrlSocialmedia =
+            data.result.generation.Facebook.image_url;
+        } else if (data.result.generation.Instagram) {
+          this.imageInstaUrlSocialmedia =
+            data.result.generation.Instagram.image_url;
+          this.editorContentSocialMedia1 =
+            data.result.generation.Instagram.text;
+        }
+
         this.editorContentSocialMedia = this.editorContentSocialMedia
           ?.replace(/"/g, '')
           .trim();
-        //refine content
         this.characterCount = this.editorContentSocialMedia?.length;
         this.existingContent = this.editorContentSocialMedia;
         this.contentDisabled = false;
-        // Function to count words in a string
         const countWords = (emailContent: any) => {
           if (!emailContent) return 0;
-          // Normalize spaces and split by space to get words
           return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
         };
-        // Count words in different parts of the email content
         this.totalWordCount = countWords(this.editorContentSocialMedia);
-
-        //this.isContentLoaded= false;
         this.isEMailPromptDisabled = false;
         this.commonPromptIsLoading = false;
         this.isImageRegenrateDisabled = false;
         this.isImageRefineDisabled = false;
-        console.log('Total word count:', this.totalWordCount);
-        // // this.chnge.detectChanges();
         this.hyperUrl = this.formData?.Hashtags;
         let brandName = this.formData?.brand?.trim();
         if (brandName) {
@@ -126,41 +127,40 @@ export class SocialReviewComponent {
             'https://img.logo.dev/' +
             brandName +
             '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-          console.log('logo:', this.brandlogo);
         }
         this.loading = false;
-        // this.chnge.detectChanges();
       });
 
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
-        this.imageUrlSocialmedia = data.result.generation.image_url;
-        this.editorContentSocialMedia1 = data.result.generation.content;
-        this.editorContentSocialMedia1 = this.editorContentSocialMedia1
+        if (data.result.generation.Facebook) {
+          this.editorContentSocialMedia = data.result.generation.Facebook.text;
+          this.imageFBUrlSocialmedia =
+            data.result.generation.Facebook.image_url;
+        } else if (data.result.generation.Instagram) {
+          this.imageInstaUrlSocialmedia = data.result.generation.Instagram;
+          this.editorContentSocialMedia1 =
+            data.result.generation.Instagram.text;
+        }
+        this.editorContentSocialMedia = this.editorContentSocialMedia
           .replace(/"/g, '')
           .trim();
-        //refine content
         this.characterCount1 = this.editorContentSocialMedia1.length;
         this.existingContent = this.editorContentSocialMedia1;
         this.contentDisabled = false;
-        // Function to count words in a string
         const countWords = (emailContent: any) => {
           if (!emailContent) return 0;
-          // Normalize spaces and split by space to get words
           return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
         };
-        // Count words in different parts of the email content
         this.totalWordCount1 = countWords(this.editorContentSocialMedia1);
 
-        //this.isContentLoaded= false;
         this.isEMailPromptDisabled = false;
         this.commonPromptIsLoading = false;
         this.isImageRegenrateDisabled = false;
         this.isImageRefineDisabled = false;
 
         console.log('Total word count:', this.totalWordCount1);
-        // this.chnge.detectChanges();
         this.brand = this.formData?.brand?.replace('.com', ' ');
         let brandName = this.formData?.brand?.trim();
         if (brandName) {
@@ -169,49 +169,21 @@ export class SocialReviewComponent {
             'https://img.logo.dev/' +
             brandName +
             '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-          console.log('logo:', this.brandlogo);
         }
-        // this.loading = false;
-        // this.chnge.detectChanges();
       });
 
     this.aiContentGenerationService
       .getAudianceResponseData1()
       .subscribe((data) => {
-        this.audianceData1 = data.result.generation.content;
-        console.log('audiance string 1: ', this.audianceData1);
-        // this.chnge.detectChanges();
+        this.audianceData1 = data.result.generation.text;
       });
 
     this.aiContentGenerationService
       .getAudianceResponseData2()
       .subscribe((data) => {
-        this.audianceData2 = data.result.generation.content;
-        console.log('audiance string2 : ', this.audianceData2);
-        // this.chnge.detectChanges();
+        this.audianceData2 = data.result.generation.text;
       });
   }
-
-  // ngAfterViewInit() {
-  //   const img = new Image();
-  //   img.src = this.imageUrl;
-  //   this.loadImage(img.src);
-  // }
-  // loadImage(url: any) {
-  //   const img = new Image();
-  //   img.src = url;
-  //   console.log('Image load : ', img.src);
-  //   img.onload = () => {
-  //     const width = img.width;
-  //     const height = img.height;
-
-  //     if (width === height) {
-  //       this.setImageDimensions('640px', '640px');
-  //     } else if (height > width) {
-  //       this.setImageDimensions('640px', '240px');
-  //     }
-  //   };
-  // }
 
   setImageDimensions(height: string, width: string) {
     this.imageContainerHeight = height;
@@ -220,28 +192,12 @@ export class SocialReviewComponent {
     this.imageWidth = width;
   }
 
-  // onCreateProject() {
-  //   const dialogConfig = new MatDialogConfig();
-  //   dialogConfig.disableClose = true;
-  //   dialogConfig.autoFocus = true;
-  //   dialogConfig.width = '400px';
-  //   this.dialog.open(SuccessDialogComponent, dialogConfig);
-  // }
-
   inputChange(fileInputEvent: any) {
     console.log(fileInputEvent.target.files[0]);
   }
 
   navigateToForm(): void {
     this.route.navigateByUrl('social-client');
-    // this.chnge.detectChanges();
-  }
-
-  navigateToSave(): void {
-    // const dialogRef = this.dialog.open(ReviewDialogComponent, {
-    //   width: '574px',
-    //   height: '346px',
-    // });
   }
 
   async postToSocialMedia() {
@@ -254,17 +210,14 @@ export class SocialReviewComponent {
       this.imageUrl,
       this.editorContentSocialMedia
     );
-    console.log('Successfully posted to Instagram | Facebook');
   }
 
   aiContentGeneration(prompt: string, type: string): void {
-    // Assuming wordLimit is a string like "63206,2200"
     const wordLimitValue = this.formData?.wordLimit;
 
     if (wordLimitValue) {
-      const limitsArray = wordLimitValue.split(','); // Split by comma
+      const limitsArray = wordLimitValue.split(',');
 
-      // Assign values separately
       this.fbLimit = limitsArray[0] ? parseInt(limitsArray[0], 10) : null;
       this.inLimit = limitsArray[1] ? parseInt(limitsArray[1], 10) : null;
     }
@@ -278,9 +231,7 @@ export class SocialReviewComponent {
         .generateContent(facebookPrompt, 'social_media')
         .subscribe({
           next: (data) => {
-            console.log(`social_media facebook prompt :`, facebookPrompt);
             this.aiContentGenerationService.setSocialResponseData(data);
-            console.log(`social_media facebook from API for :`, data);
           },
           error: (error) => {
             console.error(`Error occurred for :social_media`, error);
@@ -294,9 +245,7 @@ export class SocialReviewComponent {
         .generateContent(instaPrompt, 'social_media')
         .subscribe({
           next: (data) => {
-            console.log(`social_media insta prompt :`, instaPrompt);
             this.aiContentGenerationService.setSocialResponseData1(data);
-            console.log(`social_media insta from API for :`, data);
           },
           error: (error) => {
             console.error(`Error occurred for :social_media`, error);
@@ -314,8 +263,6 @@ export class SocialReviewComponent {
               this.aiContentGenerationService.setSocialResponseData(data);
               this.commonPromptIsLoading = false;
             }
-            console.log(`Response from API for ${type}:`, data);
-            // this.chnge.detectChanges();
           },
           error: (error) => {
             console.error(`Error occurred for ${type}:`, error);
@@ -343,11 +290,8 @@ export class SocialReviewComponent {
     var topicPropmt = `This is the existing image url "${this.imageUrl}" and topic "${this.formData?.topic}". It should be refine image based on the user input in this propt "${prompt}". But , not change whole image and image should have white or grey back ground`;
     this.aiContentGenerationService.imageGeneration(topicPropmt).subscribe({
       next: (data) => {
-        console.log('image:', data);
-
         this.aiContentGenerationService.setImage(data[0].url);
         this.isImageRefineDisabled = false;
-        //this.loadImage(data[0].url);
       },
       error: (er) => {
         console.log('Error refine image', er);

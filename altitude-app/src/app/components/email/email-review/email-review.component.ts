@@ -1,5 +1,4 @@
 import {
-  ChangeDetectorRef,
   Component,
   ElementRef,
   inject,
@@ -208,7 +207,6 @@ export class EmailReviewComponent {
     brandName = brandName?.replace(/\s+/g, '');
     this.showMore = 'https://www.' + brandName;
 
-    //heading
     this.contentDisabled = true;
     this.isLoading = true;
     this.aiContentGenerationService
@@ -218,14 +216,14 @@ export class EmailReviewComponent {
         this.contentDisabled = false;    
         this.emailHeader = data.result.generation.email_header;
         this.imageUrl = data.result.generation.image_url;
-        this.subjctEmail =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');
-        if (data.result.generation.content) {
+        this.subjctEmail =  data.result.generation.email_subjects;
+        if (data.result.generation.text) {
           // Determine if the content is a string or JSON and parse accordingly
           this.contentDisabled = false;
           let emailContent =
-            typeof data.result.generation.content === 'string'
-              ? data.result.generation.content
-              : JSON.parse(data.result.generation.content);
+            typeof data.result.generation.text === 'string'
+              ? data.result.generation.text
+              : JSON.parse(data.result.generation.text);
           emailContent = emailContent.replace(/"/g, '').trim();
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
           console.log('email para : ', this.editorContentEmail);

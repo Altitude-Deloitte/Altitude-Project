@@ -190,8 +190,7 @@
                                         class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
 
 
-                                        <p-tabpanel value="0">
-                                            <img [src]="this.imageUrlSocialmedia" />
+                                        <p-tabpanel value="0">                                          
                                             <h3 class="post-caption text-black" class="dark:text-black text-white">
                                                 {{
                                                 this.editorContentSocialMedia }}</h3>
@@ -203,18 +202,14 @@
                                                 </a>
                                             </p>
                                             }
-
-                                            <!--<p *ngIf="formData?.Hashtags"> <b>Link : </b><a [href]="formData?.Hashtags" style="text-decoration: underline; color: #1717c5 !important;outline: none;" target="_blank"  > {{formData?.Hashtags}}</a></p>-->
-                                            @if (imageUrl) {
-                                            <img [src]="imageUrl" alt="Facebook Post" class="post-image" />
+                                             @if (imageFBUrlSocialmedia) {
+                                            <img [src]="imageFBUrlSocialmedia" alt="Facebook Post" class="post-image" />
                                             }
-
-                                            <!-- </div> -->
                                         </p-tabpanel>
                                         <p-tabpanel value="1">
                                             <div class="instagram-post">
-                                                @if (imageUrl) {
-                                                <img [src]="imageUrl" alt="Instagram Post" class="post-image" />
+                                                @if (imageInstaUrlSocialmedia) {
+                                                <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post" class="post-image" />
                                                 }
                                                 <p class="post-caption text-black">{{
                                                     this.editorContentSocialMedia1 }}</p>

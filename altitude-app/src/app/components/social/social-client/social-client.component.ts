@@ -89,7 +89,7 @@ export class SocialClientComponent {
       .subscribe((data) => {
          
         this.imageUrlSocialmedia = data.result.generation.image_url;
-        this.editorContentSocialMedia = data.result.generation.content;
+        this.editorContentSocialMedia = data.result.generation.text;
       });
 
     this.aiContentGenerationService
@@ -97,7 +97,7 @@ export class SocialClientComponent {
       .subscribe((data) => {
            
           this.imageUrlSocialmedia= data.result.generation.image_url;
-        this.editorContentSocialMedia1 = data.result.generation.content;
+        this.editorContentSocialMedia1 = data.result.generation.text;
       });
     this.brand = this.formData?.brand.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
@@ -113,7 +113,7 @@ export class SocialClientComponent {
       .getAudianceResponseData1()
       .subscribe((data) => {
            
-        this.audianceData1 = data.result.generation.content;
+        this.audianceData1 = data.result.generation.text;
       });
 
     this.aiContentGenerationService

@@ -199,7 +199,7 @@
                             <div class="w-full mb-8">
                                 <h3 class="text"> Please Choose a subject</h3>
                                 <form>
-                                    <p-select name="subject" [options]="subjctsEmail"
+                                    <p-select name="subject" [options]="subjctEmail"
                                         styleClass="w-full p-4 custom-select-panel" placeholder="Please Select"
                                         [(ngModel)]="selectedSubject"
                                         (onChange)="onSubjectChange($event.value)"></p-select>
@@ -246,13 +246,6 @@
 
                                         </td>
                                     </tr>
-
-                                    <tr>
-                                        <td>
-                                            <h1>{{this.subjctEmail}}</h1>
-                                        </td>
-                                    </tr>
-
 
                                     <tr>
                                         <td style="background-color: #ffffff; padding: 30px 20px;">
