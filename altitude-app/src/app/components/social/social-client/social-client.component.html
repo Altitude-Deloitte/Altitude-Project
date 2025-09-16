@@ -44,7 +44,7 @@
 
 
                                     <p-tabpanel value="0">
-                                         <img [src]="this.imageUrlSocialmedia" />
+                                         <img [src]="this.imageFBUrlSocialmedia" />
                                         <div>
                                             <h3 class="post-caption text-black" style="color: #333333;">
                                                 {{
@@ -66,17 +66,11 @@
                                     </p-tabpanel>
                                     <p-tabpanel value="1">
                                         <div class="instagram-post">
-                                            @if (imageUrl) {
-                                            <img [src]="imageUrl" alt="Instagram Post" class="post-image" />
+                                            @if (imageInstaUrlSocialmedia) {
+                                            <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post" class="post-image" />
                                             }
                                             <p class="post-caption text-black">{{
                                                 this.editorContentSocialMedia1 }}</p>
-                                            <!-- <p class="post-caption text-black   ">For more details, visit our
-                                    website:
-                                    <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
-                                        {{this.hyperUrl}}
-                                    </a>
-                                </p> -->
                                         </div>
                                     </p-tabpanel>
                                 </p-tabpanels>

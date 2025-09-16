@@ -45,6 +45,8 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 export class SocialClientComponent {
   editorContentSocialMedia: any;
   imageUrlSocialmedia:any;
+    imageFBUrlSocialmedia: any;
+  imageInstaUrlSocialmedia: any;
   imageUrl: any;
   brand: any;
   brandlogo!: string;
@@ -87,17 +89,30 @@ export class SocialClientComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-         
-        this.imageUrlSocialmedia = data.result.generation.image_url;
-        this.editorContentSocialMedia = data.result.generation.text;
+           if (data.result.generation.Facebook) {
+          this.editorContentSocialMedia = data.result.generation.Facebook.text;
+          this.imageFBUrlSocialmedia =
+            data.result.generation.Facebook.image_url;
+        } if (data.result.generation.Instagram) {
+          this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
+          this.editorContentSocialMedia1 =
+            data.result.generation.Instagram.text;
+        }
       });
 
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
-           
-          this.imageUrlSocialmedia= data.result.generation.image_url;
-        this.editorContentSocialMedia1 = data.result.generation.text;
+        debugger;
+       if (data.result.generation.Facebook) {
+          this.editorContentSocialMedia = data.result.generation.Facebook.text;
+          this.imageFBUrlSocialmedia =
+            data.result.generation.Facebook.image_url;
+        } else if (data.result.generation.Instagram) {
+          this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
+          this.editorContentSocialMedia1 =
+            data.result.generation.Instagram.text;
+        }
       });
     this.brand = this.formData?.brand.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
