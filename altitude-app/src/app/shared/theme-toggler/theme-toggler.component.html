@@ -11,11 +11,12 @@
     </span>
     <span
         class="w-7 h-7 bg-white border border-gray-200 rounded-full shadow absolute left-1 top-1/2 -translate-y-1/2 peer-checked:left-8 transition-all"></span> -->
-<a class="rounded-full cursor-pointer border-[#D9D9D9] p-2 border-1 bg-white flex justify-center items-center space-x-2"
-    style="background-color: var(--app-bg-color); color: var(--app-text-color); transition: background-color 0.3s ease color 0.3s ease;"
-    (click)="toggleTheme()"><i class="pi pi-moon px-4 py-2 rounded-full"
-        [style]="isDarkMode?'background-color:white;color:black; transition: background-color 0.3s ease color 0.3s ease;':'background-color:##09040E;color:black; transition: background-color 0.3s ease color 0.3s ease;'"></i>
-    <i class="pi pi-sun px-4 py-2" [style]="!isDarkMode?'color:black; transition:color 0.3s ease;':''"></i>
+<a class="rounded-full cursor-pointer border-[#D9D9D9] p-2 dark:bg-black bg-white border-1 bg-white flex justify-center items-center space-x-2"
+    style="transition: background-color 0.3s ease color 0.3s ease;" (click)="toggleTheme()"><i
+        class="pi pi-moon px-4 py-2 rounded-full"
+        [style]="isDarkMode?'background-color:white;color:black; transition: background-color 0.3s ease color 0.3s ease;':'background-color:#ffffff;color:black; transition: background-color 0.3s ease color 0.3s ease;'"></i>
+    <i class="pi pi-sun px-4 py-2 rounded-full"
+        [style]="!isDarkMode?'background-color:#09040E;color:white; transition:all 0.3s ease;':'background-color:black;color:white; transition:all 0.3s ease;'"></i>
 
 </a>
 

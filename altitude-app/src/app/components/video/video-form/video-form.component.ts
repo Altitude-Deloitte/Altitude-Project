@@ -74,7 +74,7 @@ export class VideoFormComponent {
 
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
 
   urlImage: any;
   onCreateProject(): void {
@@ -82,7 +82,7 @@ export class VideoFormComponent {
     var formValues = { ...this.socialwebsite.getRawValue() };
 
     const { prompt } = formValues;
-    const { url1 } = formValues;
+    // const { url1 } = formValues;
 
     this.imageUrl = null;
 
@@ -93,11 +93,11 @@ export class VideoFormComponent {
       console.log('Form Values:', formValues);
 
       this.aiContentGenerationService
-        .createBackgroundAnimation(prompt, url1)
+        .generateVoeVideo(prompt)
         .subscribe(
-          (response) => {
+          (response: any) => {
             console.log('Response background animation response:', response);
-            this.imageUrl = response.videoUrl;
+            this.imageUrl = response?.video_url;
             console.log('background image:', this.imageUrl);
             this.aiContentGenerationService.setImage(this.imageUrl);
             // Handle the response, maybe navigate to another component to display the image
@@ -121,7 +121,7 @@ export class VideoFormComponent {
     this.route.navigateByUrl('video-review');
   }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
@@ -131,7 +131,7 @@ export class VideoFormComponent {
       taskId: [{ value: this.generateTaskId(), disabled: true }],
       dueDate: [currentDate.toISOString().split('T')[0]],
       topic: [''],
-      url1: ['', Validators.required],
+      url1: [''],
       prompt: ['', Validators.required],
     });
 

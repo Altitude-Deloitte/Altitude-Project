@@ -8,6 +8,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 })
 export class ContentGenerationService {
   private apiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-content';
+  private videoUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-video'
   private campaignUrl = 'http://18.116.64.253:3301/campaign/2676';
   private publishMarketoUrl = 'http://18.116.64.253:5000/update-email';
   private imageGenerationUrl = 'http://18.116.64.253:4000/generate-image';
@@ -330,17 +331,20 @@ export class ContentGenerationService {
     formData.append('purpose', formFieldData?.purpose);
     formData.append('brand', formFieldData?.brand);
     if (type === 'Social Media Posting') {
-       
-    }else{
+
+    } else {
       formData.append('target_reader', formFieldData?.readers);
-      formData.append('tone', 'Formal'); 
+      formData.append('tone', 'Formal');
     }
     formData.append('image_details', formFieldData?.imageOpt);
     formData.append('platform_campaign', formFieldData?.campaign);
     formData.append('topic', formFieldData?.topic);
-    
+
     formData.append('word_limit', formFieldData?.wordLimit);
     return this.http.post(this.apiUrl, formData);
+  }
+  generateVoeVideo(brief: string) {
+    return this.http.post(this.videoUrl, { brief });
   }
 
   // Method to fetch campaign data

@@ -6,27 +6,27 @@
     <div>
         <h2 class="text-lg text-white font-semibold mb-4 mt-6">Content Details</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
+            <div class="w-full">
                 <label class="block text-gray-300 mb-1">Prompt*</label>
                 <input pInputText formControlName="prompt" panelStyleClass="custom-select-panel"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>
-            <div>
+            <!-- <div>
                 <label class="block text-gray-300 mb-1">Image Url*</label>
                 <input pInputText formControlName="url1" panelStyleClass="custom-select-panel"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
-            </div>
+            </div> -->
 
         </div>
 
         <!-- Image Details -->
 
-        <div class="flex items-center">
+        <!-- <div class="flex items-center">
             @if (socialwebsite.get('url1')?.value) {
             <img [src]="socialwebsite.get('url1')?.value" alt="" class="w-72">
             }
 
-        </div>
+        </div> -->
 
         <div class="flex justify-end items-center flex-wrap">
 
