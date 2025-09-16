@@ -73,7 +73,7 @@ export class SocialReviewComponent {
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.imageUrl = null;
@@ -93,15 +93,18 @@ export class SocialReviewComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        if (data.result.generation.Facebook) {
-          this.editorContentSocialMedia = data.result.generation.Facebook.text;
+        if (data.result.generation) {
+          if (data.result.generation.Facebook)
+            this.editorContentSocialMedia = data.result.generation.Facebook.text;
           this.imageFBUrlSocialmedia =
             data.result.generation.Facebook.image_url;
-        } else if (data.result.generation.Instagram) {
+        }
+        if (data.result.generation.Instagram) {
           this.imageInstaUrlSocialmedia =
             data.result.generation.Instagram.image_url;
           this.editorContentSocialMedia1 =
             data.result.generation.Instagram.text;
+
         }
 
         this.editorContentSocialMedia = this.editorContentSocialMedia

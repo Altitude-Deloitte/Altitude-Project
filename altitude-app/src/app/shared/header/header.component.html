@@ -1,22 +1,22 @@
 <header>
-    <nav class="w-full bg-transparent relative z-10 "
-        style="color: var(--app-text-color);border-bottom: 1px solid #363636;">
+    <nav class="dark:text-white w-full bg-transparent relative z-10 " style="border-bottom: 1px solid #363636;">
         <div class="max-w-[90%] my-0 mx-auto">
             <div class="flex items-center justify-between py-4 flex-wrap">
                 <a routerLink="/home" class="logo flex items-center space-x-2">
                     <img src="/assets/images/Group1321316956.svg" alt="Logo" class="h-10" />
-                    <h1 class="text-2xl font-semibold" style="color: var(--app-text-color);">ALTITUDE</h1>
+                    <h1 class="text-2xl font-semibold dark:text-white text-black">ALTITUDE</h1>
                 </a>
                 <div class="NAVIGATION">
                     <div
                         class="flex justify-center items-center border-[#7E7E7E] border-1 rounded-full space-x-3 py-2 px-4">
-                        <a routerLink="/home" class="hover:opacity-80 text-sm cursor-pointer relative transition-all"
-                            style="color: var(--app-text-color);" [class.active]="store.activeTab() === 'home'"
-                            (click)="setActiveTab('home')"><span class="blur-effect"></span>Home</a>
+                        <a routerLink="/home"
+                            class="hover:opacity-80 text-sm cursor-pointer relative transition-all text-black dark:text-white"
+                            [class.active]="store.activeTab() === 'home'" (click)="setActiveTab('home')"><span
+                                class="blur-effect"></span>Home</a>
                         <a routerLink="/dashboard"
-                            class="hover:opacity-80 relative cursor-pointer relative transition-all"
-                            style="color: var(--app-text-color);" [class.active]="store.activeTab() === 'dashboard'"
-                            (click)="setActiveTab('dashboard')"><span class="blur-effect"></span>Dashboard</a>
+                            class="hover:opacity-80 relative cursor-pointer relative transition-all text-black dark:text-white"
+                            [class.active]="store.activeTab() === 'dashboard'" (click)="setActiveTab('dashboard')"><span
+                                class="blur-effect"></span>Dashboard</a>
                     </div>
                 </div>
                 <div class="flex items-center space-x-2 justify-center flex-wrap">

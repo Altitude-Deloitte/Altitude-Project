@@ -1,4 +1,4 @@
-<div class="min-h-screen flex flex-col bg-lightbg dark:bg-darkbg">
+<div class="min-h-screen flex flex-col bg-lightbg dark:bg-[#09040E]">
     <!-- Header -->
     <app-header></app-header>
 
@@ -23,7 +23,7 @@
             <path d="M0,350 Q720,275 1440,350" stroke="#B66DFF" stroke-width="2" fill="none" />
         </svg>
         <div class="absolute top-1/2 text-center left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-            <h1 class="text-6xl font-light" style="color: var(--app-text-color);">
+            <h1 class="text-6xl font-light text-black text-white">
                 Content Creation, <span class="italic font-semibold">Reimagined!</span>
             </h1>
             <p class="mt-4 text-xl text-[#9B9B9B]">
@@ -44,10 +44,10 @@
 
         <!-- Card -->
         <div class="w-full max-w-3xl mx-auto rounded-2xl border border-[#B66DFF] shadow-lg flex items-center px-8 py-6 gap-6"
-            style="background-color: var(--app-surface-color); box-shadow: 0 8px 32px 0 rgba(182,109,255,0.15);">
-            <span class="text-lg font-medium" style="color: var(--app-text-color);">I want to create</span>
+            style="box-shadow: 0 8px 32px 0 rgba(182,109,255,0.15);">
+            <span class="text-lg font-medium dark:text-white text-black">I want to create</span>
             <p-select [options]="requestOptions" [(ngModel)]="selectedRequests" optionLabel="name" display="chip"
-                appendTo="body" panelStyleClass="custom-select-panel" styleClass="campaign">
+                appendTo="body" panelStyleClass="custom-select-panel dark:text-white" styleClass="campaign">
 
                 <!-- Template for selected value display -->
                 <ng-template pTemplate="selectedItem">
@@ -67,7 +67,8 @@
             </p-select>
             <div class="border-l border-gray-200 h-10 mx-4"></div>
             <button (click)="generateContent()"
-                class="flex items-center px-8 py-3 rounded-lg text-white text-lg font-medium shadow-md transition cursor-pointer bg-gradient-to-r from-[#A247FC] to-[#C63BEE] hover:from-[#9333ea] hover:to-[#b91c7c]">
+                class="flex items-center px-8 py-3 rounded-lg text-white text-lg font-medium shadow-md transition cursor-pointer hover:from-[#9333ea] hover:to-[#b91c7c]"
+                style="background: linear-gradient(0deg, #8D4BFF 0%, #8D4BFF 100%), #F7F7F7;">
                 <i class="pi pi-sparkles mr-2"></i>
                 Create Now
             </button>

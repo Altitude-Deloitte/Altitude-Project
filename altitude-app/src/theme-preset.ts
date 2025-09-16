@@ -52,8 +52,8 @@ const ThemePreset = definePreset(Aura, {
           600: '#7a4fb2',
           700: '#8a58ca',
           800: '#9a62e1',
-          900: '#09040E',
-          950: '#ba75ff',
+          900: '#121212',
+          950: '#09040E',
         },
         primary: {
           color: '#c084fc',

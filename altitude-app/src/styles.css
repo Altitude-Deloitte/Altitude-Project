@@ -8,14 +8,14 @@
 @import "primeicons/primeicons.css";
 
 /* CSS Variables for theme colors */
-/* :root {
+:root {
   --app-bg-color: #ffffff;
   --app-text-color: #121212;
   --app-surface-color: #fafafa;
-} */
+}
 
 .dark {
-  
+  --app-text-color: #ffffff;
   --p-stepper-step-title-active-color: var(--app-text-color) !important;
   --p-stepper-step-number-active-color: #000000 !important;
   --p-stepper-step-number-active-background: #ffffff !important;
@@ -48,7 +48,7 @@ body {
 }
 /* Utility classes for consistent theming */
 @layer components {
-  .theme-bg {
+  /* .theme-bg {
     background-color: var(--app-bg-color);
     transition: background-color 0.3s ease;
   }
@@ -67,7 +67,7 @@ body {
     background-color: var(--app-surface-color);
     color: var(--app-text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
-  }
+  } */
 }
 
 /* Apply theme to all common elements automatically */

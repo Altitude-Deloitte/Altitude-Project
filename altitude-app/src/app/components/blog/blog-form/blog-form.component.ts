@@ -123,7 +123,7 @@ export class BlogFormComponent {
     // private dialog: MatDialog,
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
 
   urlImage: any;
   onCreateProject(): void {
@@ -239,7 +239,7 @@ export class BlogFormComponent {
     }
   }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
@@ -524,7 +524,7 @@ Output the entire blog in HTML format, followed by:
 
     var audiancePrompt = `Generate 3 audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and the blog format "${formValues.format}". Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
     this.aiContentGenerationService
-      .generateContent(audiancePrompt, 'emailer')
+      .generateContent(formValues, 'Blog')
       .subscribe({
         next: (data) => {
           console.log(`email subject prompt :`, audiancePrompt);
