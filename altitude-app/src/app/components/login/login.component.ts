@@ -6,9 +6,9 @@ import { ButtonModule } from 'primeng/button';
 
 @Component({
   selector: 'app-login',
-  imports: [RouterLink, ThemeTogglerComponent,ButtonModule],
+  imports: [RouterLink, ButtonModule], //add themetoggler component over here
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
   animations: [routeAnimations],
 })
-export class LoginComponent {}
+export class LoginComponent { }

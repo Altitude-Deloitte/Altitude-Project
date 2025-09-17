@@ -6,7 +6,7 @@ import { TabStore } from '../../store/tab.store';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, RouterLink, ThemeTogglerComponent],
+  imports: [CommonModule, RouterLink],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
