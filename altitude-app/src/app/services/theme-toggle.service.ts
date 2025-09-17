@@ -6,7 +6,7 @@ import { BehaviorSubject } from 'rxjs';
   providedIn: 'root',
 })
 export class ThemeToggleService {
-  private isDarkModeSubject = new BehaviorSubject<boolean>(false);
+  private isDarkModeSubject = new BehaviorSubject<boolean>(true);
   public isDarkMode$ = this.isDarkModeSubject.asObservable();
   // to change the source of the video based on the theme
   private sourceBehaviourSubject = new BehaviorSubject<string>('');
