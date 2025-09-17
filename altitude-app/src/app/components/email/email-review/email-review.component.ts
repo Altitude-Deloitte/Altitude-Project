@@ -1,5 +1,6 @@
 import {
   Component,
+  effect,
   ElementRef,
   inject,
   input,
@@ -19,6 +20,7 @@ import { SelectionStore } from '../../../store/campaign.store';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 @Component({
   selector: 'app-email-review',
   imports: [
@@ -164,12 +166,17 @@ export class EmailReviewComponent {
   lightHexCode: any;
   emailHeader: any;
   formData: any;
+  socketData: any;
   constructor(
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService // private dialog: MatDialog,
-  ) { }
-  
+    private aiContentGenerationService: ContentGenerationService, // private dialog: MatDialog,
+    private socketConnection: SocketConnectionService
+  ) {
+
+  }
+
   ngOnInit() {
+
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
@@ -177,10 +184,10 @@ export class EmailReviewComponent {
       this.formData = data;
     });
 
-    console.log(this.brand);
+    // console.log(this.brand);
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {
-      console.log('getImagegetImage', data);
+      // console.log('getImagegetImage', data);
       if (data) {
         this.imageUrl = data;
       }
@@ -188,7 +195,7 @@ export class EmailReviewComponent {
 
     //event image
     this.aiContentGenerationService.getOfferImage().subscribe((data) => {
-      console.log('getOfferImagegetImage', data);
+      // console.log('getOfferImagegetImage', data);
       if (data) {
         this.imageOfferUrl = data;
       }
@@ -196,13 +203,13 @@ export class EmailReviewComponent {
 
     //offer image
     this.aiContentGenerationService.getEventImage().subscribe((data) => {
-      console.log('getEventImagegetImage', data);
+      // console.log('getEventImagegetImage', data);
       if (data) {
         this.imageEventUrl = data;
       }
     });
     this.brand = this.formData?.brand?.replace('.com', ' ');
-    console.log('brand', this.brand);
+    // console.log('brand', this.brand);
     let brandName = this.formData?.brand?.trim();
     brandName = brandName?.replace(/\s+/g, '');
     this.showMore = 'https://www.' + brandName;
@@ -212,11 +219,11 @@ export class EmailReviewComponent {
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        console.log('get headering for email ', data);
-        this.contentDisabled = false;    
+        // console.log('get headering for email ', data);
+        this.contentDisabled = false;
         this.emailHeader = data.result.generation.email_header;
         this.imageUrl = data.result.generation.image_url;
-        this.subjctEmail =  data.result.generation.email_subjects;
+        this.subjctEmail = data.result.generation.email_subjects;
         if (data.result.generation.html) {
           // Determine if the content is a string or JSON and parse accordingly
           this.contentDisabled = false;
@@ -226,7 +233,7 @@ export class EmailReviewComponent {
               : JSON.parse(data.result.generation.html);
           emailContent = emailContent.replace(/"/g, '').trim();
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
-          console.log('email para : ', this.editorContentEmail);
+          // console.log('email para : ', this.editorContentEmail);
           this.existingEmailContent = this.editorContentEmail;
           // Function to count words in a string
           const countWords = (emailContent: any) => {
@@ -260,7 +267,7 @@ export class EmailReviewComponent {
         }
       });
 
-   
+
     this.aiContentGenerationService
       .getEmailResponsetData()
       .subscribe((data) => {
@@ -467,7 +474,7 @@ The html tags are separate and it should not be part of word count.`;
 
   onImageRefine(prompt: string, type: string): void {
     this.isImageRefineDisabled = true;
-   var topicPropmt = `This is the existing image url "${this.imageUrl}" and topic "${this.formData?.topic}". It should be refine image based on the user input in this propt "${prompt}". But , not change whole image and image should have white or grey back ground`;
+    var topicPropmt = `This is the existing image url "${this.imageUrl}" and topic "${this.formData?.topic}". It should be refine image based on the user input in this propt "${prompt}". But , not change whole image and image should have white or grey back ground`;
     this.aiContentGenerationService.imageGeneration(topicPropmt).subscribe({
       next: (data) => {
         console.log('image:', data);

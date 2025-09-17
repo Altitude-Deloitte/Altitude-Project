@@ -21,6 +21,7 @@ import { ButtonModule } from 'primeng/button';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router } from '@angular/router';
 import { SelectionStore } from '../../../store/campaign.store';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 
 @Component({
   selector: 'app-email-form',
@@ -110,8 +111,9 @@ export class EmailFormComponent {
   store = inject(SelectionStore);
   imageOption: string = '';
   imageBox: string = '';
-  constructor(private aiContentGenerationService: ContentGenerationService) {}
-  
+  socketData: any;
+  constructor(private aiContentGenerationService: ContentGenerationService, private socketConnection: SocketConnectionService) { }
+
   ngOnInit(): void {
     console.log('store: ', this.store.campaignType());
     const currentDate = new Date();
@@ -176,8 +178,7 @@ export class EmailFormComponent {
 
     var eventImage = `Create an "${formValues.brand}" event image on "${formValues.topic}"`;
     var offerImage = `Create an "${formValues.brand}" offer image on "${formValues.topic}"`;
-    console.log('event prompt : ', eventImage);
-    console.log('offer prompt : ', offerImage);
+
     this.aiContentGenerationService.eventImageGeneration(eventImage).subscribe({
       next: (data) => {
         this.aiContentGenerationService.setEventImage(data[0].url);
@@ -200,17 +201,24 @@ export class EmailFormComponent {
       .generateContent(formValues, 'Email Campaign')
       .subscribe({
         next: (data) => {
+          this.socketData = this.socketConnection.dataSignal();
+          this.socketConnection.sendMessage('data', 'hello from client')
+          console.log('socketData', this.socketData);
           this.aiContentGenerationService.setEmailHeadResponseData(data);
         },
+
         error: (error) => {
           console.error(`Error occurred for heading:`, error);
         },
+        complete: () => {
+
+        }
       });
 
     if (this.socialwebsite.valid) {
       var formValues = { ...this.socialwebsite.getRawValue() };
 
-      this.contentTypes.forEach((contentType) => {});
+      this.contentTypes.forEach((contentType) => { });
       if (this.uploadedIamges) {
         this.aiContentGenerationService.setImage(this.uploadedIamges);
       }

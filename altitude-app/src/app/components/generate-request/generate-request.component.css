@@ -70,40 +70,17 @@
   border: none !important;
 }
 
-/* Custom radio button green styling */
-/* ::ng-deep .custom-radio-success .p-radiobutton-box {
-  border: 2px solid #4afc97 !important; 
-  background: transparent !important;
-}
-
-::ng-deep .custom-radio-success .p-radiobutton-box.p-highlight {
-  border: 2.5px solid #4afc97 !important; 
-  background: transparent !important;
-}
-
-::ng-deep .custom-radio-success .p-radiobutton-icon {
-  background: #4afc97 !important; 
-}
-
-
-::ng-deep .custom-radio-success .p-radiobutton-box:hover,
-::ng-deep .custom-radio-success .p-radiobutton-box:focus {
-  box-shadow: 0 0 0 2px #4afc9780 !important;
-  border-color: #4afc97 !important;
-} */
 ::ng-deep .custom-radio-success.p-radiobutton-checked .p-radiobutton-box {
-  background: var(--bg-success);
+  background: var(--bg-success) !important;
 }
-/* ::ng-deep .p-radiobutton-checked .p-radiobutton-box .p-radiobutton-icon {
-  background: var(--bg-success);
-} */
 ::ng-deep
   .custom-radio-success.p-radiobutton-checked
   .p-radiobutton-box
   .p-radiobutton-icon {
   background: var(--bg-success);
-  border: 1px solid var(--app-bg-color);
+  border: 2px solid var(--app-radio-color);
 }
+
 ::ng-deep .custom-radio-success .p-radiobutton-box {
   background: var(--app-bg-color);
   border: 1px solid #686868;

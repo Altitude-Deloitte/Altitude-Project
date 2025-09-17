@@ -12,6 +12,8 @@
   --app-bg-color: #ffffff;
   --app-text-color: #121212;
   --app-surface-color: #fafafa;
+  --app-radio-color: #000000 !important;
+  --bg-success: #c084fc;
 }
 
 .dark {
@@ -138,11 +140,15 @@ a {
 .p-selectitem {
   background-color: var(--app-bg-color) !important;
 }
-.p-select-option {
+li.p-select-option {
   padding: 10px !important;
-  border-bottom: 1px solid #4d4d4d !important;
+  border-bottom: 1px solid #4d4d4d;
   color: var(--app-text-color) !important;
+  border-radius: 0;
 }
+/* ul li.p-select-option:last-child {
+  border-bottom: none;
+} */
 .p-multiselect-option {
   padding: 10px !important;
   border-bottom: 1px solid #4d4d4d !important;
@@ -151,13 +157,18 @@ a {
 .p-select-option.p-select-option-selected {
   padding: 10px !important;
   border-bottom: 1px solid #4d4d4d !important;
+  border-radius: 0;
 }
 
 .email-glow {
   text-shadow: 0 0 4px #fafafa3b, 0 0 16px #fbb2ff99;
 }
+
 .p-slider-horizontal .p-slider-handle {
   inset-block-start: 50%;
   margin-block-start: calc(-1 * calc(var(--p-slider-handle-height) / 2));
   margin-inline-start: calc(-1 * calc(var(--p-slider-handle-width) / 2));
+}
+.p-radiobutton-box {
+  background-color: #c084fc;
 }
