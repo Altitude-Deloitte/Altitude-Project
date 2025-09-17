@@ -10,13 +10,15 @@
 /* CSS Variables for theme colors */
 :root {
   --app-bg-color: #ffffff;
-  --app-text-color: #121212;
+  --app-text-color: #09040e;
   --app-surface-color: #fafafa;
   --app-radio-color: #000000 !important;
   --bg-success: #c084fc;
+  --app-body-bg-color: #ffffff;
 }
 
 .dark {
+  --app-body-bg-color: #09040e;
   --app-text-color: #ffffff;
   --p-stepper-step-title-active-color: var(--app-text-color) !important;
   --p-stepper-step-number-active-color: #000000 !important;
@@ -39,6 +41,7 @@ html,
 body {
   /* background-color: var(--app-bg-color);
   color: var(--app-text-color); */
+  background-color: var(--app-body-bg-color);
   transition: background-color 0.3s ease, color 0.3s ease;
   margin: 0;
   padding: 0;

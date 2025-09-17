@@ -107,11 +107,7 @@ export class BlogFormComponent {
   imageBox: string = '';
 
   formats = [
-    'SEO-Optimised Longform',
-    'SEO-Optimised Listicle',
-    'Case Study',
-    'Fact Sheet',
-    'Guide',
+    "Listicle", "Post Event", "Topical", "Guide", "Blog", "Thought Leadership", "Initiative Awareness", "Trends Blog"
   ];
   selectedTone: any;
   selectedToppings: any;

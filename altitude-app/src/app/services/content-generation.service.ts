@@ -346,14 +346,12 @@ export class ContentGenerationService {
     } else {
       formData.append('use_case', type);
       formData.append('purpose', formFieldData?.purpose);
-      console.log(formFieldData?.purpose)
       formData.append('brand', formFieldData?.brand);
       formData.append('outline', formFieldData?.outline);
       formData.append('format', formFieldData?.format)
       formData.append('keywords', formFieldData?.keywords);
-      formData.append('topic', formFieldData?.topic);
       formData.append('target_reader', formFieldData?.readers);
-      formData.append('tone', 'formal');
+      formData.append('tone', formFieldData?.Type);
       formData.append('word_limit', formFieldData?.wordLimit);
       return this.http.post(this.apiUrl, formData);
     }

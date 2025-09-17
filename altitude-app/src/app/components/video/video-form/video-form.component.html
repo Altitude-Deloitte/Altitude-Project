@@ -5,19 +5,18 @@
     <!-- Content Details -->
     <div>
         <h2 class="text-lg text-white font-semibold mb-4 mt-6">Content Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div class="w-full">
-                <label class="block text-gray-300 mb-1">Prompt*</label>
-                <input pInputText formControlName="prompt" panelStyleClass="custom-select-panel"
-                    class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
-            </div>
-            <!-- <div>
+
+        <div class="w-full mb-5">
+            <label class="block text-gray-300 mb-1">Prompt*</label>
+            <textarea pInputText formControlName="prompt" rows="5" cols="50" panelStyleClass="custom-select-panel"
+                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]">
+                </textarea>
+        </div>
+        <!-- <div>
                 <label class="block text-gray-300 mb-1">Image Url*</label>
                 <input pInputText formControlName="url1" panelStyleClass="custom-select-panel"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div> -->
-
-        </div>
 
         <!-- Image Details -->
 

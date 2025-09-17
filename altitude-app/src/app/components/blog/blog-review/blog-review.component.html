@@ -1,47 +1,28 @@
 <app-header></app-header>
-@if (loading) {
-<!-- Main container that doesn't cover the header -->
-<div class="relative min-h-[70vh] w-full overflow-hidden" style="height: calc(100vh - var(--header-height, 80px));">
-    <!-- Background Video -->
-    <video src="assets/videos/dark-particles.mp4" autoplay muted loop playsinline
-        class="absolute inset-0 w-full h-full object-cover z-0"></video>
 
-    <!-- Centered Content with Heading and Loader -->
-    <div class="relative z-10 flex flex-col items-center justify-center h-full">
-        <!-- Heading Section -->
-        <div class="mb-4 text-center">
-            <h1 class="text-center text-[3.6rem]">Creating <span class="email-glow italic">Magic!</span></h1>
-        </div>
 
-        <!-- Container for both loader elements -->
-        <div class="relative w-full flex justify-center">
-            <!-- LoaderAnimation.svg (background - full width) -->
-            <img src="assets/images/LoaderAnimation.svg" alt="Loader Animation"
-                class="w-full h-auto object-contain max-w-none" draggable="false" />
-
-            <!-- LogoLoader.svg (positioned on top center) -->
-            <img src="assets/images/LogoLoader.svg" alt="Logo Loader"
-                class="absolute top-1/2 left-1/2 w-[102px] h-[102px] -translate-x-1/2 -translate-y-1/2 z-10"
-                draggable="false" />
-        </div>
-    </div>
-</div>
-}
-@else {
 <div class="">
     <div
         class="max-w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
         <div class="flex w-full flex-wrap justify-between items-center">
             <div class="flex flex-col justify-center gap-2">
                 <div class="flex items-center gap-2">
+
                     <a routerLink="/generate-request" class="text-2xl cursor-pointer"><i
                             class="pi pi-angle-left mr-1"></i>Website Blog<i class="pi pi-pencil ml-1"></i></a>
+
+
                 </div>
                 <div class="flex items-center gap-2">
-                    <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636]"><img
+
+                    <a class="flex text-decoration-none p-3 rounded-full border-1 border-[#363636]"><img
                             src="assets/images/Browser.svg" class="mr-2">Blog Requests</a>
-                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
+
+                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April
+                        16,
                         2025</a>
+
+
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -52,10 +33,35 @@
         <div class="flex flex-wrap mt-5 gap-4 w-full">
             <div class="md:flex-1">
                 <div class="">
-
                     <p-accordion value="0">
                         <p-accordion-panel value="0">
-                            <p-accordion-header class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                            <p-accordion-header
+                                class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
+                                Agentic Workflow
+                            </p-accordion-header>
+
+                            <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
+                                <div class="flex flex-col gap-4">
+                                    <div *ngFor="let key of socketConnection.dataSignal() | keyvalue : keepOrder"
+                                        class="flex items-center gap-3 p-3 bg-[#23262E] rounded-lg">
+                                        <i class="pi pi-check-circle text-green-500 text-xl"></i>
+                                        <div>
+                                            <p class="text-white font-semibold">
+                                                {{ key.value.name }}
+                                            </p>
+                                            <p class="text-gray-300 text-sm">
+                                                Status: {{ key.value.status }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+                    </p-accordion>
+                    <p-accordion value="1">
+                        <p-accordion-panel value="1">
+                            <p-accordion-header
+                                class="border-1 p-4 bg-[#121212] border-b-0 rounded-none border-[#363636]">
                                 Brand Guidelines & Assets
                             </p-accordion-header>
                             <p-accordion-content class="p-4 border-1 border-[#363636]">
@@ -86,9 +92,8 @@
                             </p-accordion-content>
                         </p-accordion-panel>
                     </p-accordion>
-
-                    <p-accordion value="1">
-                        <p-accordion-panel value="1">
+                    <p-accordion value="2">
+                        <p-accordion-panel value="2">
                             <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
                                 Task Details
                             </p-accordion-header>
@@ -180,6 +185,10 @@
 
 
                             <div class="flex justify-center items-center min-h-screen py-8">
+                                @if(loading){
+                                <p-progress-spinner strokeWidth="2" fill="transparent" animationDuration=".5s"
+                                    styleClass="custom-spinner" [style]="{ width: '50px', height: '50px'}" />
+                                }@else {
                                 <div
                                     class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden">
                                     <!-- Image Banner -->
@@ -199,6 +208,8 @@
 
                                     </div>
                                 </div>
+                                }
+
                             </div>
                         </div>
                         <div class="flex items-center gap-2 mt-4">
@@ -242,4 +253,3 @@
     <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 rounded-full float-right" label="Send For Approval"
         (onClick)="navigateToForm()"></p-button>
 </div>
-}

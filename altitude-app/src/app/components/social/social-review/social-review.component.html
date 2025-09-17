@@ -26,7 +26,8 @@
                 draggable="false" />
         </div>
     </div>
-</div> }
+</div>
+}
 @else {
 <div class="">
     <div
@@ -73,10 +74,35 @@
         <div class="flex flex-wrap mt-5 gap-4 w-full">
             <div class="md:flex-1">
                 <div class="">
-
                     <p-accordion value="0">
                         <p-accordion-panel value="0">
-                            <p-accordion-header class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                            <p-accordion-header
+                                class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
+                                Agentic Workflow
+                            </p-accordion-header>
+
+                            <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
+                                <div class="flex flex-col gap-4">
+                                    <div *ngFor="let key of socketConnection.dataSignal() | keyvalue : keepOrder"
+                                        class="flex items-center gap-3 p-3 bg-[#23262E] rounded-lg">
+                                        <i class="pi pi-check-circle text-green-500 text-xl"></i>
+                                        <div>
+                                            <p class="text-white font-semibold">
+                                                {{ key.value.name }}
+                                            </p>
+                                            <p class="text-gray-300 text-sm">
+                                                Status: {{ key.value.status }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </p-accordion-content>
+                        </p-accordion-panel>
+                    </p-accordion>
+                    <p-accordion value="1">
+                        <p-accordion-panel value="1">
+                            <p-accordion-header
+                                class="border-1 p-4 bg-[#121212] border-b-0 rounded-none border-[#363636]">
                                 Brand Guidelines & Assets
                             </p-accordion-header>
                             <p-accordion-content class="p-4 border-1 border-[#363636]">
@@ -107,9 +133,8 @@
                             </p-accordion-content>
                         </p-accordion-panel>
                     </p-accordion>
-
-                    <p-accordion value="1">
-                        <p-accordion-panel value="1">
+                    <p-accordion value="2">
+                        <p-accordion-panel value="2">
                             <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
                                 Task Details
                             </p-accordion-header>
@@ -190,7 +215,7 @@
                                         class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
 
 
-                                        <p-tabpanel value="0">                                          
+                                        <p-tabpanel value="0">
                                             <h3 class="post-caption text-black" class="dark:text-black text-white">
                                                 {{
                                                 this.editorContentSocialMedia }}</h3>
@@ -202,14 +227,15 @@
                                                 </a>
                                             </p>
                                             }
-                                             @if (imageFBUrlSocialmedia) {
+                                            @if (imageFBUrlSocialmedia) {
                                             <img [src]="imageFBUrlSocialmedia" alt="Facebook Post" class="post-image" />
                                             }
                                         </p-tabpanel>
                                         <p-tabpanel value="1">
                                             <div class="instagram-post">
                                                 @if (imageInstaUrlSocialmedia) {
-                                                <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post" class="post-image" />
+                                                <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post"
+                                                    class="post-image" />
                                                 }
                                                 <p class="post-caption text-black">{{
                                                     this.editorContentSocialMedia1 }}</p>

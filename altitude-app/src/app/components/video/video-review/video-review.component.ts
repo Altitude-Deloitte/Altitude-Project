@@ -1,10 +1,11 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { AccordionModule } from 'primeng/accordion';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 @Component({
   selector: 'app-video-review',
   imports: [
@@ -33,8 +34,9 @@ export class VideoReviewComponent {
   isImageRegenrateDisabled = false;
   constructor(
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService
-  ) {}
+    private aiContentGenerationService: ContentGenerationService,
+    public socketConnection: SocketConnectionService
+  ) { }
 
   ngOnInit(): void {
     this.contentDisabled = true;
@@ -59,7 +61,9 @@ export class VideoReviewComponent {
   isMp4(url: string): boolean {
     return url.toLowerCase().endsWith('.mp4');
   }
-
+  keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0; // Or implement custom sorting logic if needed
+  }
   navigateToForm(): void {
     this.route.navigateByUrl('video-client');
   }

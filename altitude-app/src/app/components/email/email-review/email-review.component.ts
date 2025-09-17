@@ -15,12 +15,13 @@ import { FormGroup, FormsModule } from '@angular/forms';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router, RouterLink } from '@angular/router';
 import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { SelectionStore } from '../../../store/campaign.store';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @Component({
   selector: 'app-email-review',
   imports: [
@@ -36,6 +37,7 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     RouterLink,
     MenuModule,
     DialogModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './email-review.component.html',
   styleUrl: './email-review.component.css',
@@ -167,11 +169,20 @@ export class EmailReviewComponent {
   emailHeader: any;
   formData: any;
   socketData: any;
+  socketMessage: any = [];
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService, // private dialog: MatDialog,
-    private socketConnection: SocketConnectionService
+    public socketConnection: SocketConnectionService
   ) {
+    // effect(() => {
+    //   this.socketData = this.socketConnection.dataSignal();
+    //   if (this.socketData) {
+    //     console.log(this.socketData)
+    //     this.socketMessage.push(this.socketData);
+    //   }
+    // })
+
 
   }
 
@@ -487,6 +498,9 @@ The html tags are separate and it should not be part of word count.`;
         console.log('Error refine image', er);
       },
     });
+  }
+  keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0; // Or implement custom sorting logic if needed
   }
 
   onTypographyChange(event: any) {

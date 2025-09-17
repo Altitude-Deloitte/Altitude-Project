@@ -4,7 +4,7 @@ import { ContentGenerationService } from '../../../services/content-generation.s
 import { TabsModule } from 'primeng/tabs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SelectModule } from 'primeng/select';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { AccordionModule } from 'primeng/accordion';
@@ -12,6 +12,7 @@ import { EditorModule } from '@tinymce/tinymce-angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 @Component({
   selector: 'app-social-review',
   imports: [
@@ -72,7 +73,8 @@ export class SocialReviewComponent {
 
   constructor(
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService
+    private aiContentGenerationService: ContentGenerationService,
+    public socketConnection: SocketConnectionService
   ) { }
 
   ngOnInit(): void {
@@ -214,7 +216,9 @@ export class SocialReviewComponent {
       this.editorContentSocialMedia
     );
   }
-
+  keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0; // Or implement custom sorting logic if needed
+  }
   aiContentGeneration(prompt: string, type: string): void {
     const wordLimitValue = this.formData?.wordLimit;
 

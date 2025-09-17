@@ -201,9 +201,6 @@ export class EmailFormComponent {
       .generateContent(formValues, 'Email Campaign')
       .subscribe({
         next: (data) => {
-          this.socketData = this.socketConnection.dataSignal();
-          this.socketConnection.sendMessage('data', 'hello from client')
-          console.log('socketData', this.socketData);
           this.aiContentGenerationService.setEmailHeadResponseData(data);
         },
 

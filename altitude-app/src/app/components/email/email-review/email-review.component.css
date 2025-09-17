@@ -1,3 +1,7 @@
 .comment {
   color: #bb93ff !important;
 }
+/* Apply your custom color to the spinner */
+.custom-spinner .p-progress-spinner-circle {
+  stroke: #8d4bff !important;
+}

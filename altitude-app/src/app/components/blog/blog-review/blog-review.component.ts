@@ -1,10 +1,12 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, effect } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { AccordionModule } from 'primeng/accordion';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-blog-review',
@@ -14,6 +16,7 @@ import { AccordionModule } from 'primeng/accordion';
     HeaderComponent,
     AccordionModule,
     RouterLink,
+    ProgressSpinnerModule
   ],
   templateUrl: './blog-review.component.html',
   styleUrl: './blog-review.component.css',
@@ -60,12 +63,15 @@ export class BlogReviewComponent {
   destokpScore: any;
   perfUrl: any;
   audianceData: string | undefined;
+  socketData: any;
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
     // private dialog: MatDialog,
+    public socketConnection: SocketConnectionService,
     private chnge: ChangeDetectorRef
-  ) { }
+  ) {
+  }
 
   formData: any;
   ngOnInit(): void {
@@ -171,6 +177,9 @@ export class BlogReviewComponent {
   //   img.src = this.imageUrl;
   //   this.loadImage(img.src);
   // }
+  keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0; // Or implement custom sorting logic if needed
+  }
   loadImage(url: any) {
     const img = new Image();
     img.src = url;
