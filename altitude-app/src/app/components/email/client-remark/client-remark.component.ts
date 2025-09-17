@@ -171,9 +171,9 @@ export class ClientRemarkComponent {
         this.emailSubject =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');  
         this.emailHeader = data.result.generation.email_header;
        const emailContent =
-            typeof  data.result.generation.text === 'string'
-              ? data.result.generation.text
-              : JSON.parse(data.result.generation.text);
+            typeof  data.result.generation.html === 'string'
+              ? data.result.generation.html
+              : JSON.parse(data.result.generation.html);
 
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '<br>');
         this.imageUrl = data.result.generation.image_url;
@@ -241,12 +241,12 @@ export class ClientRemarkComponent {
       .getEmailResponsetData()
       .subscribe((data) => {
           
-        if ( data.result.generation.text) {
+        if ( data.result.generation.html) {
           // Determine if the content is a string or JSON and parse accordingly
           const emailContent =
-            typeof  data.result.generation.text === 'string'
-              ? data.result.generation.text
-              : JSON.parse(data.result.generation.text);
+            typeof  data.result.generation.html === 'string'
+              ? data.result.generation.html
+              : JSON.parse(data.result.generation.html);
 
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '<br>');
 

@@ -217,13 +217,13 @@ export class EmailReviewComponent {
         this.emailHeader = data.result.generation.email_header;
         this.imageUrl = data.result.generation.image_url;
         this.subjctEmail =  data.result.generation.email_subjects;
-        if (data.result.generation.text) {
+        if (data.result.generation.html) {
           // Determine if the content is a string or JSON and parse accordingly
           this.contentDisabled = false;
           let emailContent =
-            typeof data.result.generation.text === 'string'
-              ? data.result.generation.text
-              : JSON.parse(data.result.generation.text);
+            typeof data.result.generation.html === 'string'
+              ? data.result.generation.html
+              : JSON.parse(data.result.generation.html);
           emailContent = emailContent.replace(/"/g, '').trim();
           this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
           console.log('email para : ', this.editorContentEmail);
