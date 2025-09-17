@@ -65,7 +65,7 @@ export class BlogReviewComponent {
     private aiContentGenerationService: ContentGenerationService,
     // private dialog: MatDialog,
     private chnge: ChangeDetectorRef
-  ) {}
+  ) { }
 
   formData: any;
   ngOnInit(): void {
@@ -99,7 +99,7 @@ export class BlogReviewComponent {
         this.chnge.detectChanges();
       });
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.content;
+      this.editorContentSocialMedia = data?.result?.generation.content;
       const cleanedString = this.editorContentSocialMedia
         .replace(/^```html/, '')
         .replace(/```$/, '');

@@ -327,21 +327,38 @@ export class ContentGenerationService {
   // Method to generate content
   generateContent(formFieldData: any, type: string): Observable<any> {
     const formData = new FormData();
-    formData.append('use_case', type);
-    formData.append('purpose', formFieldData?.purpose);
-    formData.append('brand', formFieldData?.brand);
-    if (type === 'Social Media Posting') {
+    if (type !== 'Blog Generation') {
+      formData.append('use_case', type);
+      formData.append('purpose', formFieldData?.purpose);
+      formData.append('brand', formFieldData?.brand);
+      if (type === 'Social Media Posting') {
 
+      } else {
+        formData.append('target_reader', formFieldData?.readers);
+        formData.append('tone', 'Formal');
+      }
+      formData.append('image_details', formFieldData?.imageOpt);
+      formData.append('platform_campaign', formFieldData?.campaign);
+      formData.append('topic', formFieldData?.topic);
+
+      formData.append('word_limit', formFieldData?.wordLimit);
+      return this.http.post(this.apiUrl, formData);
     } else {
+      formData.append('use_case', type);
+      formData.append('purpose', formFieldData?.purpose);
+      console.log(formFieldData?.purpose)
+      formData.append('brand', formFieldData?.brand);
+      formData.append('outline', formFieldData?.outline);
+      formData.append('format', formFieldData?.format)
+      formData.append('keywords', formFieldData?.keywords);
+      formData.append('topic', formFieldData?.topic);
       formData.append('target_reader', formFieldData?.readers);
-      formData.append('tone', 'Formal');
+      formData.append('tone', 'formal');
+      formData.append('word_limit', formFieldData?.wordLimit);
+      return this.http.post(this.apiUrl, formData);
     }
-    formData.append('image_details', formFieldData?.imageOpt);
-    formData.append('platform_campaign', formFieldData?.campaign);
-    formData.append('topic', formFieldData?.topic);
 
-    formData.append('word_limit', formFieldData?.wordLimit);
-    return this.http.post(this.apiUrl, formData);
+
   }
   generateVoeVideo(brief: string) {
     return this.http.post(this.videoUrl, { brief });

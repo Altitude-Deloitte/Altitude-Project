@@ -180,7 +180,7 @@ export class BlogFormComponent {
           this.audianceData
         );
         console.log('blog request data:', prompt);
-        this.aiContentGeneration(prompt, contentType);
+        this.aiContentGeneration(formValues, 'Blog Generation');
       });
 
       if (this.uploadedIamges) {
@@ -211,7 +211,7 @@ export class BlogFormComponent {
   aiContentGeneration(prompt: string, type: string): void {
     this.aiContentGenerationService.generateContent(prompt, type).subscribe({
       next: (data) => {
-        if (type == 'blog') {
+        if (type == 'Blog Generation') {
           this.aiContentGenerationService.setBlogResponseData(data);
         }
         console.log(`Response from API for ${type}:`, data);
@@ -454,7 +454,7 @@ Output the entire blog in HTML format, followed by:
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-       
+
       if (files.length) {
         files.forEach((file) => {
           if (file instanceof File) {
@@ -524,7 +524,7 @@ Output the entire blog in HTML format, followed by:
 
     var audiancePrompt = `Generate 3 audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and the blog format "${formValues.format}". Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
     this.aiContentGenerationService
-      .generateContent(formValues, 'Blog')
+      .generateContent(formValues, 'Blog Generation')
       .subscribe({
         next: (data) => {
           console.log(`email subject prompt :`, audiancePrompt);
