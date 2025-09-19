@@ -135,6 +135,7 @@ export class EmailFormComponent {
       brand: [''],
       imageOpt: ['N/A'],
       imgDesc: [''],
+      additional: ['']
     });
     this.aiContentGenerationService.setImage(null);
     this.aiContentGenerationService.setEmailResponseData(null);

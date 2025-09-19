@@ -331,13 +331,13 @@ export class ContentGenerationService {
       formData.append('use_case', type);
       formData.append('purpose', formFieldData?.purpose);
       formData.append('brand', formFieldData?.brand);
-      if (type === 'Social Media Posting') {
-
+      if (type === 'Social Media Posting' && formFieldData?.additional) {
+        formData.append('additional_details', formFieldData?.additional)
       } else {
         formData.append('target_reader', formFieldData?.readers);
         formData.append('tone', 'Formal');
       }
-      formData.append('image_details', formFieldData?.imageOpt);
+      formData.append('image_details', formFieldData?.imgDesc);
       formData.append('platform_campaign', formFieldData?.campaign);
       formData.append('topic', formFieldData?.topic);
 

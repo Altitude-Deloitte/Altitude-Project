@@ -6,6 +6,7 @@ import { ButtonModule } from 'primeng/button';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { AccordionModule } from 'primeng/accordion';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @Component({
   selector: 'app-video-review',
   imports: [
@@ -14,6 +15,7 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     HeaderComponent,
     AccordionModule,
     RouterLink,
+    ProgressSpinnerModule
   ],
   templateUrl: './video-review.component.html',
   styleUrl: './video-review.component.css',

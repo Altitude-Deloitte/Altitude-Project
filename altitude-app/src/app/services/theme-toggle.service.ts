@@ -16,35 +16,36 @@ export class ThemeToggleService {
   }
 
   private initializeTheme(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      const storedTheme = localStorage.getItem('theme');
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches;
+    // if (isPlatformBrowser(this.platformId)) {
+    //   const storedTheme = localStorage.getItem('theme');
+    //   const prefersDark = window.matchMedia(
+    //     '(prefers-color-scheme: dark)'
+    //   ).matches;
 
-      const isDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
-      this.setTheme(isDark);
-    }
+    //   const isDark = storedTheme === 'dark' || (!storedTheme && prefersDark);
+    //   this.setTheme(isDark);
+    // }
+    this.setTheme(true)
   }
 
   setTheme(isDark: boolean): void {
     this.isDarkModeSubject.next(isDark);
 
-    if (isPlatformBrowser(this.platformId)) {
-      const htmlElement = document.documentElement;
+    // if (isPlatformBrowser(this.platformId)) {
+    const htmlElement = document.documentElement;
 
-      if (isDark) {
-        htmlElement.classList.add('dark');
-        this.sourceBehaviourSubject.next('assets/videos/dark-particles.mp4');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        this.sourceBehaviourSubject.next(
-          'assets/videos/vecteezy_abstract-motion-background-animation-with-a-beautiful-gently_26592036.mp4'
-        );
-        htmlElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
+    if (isDark) {
+      htmlElement.classList.add('dark');
+      this.sourceBehaviourSubject.next('assets/videos/dark-particles.mp4');
+      localStorage.setItem('theme', 'dark');
+    } else {
+      this.sourceBehaviourSubject.next(
+        'assets/videos/vecteezy_abstract-motion-background-animation-with-a-beautiful-gently_26592036.mp4'
+      );
+      // htmlElement.classList.remove('dark');
+      // localStorage.setItem('theme', 'light');
     }
+    // }
   }
 
   toggleTheme(): void {

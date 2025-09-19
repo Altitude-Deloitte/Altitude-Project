@@ -13,6 +13,7 @@ import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
 @Component({
   selector: 'app-social-review',
   imports: [
@@ -33,6 +34,7 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     RouterLink,
     MenuModule,
     DialogModule,
+    ProgressSpinnerModule
   ],
   templateUrl: './social-review.component.html',
   styleUrl: './social-review.component.css',

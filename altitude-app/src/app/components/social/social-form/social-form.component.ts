@@ -156,6 +156,7 @@ export class SocialFormComponent {
       brand: [''],
       imageOpt: ['N/A'],
       imgDesc: [''],
+      additional:['']
     });
     this.aiContentGenerationService.setImage(null);
     this.aiContentGenerationService.setSocialResponseData(null);
