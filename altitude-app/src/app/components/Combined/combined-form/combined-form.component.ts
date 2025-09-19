@@ -135,7 +135,7 @@ export class CombinedFormComponent {
 
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
 
   imageOption: string = '';
   imageBox: string = '';
@@ -244,7 +244,7 @@ export class CombinedFormComponent {
 
     var offerImage = `Create an "${formValues.brand}" brand offer/quote heading for a "${formValues.topic}" with an attractive, short, and brand-aligned title in an <h1> tag and a subtitle in an <h2> tag. Ensure the output includes only the <h1> and <h2> tags with the content. Avoid adding extra HTML or markdown. The font style and color should align with Nike's branding.`;
     this.aiContentGenerationService
-      .generateContent(offerImage, 'emailer')
+      .generateOtherContent(offerImage, 'emailer')
       .subscribe({
         next: (data) => {
           console.log(`email heading prompt :`, offerImage);
@@ -284,7 +284,7 @@ export class CombinedFormComponent {
 
       var facebookPrompt = `Create a social media post for the platform "Facebook" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "Facebook". The purpose of the post is "${formValues.purpose}". The intended target audience is "Facebook". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       this.aiContentGenerationService
-        .generateContent(facebookPrompt, 'social_media')
+        .generateOtherContent(facebookPrompt, 'social_media')
         .subscribe({
           next: (data) => {
             console.log(`social_media facebook prompt :`, facebookPrompt);
@@ -298,7 +298,7 @@ export class CombinedFormComponent {
 
       var instaPrompt = `Create a social media post for the platform "Instagram" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "Instagram". The purpose of the post is "${formValues.purpose}". The intended target audience is "Instagram". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       this.aiContentGenerationService
-        .generateContent(instaPrompt, 'social_media')
+        .generateOtherContent(instaPrompt, 'social_media')
         .subscribe({
           next: (data) => {
             console.log(`social_media insta prompt :`, instaPrompt);
@@ -312,7 +312,7 @@ export class CombinedFormComponent {
 
       var subjectPrompt = `Generate 4 email subjects based on the topic "${formValues.topic}". The email subjects should be in "${formValues.lang}" (English) and use a "${formValues.Type}" tone. Consider the purpose "${formValues.purpose}" and the target readers "${formValues.readers}". Output only the 4 email subjects in a single string, separated by semicolons (";"). Do not include any additional text, explanations, or formatting—just the 4 email subjects in the required format.`;
       this.aiContentGenerationService
-        .generateContent(subjectPrompt, 'emailer')
+        .generateOtherContent(subjectPrompt, 'emailer')
         .subscribe({
           next: (data) => {
             console.log(`email subject prompt :`, subjectPrompt);
@@ -487,7 +487,7 @@ Output the entire blog in HTML format, followed by:
   }
 
   aiContentGeneration2(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateContent(prompt, type).subscribe({
+    this.aiContentGenerationService.generateOtherContent(prompt, type).subscribe({
       next: (data) => {
         if (type == 'blog') {
           this.aiContentGenerationService.setBlogResponseData(data);
@@ -506,7 +506,7 @@ Output the entire blog in HTML format, followed by:
   }
 
   aiContentGeneration(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateContent(prompt, type).subscribe({
+    this.aiContentGenerationService.generateOtherContent(prompt, type).subscribe({
       next: (data) => {
         console.log('ai content call : ', type);
         if (type === 'emailer') {
@@ -569,7 +569,7 @@ Output the entire blog in HTML format, followed by:
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-       
+
       if (files.length) {
         files.forEach((file) => {
           if (file instanceof File) {
@@ -657,7 +657,7 @@ Output the entire blog in HTML format, followed by:
   //   event.chipInput!.clear();
   // }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   addImageFromURL(): void {
     const url = this.socialwebsite.get('url')?.value;
@@ -759,7 +759,7 @@ Output the entire blog in HTML format, followed by:
 
     var audiancePrompt = `Generate 3 audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and the blog format "${formValues.format}". Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
     this.aiContentGenerationService
-      .generateContent(audiancePrompt, 'emailer')
+      .generateOtherContent(audiancePrompt, 'emailer')
       .subscribe({
         next: (data) => {
           console.log(`email subject prompt :`, audiancePrompt);

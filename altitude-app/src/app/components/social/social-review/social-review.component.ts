@@ -237,7 +237,7 @@ export class SocialReviewComponent {
       // var facebookPrompt = `Create a social media post for the platform "Facebook" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type1}". The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target1}". The content should be detailed and informative, with a length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. This is the hyper link "${formValues.Hashtags}" add it at the end of the post which is shown as hyperlink and clickable if there is not link, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var facebookPrompt = `Generate a Facebook post on "${this.formData?.topic}" in "${this.formData?.lang}" with a "${this.formData?.Type1}" tone for "${this.formData?.target1}". The purpose is "${this.formData?.purpose}". Keep the post within "${this.fbLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant. Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
       this.aiContentGenerationService
-        .generateContent(facebookPrompt, 'social_media')
+        .generateContent(facebookPrompt)
         .subscribe({
           next: (data) => {
             this.aiContentGenerationService.setSocialResponseData(data);
@@ -251,7 +251,7 @@ export class SocialReviewComponent {
       // var instaPrompt = `Create a social media post for the platform "Instagram" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type2}" and intractive description and caption. The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target2}". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var instaPrompt = `Generate a Instagram post on "${this.formData?.topic}" in "${this.formData?.lang}" with a "${this.formData?.Type2}" tone for "${this.formData?.target2}". The purpose is "${this.formData?.purpose}". Keep the post within "${this.inLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant.Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
       this.aiContentGenerationService
-        .generateContent(instaPrompt, 'social_media')
+        .generateContent(instaPrompt)
         .subscribe({
           next: (data) => {
             this.aiContentGenerationService.setSocialResponseData1(data);
@@ -265,7 +265,7 @@ export class SocialReviewComponent {
       prompt = `This is my existing post "${this.existingContent}" in that don't change whole content from my existing post, just add the new fact / content without removing existing post content based on user input or rephrase withput exced the word limit, The content of post should not exceed "${this.formData?.wordLimit}" words limit. and this is the prompt which user want to add in existing post " ${prompt} ". The content of post characters not exceeding "${this.formData?.wordLimit}" limit, with all sentences closed properly. Also include socially relevant tags for the post. Also include emotions if required. only show content and hastags not any type of additional details or notes `;
 
       this.aiContentGenerationService
-        .generateContent(prompt, 'social_media')
+        .generateContent(prompt)
         .subscribe({
           next: (data) => {
             if (type === 'common_prompt') {

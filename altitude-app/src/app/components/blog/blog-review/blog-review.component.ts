@@ -248,22 +248,6 @@ export class BlogReviewComponent {
       prompt = `This is my existing blog "${this.existingContent}" in that don't change whole content from my existing blog, just add the new fact / content without removing existing post blog based on user input and this is the prompt which user want to add in existing blog " ${prompt} ". just directly show blog content only don't show addition details.`;
     }
 
-    this.aiContentGenerationService.generateContent(prompt, 'blog').subscribe({
-      next: (data) => {
-        if (type === 'regenerate') {
-          this.aiContentGenerationService.setBlogResponseData(data);
-          this.isEMailPromptDisabled = false;
-        } else if (type === 'common_prompt') {
-          this.aiContentGenerationService.setBlogResponseData(data);
-          this.commonPromptIsLoading = false;
-        }
-        console.log(`Response from API for ${type}:`, data);
-        this.chnge.detectChanges();
-      },
-      error: (error) => {
-        console.error(`Error occurred for ${type}:`, error);
-      },
-    });
   }
 
   imageRegenrate() {

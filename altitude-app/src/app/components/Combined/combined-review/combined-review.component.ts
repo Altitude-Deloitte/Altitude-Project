@@ -148,7 +148,7 @@ export class CombinedReviewComponent {
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
     private chnge: ChangeDetectorRef
-  ) {}
+  ) { }
 
   formData: any;
   ngOnInit(): void {
@@ -245,8 +245,8 @@ export class CombinedReviewComponent {
           this.brandlogoTop =
             brandName !== 'babycheramy.lk'
               ? 'https://img.logo.dev/' +
-                brandName +
-                '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+              brandName +
+              '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
               : 'https://www.babycheramy.lk/images/logo.webp';
         }
 
@@ -582,7 +582,7 @@ The html tags are separate and it should not be part of word count`;
     }
 
     this.aiContentGenerationService
-      .generateContent(prompt, 'emailer')
+      .generateOtherContent(prompt, 'emailer')
       .subscribe({
         next: (data) => {
           if (type === 'regenerate') {
@@ -732,7 +732,7 @@ The html tags are separate and it should not be part of word count`;
     }
 
     this.aiContentGenerationService
-      .generateContent(prompt, 'social_media')
+      .generateOtherContent(prompt, 'social_media')
       .subscribe({
         next: (data) => {
           if (type === 'regenerate') {
@@ -760,7 +760,7 @@ The html tags are separate and it should not be part of word count`;
       prompt = `This is my existing blog "${this.existingContent}" in that don't change whole content from my existing blog, just add the new fact / content without removing existing post blog based on user input and this is the prompt which user want to add in existing blog " ${prompt} ". just directly show blog content only don't show addition details.`;
     }
 
-    this.aiContentGenerationService.generateContent(prompt, 'blog').subscribe({
+    this.aiContentGenerationService.generateOtherContent(prompt, 'blog').subscribe({
       next: (data) => {
         if (type === 'regenerate') {
           this.aiContentGenerationService.setBlogResponseData(data);

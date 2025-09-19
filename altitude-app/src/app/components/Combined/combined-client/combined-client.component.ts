@@ -161,7 +161,7 @@ export class CombinedClientComponent {
     private aiContentGenerationService: ContentGenerationService,
 
     private chnge: ChangeDetectorRef
-  ) {}
+  ) { }
 
   formData: any;
   ngOnInit(): void {
@@ -621,7 +621,7 @@ The html tags are separate and it should not be part of word count`;
     }
 
     this.aiContentGenerationService
-      .generateContent(prompt, 'emailer')
+      .generateOtherContent(prompt, 'emailer')
       .subscribe({
         next: (data) => {
           if (type === 'regenerate') {
@@ -1125,5 +1125,5 @@ The html tags are separate and it should not be part of word count`;
       };
     }
   }
-  saveComment() {}
+  saveComment() { }
 }

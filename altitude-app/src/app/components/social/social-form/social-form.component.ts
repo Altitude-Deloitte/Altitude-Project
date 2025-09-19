@@ -57,7 +57,7 @@ export class SocialFormComponent {
     'LinkedIn',
     'Pinterest',
   ];
-
+  socialMediaPayload: any;
   contentTypes = ['social_media'];
   imageSize = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -121,10 +121,10 @@ export class SocialFormComponent {
   instaFlag: boolean = false;
   fbLimit: number | null | undefined;
   inLimit: number | null | undefined;
-  selectedPlatforms: string[] = []; 
+  selectedPlatforms: string[] = [];
 
-  otherPlatformLimits: Record<string, string> = {}; 
-  combinedLimit: string = ''; 
+  otherPlatformLimits: Record<string, string> = {};
+  combinedLimit: string = '';
   urlImage: any;
 
   constructor(
@@ -133,7 +133,7 @@ export class SocialFormComponent {
     private aiContentGenerationService: ContentGenerationService
   ) { }
 
- 
+
   ngOnInit(): void {
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
@@ -156,7 +156,7 @@ export class SocialFormComponent {
       brand: [''],
       imageOpt: ['N/A'],
       imgDesc: [''],
-      additional:['']
+      additional: ['']
     });
     this.aiContentGenerationService.setImage(null);
     this.aiContentGenerationService.setSocialResponseData(null);
@@ -164,8 +164,25 @@ export class SocialFormComponent {
 
   onCreateProject(): void {
     var formValues = { ...this.socialwebsite.getRawValue() };
-    const { topic } = formValues;
-    const { imgDesc } = formValues;
+    const { topic, imgDesc } = formValues;
+
+    // Create FormData instead of object
+    this.socialMediaPayload = new FormData();
+    this.socialMediaPayload.append('use_case', 'Social Media Posting');
+    this.socialMediaPayload.append('purpose', formValues?.purpose || '');
+    this.socialMediaPayload.append('brand', formValues?.brand || '');
+    this.socialMediaPayload.append('platform_campaign', formValues?.campaign || '');
+    this.socialMediaPayload.append('topic', topic || '');
+    this.socialMediaPayload.append('word_limit', formValues?.wordLimit || '');
+
+    // Conditionally append additional fields
+    if (formValues?.additional && formValues?.additional.trim() !== '') {
+      this.socialMediaPayload.append('additional_details', formValues?.additional);
+    }
+    if (formValues?.imgDesc && formValues?.imgDesc.trim() !== '') {
+      this.socialMediaPayload.append('image_details', formValues?.imgDesc);
+    }
+
     this.addImageFromURL();
     this.imageUrl = null;
     if (this.uploadedImages.length == 0 && !this.urlImage) {
@@ -211,8 +228,9 @@ export class SocialFormComponent {
 
       if (this.facebookFlag) {
         var audiancePrompt = `Generate Facebook 3 audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and with the Facebook format . Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
+
         this.aiContentGenerationService
-          .generateContent(audiancePrompt, 'Social Media Posting')
+          .generateContent(audiancePrompt)
           .subscribe({
             next: (data: any) => {
               this.aiContentGenerationService.setAudianceResponseData1(data);
@@ -228,7 +246,7 @@ export class SocialFormComponent {
       if (this.instaFlag) {
         var audiancePrompt = `Generate 3 Instagram audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and with the Instagram format . Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
         this.aiContentGenerationService
-          .generateContent(formValues, 'Social Media Posting')
+          .generateContent(this.socialMediaPayload)
           .subscribe({
             next: (data: any) => {
               this.aiContentGenerationService.setAudianceResponseData2(data);
@@ -245,19 +263,19 @@ export class SocialFormComponent {
       // var facebookPrompt = `Create a social media post for the platform "Facebook" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type1}". The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target1}". The content should be detailed and informative, with a length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. This is the hyper link "${formValues.Hashtags}" add it at the end of the post which is shown as hyperlink and clickable if there is not link, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var facebookPrompt = `Generate a Facebook post on "${formValues.topic}" in "${formValues.lang}" with a "${formValues.Type1}" tone for "${formValues.target1}". The purpose is "${formValues.purpose}". Keep the post within "${this.fbLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant. Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
       this.aiContentGenerationService
-        .generateContent(formValues, 'Social Media Posting')
+        .generateContent(this.socialMediaPayload)
         .subscribe({
           next: (data: any) => {
             console.log(`social_media facebook prompt :`, facebookPrompt);
             this.aiContentGenerationService.setSocialResponseData(data);
-   },
+          },
           error: (error: any) => {
             console.error(`Error occurred for :social_media`, error);
           },
         });
 
       // var instaPrompt = `Create a social media post for the platform "Instagram" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type2}" and intractive description and caption. The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target2}". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
-    
+
       if (this.uploadedIamges) {
         this.aiContentGenerationService.setImage(this.uploadedIamges);
       }
@@ -273,7 +291,7 @@ export class SocialFormComponent {
     } else {
       console.log('Form is invalid');
     }
-    
+
   }
 
   navigateToForm(): void {
@@ -305,7 +323,7 @@ export class SocialFormComponent {
     this.otherPlatformLimits = {};
     selectedPlatforms.forEach(
       (platform: keyof typeof this.platformWordLimits) => {
-        const limit = this.platformWordLimits[platform]; 
+        const limit = this.platformWordLimits[platform];
         if (platform === 'Facebook') {
           this.facebookLimit = limit;
           this.facebookFlag = true;
@@ -368,7 +386,7 @@ export class SocialFormComponent {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const files = Array.from(input.files);
-       
+
       if (files.length) {
         files.forEach((file) => {
           if (file instanceof File) {
@@ -447,7 +465,7 @@ export class SocialFormComponent {
       });
     }
   }
-  
+
   onDragOver(event: DragEvent): void {
     event.preventDefault();
   }

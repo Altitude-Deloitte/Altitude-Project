@@ -384,7 +384,7 @@ export class ClientRemarkComponent {
     }
 
     this.aiContentGenerationService
-      .generateContent(prompt, 'emailer')
+      .generateContent(prompt)
       .subscribe({
         next: (data) => {
           if (type === 'blog') {

@@ -9,6 +9,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 export class ContentGenerationService {
   private apiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-content';
   private videoUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-video'
+  private baseUrl = 'http://18.116.64.253:3000/generate-content';
   private campaignUrl = 'http://18.116.64.253:3301/campaign/2676';
   private publishMarketoUrl = 'http://18.116.64.253:5000/update-email';
   private imageGenerationUrl = 'http://18.116.64.253:4000/generate-image';
@@ -98,6 +99,7 @@ export class ContentGenerationService {
   private templateId = signal('');
   private memeFormData = signal(null);
   private hashTags = signal(null);
+  
   constructor(private http: HttpClient) { }
 
   getTemplateId(): string {
@@ -323,40 +325,17 @@ export class ContentGenerationService {
   getProductResponsetData(): Observable<any[]> {
     return this.productResponses.asObservable();
   }
+  generateOtherContent (prompt: string, type: string): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const body = { prompt, type };
 
+    return this.http
+      .post(this.apiUrl, body, { headers })
+      .pipe(catchError(this.handleError('generateContent', {})));
+  }
   // Method to generate content
-  generateContent(formFieldData: any, type: string): Observable<any> {
-    const formData = new FormData();
-    if (type !== 'Blog Generation') {
-      formData.append('use_case', type);
-      formData.append('purpose', formFieldData?.purpose);
-      formData.append('brand', formFieldData?.brand);
-      if (type === 'Social Media Posting' && formFieldData?.additional) {
-        formData.append('additional_details', formFieldData?.additional)
-      } else {
-        formData.append('target_reader', formFieldData?.readers);
-        formData.append('tone', 'Formal');
-      }
-      formData.append('image_details', formFieldData?.imgDesc);
-      formData.append('platform_campaign', formFieldData?.campaign);
-      formData.append('topic', formFieldData?.topic);
-
-      formData.append('word_limit', formFieldData?.wordLimit);
-      return this.http.post(this.apiUrl, formData);
-    } else {
-      formData.append('use_case', type);
-      formData.append('purpose', formFieldData?.purpose);
-      formData.append('brand', formFieldData?.brand);
-      formData.append('outline', formFieldData?.outline);
-      formData.append('format', formFieldData?.format)
-      formData.append('keywords', formFieldData?.keywords);
-      formData.append('target_reader', formFieldData?.readers);
-      formData.append('tone', formFieldData?.Type);
-      formData.append('word_limit', formFieldData?.wordLimit);
-      return this.http.post(this.apiUrl, formData);
-    }
-
-
+  generateContent(formFieldData: any): Observable<any> {
+    return this.http.post<any>(this.apiUrl, formFieldData);
   }
   generateVoeVideo(brief: string) {
     return this.http.post(this.videoUrl, { brief });

@@ -112,6 +112,7 @@ export class EmailFormComponent {
   imageOption: string = '';
   imageBox: string = '';
   socketData: any;
+  emailPayload: any;
   constructor(private aiContentGenerationService: ContentGenerationService, private socketConnection: SocketConnectionService) { }
 
   ngOnInit(): void {
@@ -143,8 +144,25 @@ export class EmailFormComponent {
 
   onCreateProject(): void {
     var formValues = { ...this.socialwebsite.getRawValue() };
-    const { topic } = formValues;
-    const { imgDesc } = formValues;
+    const { topic, imgDesc } = formValues;
+
+    // Create FormData instead of object
+    this.emailPayload = new FormData();
+    this.emailPayload.append('use_case', 'Email Campaign');
+    this.emailPayload.append('purpose', formValues?.purpose || '');
+    this.emailPayload.append('brand', formValues?.brand || '');
+    this.emailPayload.append('tone', formValues?.Type || '');
+    this.emailPayload.append('topic', formValues?.topic || '');
+    this.emailPayload.append('word_limit', formValues?.wordLimit || '');
+    this.emailPayload.append('target_reader', formValues?.readers || '');
+
+    // Conditionally append additional fields
+    if (formValues?.additional && formValues?.additional.trim() !== '') {
+      this.emailPayload.append('additional_details', formValues?.additional);
+    }
+    if (formValues?.imgDesc && formValues?.imgDesc.trim() !== '') {
+      this.emailPayload.append('image_details', formValues?.imgDesc);
+    }
 
     this.addImageFromURL();
     if (this.uploadedImages.length == 0 && !this.urlImage) {
@@ -199,7 +217,7 @@ export class EmailFormComponent {
 
     var offerImage = `Create an "${formValues.brand}" brand offer/quote heading for a "${formValues.topic}" with an attractive, short, and brand-aligned title in an <h1> tag and a subtitle in an <h2> tag. Ensure the output includes only the <h1> and <h2> tags with the content. Avoid adding extra HTML or markdown. The font style and color should align with Nike's branding.`;
     this.aiContentGenerationService
-      .generateContent(formValues, 'Email Campaign')
+      .generateContent(this.emailPayload)
       .subscribe({
         next: (data) => {
           this.aiContentGenerationService.setEmailHeadResponseData(data);
@@ -256,7 +274,7 @@ The html tags are separate and it should not be part of word count`;
   }
 
   aiContentGeneration(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateContent(prompt, type).subscribe({
+    this.aiContentGenerationService.generateContent(this.emailPayload).subscribe({
       next: (data) => {
         if (type === 'emailer') {
           this.aiContentGenerationService.setEmailResponseData(data);

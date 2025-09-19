@@ -422,7 +422,7 @@ The html tags are separate and it should not be part of word count.`;
     }
 
     this.aiContentGenerationService
-      .generateContent(prompt, 'emailer')
+      .generateContent(prompt)
       .subscribe({
         next: (data) => {
           if (type === 'blog') {
