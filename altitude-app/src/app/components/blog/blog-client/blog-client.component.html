@@ -8,10 +8,10 @@
                         <i class="pi pi-angle-left"></i>
                         Back to Client Dashboard</a>
                 </div>
-                <h3 class="text-3xl">New Coca Cola Flavours</h3>
+                <h3 class="text-3xl">Blog Requests</h3>
                 <div class="flex items-center gap-2">
-                    <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636]"><i
-                            class="pi pi-envelope mr-2"></i>E-mail Request</a>
+                    <a class="flex text-decoration-none p-3 rounded-full border-1 border-[#363636]"><img
+                            src="assets/images/Browser.svg" class="mr-2">Blog Requests</a>
                     <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
                         2025</a>
                 </div>
@@ -25,6 +25,12 @@
 
                     <div class="px-10 py-8">
                         <div>
+                            <div class="w-full">
+                                @if (imageUrl) {
+                                <img [src]="imageUrl" alt="Main Visual" class="w-full object-cover" style="max-height:320px;" />
+                                }
+                            
+                            </div>
                             <div class="text-black" [innerHTML]="blogContent"></div>
                         </div>
                     </div>

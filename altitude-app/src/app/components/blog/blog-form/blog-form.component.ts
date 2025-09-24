@@ -140,15 +140,15 @@ export class BlogFormComponent {
     this.blogPayload.append('word_limit', formValues?.wordLimit || '');
     this.blogPayload.append('target_reader', formValues?.readers || '');
     this.blogPayload.append('tone', formValues?.Type || '');
+    this.blogPayload.append('image_details', formValues?.imageOpt || '');
 
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.blogPayload.append('additional_details', formValues?.additional);
     }
-    if (formValues?.imgDesc && formValues?.imgDesc.trim() !== '') {
-      this.blogPayload.append('image_details', formValues?.imgDesc);
-    }
-
+    this.aiContentGenerationService.setData(formValues)
+    this.aiContentGeneration(formValues, 'Blog Generation');
+    this.navigateToForm();
     // if (this.uploadedImages.length == 0 && !this.urlImage) {
     //   console.log('image option :', formValues.imageOpt);
     //   if (formValues.imageOpt === 'N/A') {
@@ -201,6 +201,7 @@ export class BlogFormComponent {
       next: (data) => {
         if (type == 'Blog Generation') {
           this.aiContentGenerationService.setBlogResponseData(data);
+
         }
         console.log(`Response from API for ${type}:`, data);
       },

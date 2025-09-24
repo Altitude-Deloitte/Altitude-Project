@@ -197,12 +197,12 @@ export class EmailReviewComponent {
 
     // console.log(this.brand);
     //generate image
-    this.aiContentGenerationService.getImage().subscribe((data) => {
-      // console.log('getImagegetImage', data);
-      if (data) {
-        this.imageUrl = data;
-      }
-    });
+    // this.aiContentGenerationService.getImage().subscribe((data) => {
+    //   // console.log('getImagegetImage', data);
+    //   if (data) {
+    //     this.imageUrl = data;
+    //   }
+    // });
 
     //event image
     this.aiContentGenerationService.getOfferImage().subscribe((data) => {

@@ -60,7 +60,7 @@ export class BlogClientComponent {
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
   formData: any;
   ngOnInit(): void {
     this.ispublisLoaderDisabled = false;
@@ -84,7 +84,8 @@ export class BlogClientComponent {
     });
 
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.content;
+      this.editorContentSocialMedia = data?.result?.generation.html;
+      this.imageUrl = data?.result?.generation.image_url;
       const cleanedString = this.editorContentSocialMedia
         .replace(/^```html/, '')
         .replace(/```$/, '');

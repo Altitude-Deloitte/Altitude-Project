@@ -81,12 +81,12 @@ export class BlogReviewComponent {
       console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
     });
 
-    this.aiContentGenerationService.getImage().subscribe((data) => {
-      console.log('getImagegetImage', data);
-      if (data) {
-        this.imageUrl = data;
-      }
-    });
+    // this.aiContentGenerationService.getImage().subscribe((data) => {
+    //   console.log('getImagegetImage', data);
+    //   if (data) {
+    //     this.imageUrl = data;
+    //   }
+    // });
 
     this.blogstructure = this.blogGuideLines();
 
@@ -105,7 +105,8 @@ export class BlogReviewComponent {
         this.chnge.detectChanges();
       });
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.result?.generation.content;
+      this.editorContentSocialMedia = data?.result?.generation.html;
+      this.imageUrl = data?.result?.generation.image_url;
       const cleanedString = this.editorContentSocialMedia
         .replace(/^```html/, '')
         .replace(/```$/, '');

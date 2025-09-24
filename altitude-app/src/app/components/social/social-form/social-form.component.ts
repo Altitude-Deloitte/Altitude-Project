@@ -174,14 +174,13 @@ export class SocialFormComponent {
     this.socialMediaPayload.append('platform_campaign', formValues?.campaign || '');
     this.socialMediaPayload.append('topic', topic || '');
     this.socialMediaPayload.append('word_limit', formValues?.wordLimit || '');
+    this.socialMediaPayload.append('image_details', formValues?.imageOpt);
 
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.socialMediaPayload.append('additional_details', formValues?.additional);
     }
-    if (formValues?.imgDesc && formValues?.imgDesc.trim() !== '') {
-      this.socialMediaPayload.append('image_details', formValues?.imgDesc);
-    }
+    
 
     this.addImageFromURL();
     this.imageUrl = null;

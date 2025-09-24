@@ -61,7 +61,7 @@
                                         <i class="pi pi-check-circle text-green-500 text-xl"></i>
                                         <div>
                                             <p class="text-white font-semibold">
-                                                {{ key.value.name }}
+                                                {{ key.value.name | titlecase }}
                                             </p>
                                             <p class="text-gray-300 text-sm">
                                                 Status: {{ key.value.status }}
@@ -260,15 +260,15 @@
                                     </tr>
 
 
-                                    <!-- <tr>
-                                                                        <td style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
-                                
-                                                                            <a [href]="this.showMore" target="_blank"
-                                                                                style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
-                                                                                Know More
-                                                                            </a>
-                                                                        </td>
-                                                                    </tr> -->
+                                    <tr>
+                                        <td style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
+
+                                            <a [href]="this.showMore" target="_blank"
+                                                style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                                                Know More
+                                            </a>
+                                        </td>
+                                    </tr>
 
 
                                     <tr>

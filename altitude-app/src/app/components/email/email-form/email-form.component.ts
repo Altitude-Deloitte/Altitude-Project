@@ -134,7 +134,7 @@ export class EmailFormComponent {
       language: [''],
       lang: ['English(US)'],
       brand: [''],
-      imageOpt: ['N/A'],
+      imageOpt: ['No Image'],
       imgDesc: [''],
       additional: ['']
     });
@@ -155,14 +155,13 @@ export class EmailFormComponent {
     this.emailPayload.append('topic', formValues?.topic || '');
     this.emailPayload.append('word_limit', formValues?.wordLimit || '');
     this.emailPayload.append('target_reader', formValues?.readers || '');
+    this.emailPayload.append('image_details', formValues?.imageOpt || '');
 
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.emailPayload.append('additional_details', formValues?.additional);
     }
-    if (formValues?.imgDesc && formValues?.imgDesc.trim() !== '') {
-      this.emailPayload.append('image_details', formValues?.imgDesc);
-    }
+
 
     this.addImageFromURL();
     if (this.uploadedImages.length == 0 && !this.urlImage) {

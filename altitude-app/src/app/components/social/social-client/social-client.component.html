@@ -5,7 +5,7 @@
             <div class="flex justify-between items-center flex-wrap">
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center text-[#9B9B9B] gap-2">
-                        <a routerLink="/review">
+                        <a routerLink="/social-review">
                             <i class="pi pi-angle-left"></i>
                             Back to Client Dashboard</a>
                     </div>
@@ -44,30 +44,32 @@
 
 
                                     <p-tabpanel value="0">
-                                         <img [src]="this.imageFBUrlSocialmedia" />
                                         <div>
                                             <h3 class="post-caption text-black" style="color: #333333;">
                                                 {{
                                                 this.editorContentSocialMedia }}</h3>
                                             <!-- @if (hyperUrl) {
-                                <p class="post-caption text-black">For more details, visit our website:
-                                    <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
-                                        {{this.hyperUrl}}
-                                    </a>
-                                </p>
-                                } -->
+                                                                                <p class="post-caption text-black">For more details, visit our website:
+                                                                                    <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
+                                                                                        {{this.hyperUrl}}
+                                                                                    </a>
+                                                                                </p>
+                                                                                } -->
 
                                             <!--<p *ngIf="formData?.Hashtags"> <b>Link : </b><a [href]="formData?.Hashtags" style="text-decoration: underline; color: #1717c5 !important;outline: none;" target="_blank"  > {{formData?.Hashtags}}</a></p>-->
-                                            @if (imageUrl) {
-                                            <img [src]="imageUrl" alt="Facebook Post" class="post-image" />
-                                            }
+                                            <!-- @if (imageUrl) {
+                                                                                            <img [src]="imageUrl" alt="Facebook Post" class="post-image" />
+                                                                                            } -->
 
                                         </div>
+                                        <img class="mt-3" [src]="this.imageFBUrlSocialmedia" />
+
                                     </p-tabpanel>
                                     <p-tabpanel value="1">
                                         <div class="instagram-post">
                                             @if (imageInstaUrlSocialmedia) {
-                                            <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post" class="post-image" />
+                                            <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post"
+                                                class="post-image" />
                                             }
                                             <p class="post-caption text-black">{{
                                                 this.editorContentSocialMedia1 }}</p>
@@ -76,23 +78,23 @@
                                 </p-tabpanels>
                             </div>
                         </div>
-                        <p-overlayPanel #commentPanel [dismissable]="false" [appendTo]="'body'"
-                            (onShow)="positionPanel($event)">
-                            <div class="absolute" [ngStyle]="panelStyle">
-                                <textarea name="commentBox"
-                                    class="bg-[#2C2C2C] text-white rounded-tr-lg rounded-tl-lg rounded-br-lg"
-                                    [(ngModel)]="commentBox" rows="3" cols="30" id="">
+                        <!-- <p-overlayPanel #commentPanel [dismissable]="false" [appendTo]="'body'"
+                            (onShow)="positionPanel($event)"> -->
+                        <!-- <div class="absolute" [ngStyle]="panelStyle">
+                            <textarea name="commentBox"
+                                class="bg-[#2C2C2C] text-white rounded-tr-lg rounded-tl-lg rounded-br-lg"
+                                [(ngModel)]="commentBox" rows="3" cols="30" id="">
 
                             </textarea>
-                                <div class="flex gap-4">
-                                    <p-button class="text-white rounded-full bg-[#8D4BFF] p-3" label="Save"
-                                        (onClick)="saveComment()"></p-button>
-                                    <p-button class="border-1 p-3 border-[#8D4BFF] rounded-full" label="cancel"
-                                        (onClick)="commentPanel.hide()"></p-button>
-                                </div>
-
+                            <div class="flex gap-4">
+                                <p-button class="text-white rounded-full bg-[#8D4BFF] p-3" label="Save"
+                                    (onClick)="saveComment()"></p-button>
+                                <p-button class="border-1 p-3 border-[#8D4BFF] rounded-full" label="cancel"
+                                    (onClick)="commentPanel.hide()"></p-button>
                             </div>
-                        </p-overlayPanel>
+
+                        </div> -->
+                        <!-- </p-overlayPanel> -->
                     </div>
 
                 </div>
