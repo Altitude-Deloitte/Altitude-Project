@@ -41,6 +41,9 @@ export class VideoClientComponent {
   thumbLabel = false;
   value = 0;
   isImageRegenrateDisabled = false;
+      currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
+  
   constructor(private aiContentGenerationService: ContentGenerationService) {}
   ngOnInit(): void {
     this.contentDisabled = true;

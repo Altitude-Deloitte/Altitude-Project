@@ -175,3 +175,6 @@ li.p-select-option {
 .p-radiobutton-box {
   background-color: #c084fc;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

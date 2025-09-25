@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule, KeyValue } from '@angular/common';
@@ -34,6 +34,8 @@ export class VideoReviewComponent {
   thumbLabel = false;
   value = 0;
   isImageRegenrateDisabled = false;
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
@@ -42,19 +44,18 @@ export class VideoReviewComponent {
 
   ngOnInit(): void {
     this.contentDisabled = true;
-
     this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data; // Use the data received from the service
-      console.log('Form data received:', this.formData);
+      this.formData = data;
     });
 
     this.aiContentGenerationService.getImage().subscribe((data) => {
-      console.log('getImagegetImage', data);
+        setTimeout(() => {
       if (data) {
         this.imageUrl = data;
         this.isVideoFormat = this.isMp4(data);
       }
       this.contentDisabled = false;
+       }, 3000);
     });
 
     this.isImageRegenrateDisabled = false;

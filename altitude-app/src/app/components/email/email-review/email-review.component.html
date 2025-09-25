@@ -13,8 +13,9 @@
                 <div class="flex items-center gap-2">
                     <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636]"><i
                             class="pi pi-envelope mr-2"></i>E-mail Request</a>
-                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
-                        2025</a>
+                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">
+                        {{ currentsDate }}
+                    </a>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -63,7 +64,12 @@
                                             <p class="text-white font-semibold">
                                                 {{ key.value.name | titlecase }}
                                             </p>
-                                            <p class="text-gray-300 text-sm">
+                                            <p class="text-gray-300 text-sm" [ngClass]="{
+          'text-green-400': key.value.status === 'COMPLETED',
+          'text-yellow-400': key.value.status === 'IN_PROGRESS',
+          'text-red-400': key.value.status === 'FAILED',
+          'text-gray-300': key.value.status !== 'COMPLETED' && key.value.status !== 'IN_PROGRESS' && key.value.status !== 'FAILED'
+        }">
                                                 Status: {{ key.value.status }}
                                             </p>
                                         </div>
@@ -185,7 +191,7 @@
 
                             <div class="flex items-center gap-2">
                                 <img src="assets/images/ListMagnifyingGlass.svg" alt="">
-                                <p class="font-semibold text-lg">Check Plagiarism</p>
+                                <p class="font-semibold text-lg" style="cursor: pointer;" (click)="onCreateProject()">Check Plagiarism</p>
                             </div>
                         </div>
 

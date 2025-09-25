@@ -1,11 +1,5 @@
 import {
-  AfterViewInit,
-  ChangeDetectorRef,
   Component,
-  ElementRef,
-  inject,
-  OnInit,
-  ViewChild,
 } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { ButtonModule } from 'primeng/button';
@@ -14,20 +8,15 @@ import { ButtonModule } from 'primeng/button';
 import { TextareaModule } from 'primeng/textarea';
 
 import {
-  FormBuilder,
-  FormGroup,
   FormsModule,
-  FormControl,
-  ReactiveFormsModule,
 } from '@angular/forms';
 // import { QuillModule } from 'ngx-quill';
 import { Router, RouterLink } from '@angular/router';
 
-import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule } from '@angular/common';
 import { SelectModule } from 'primeng/select';
-import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { OverlayPanelModule } from 'primeng/overlaypanel';
 @Component({
   selector: 'app-blog-client',
   imports: [

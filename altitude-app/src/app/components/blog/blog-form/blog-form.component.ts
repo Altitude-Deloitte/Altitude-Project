@@ -1,6 +1,5 @@
 import {
   Component,
-  OnInit,
   ViewChild,
   ElementRef,
   inject,
@@ -11,17 +10,16 @@ import {
   FormGroup,
   FormsModule,
   ReactiveFormsModule,
-  Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
-import { DatePipe } from '@angular/common';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 
 import { CommonModule } from '@angular/common';
 import { SelectModule } from 'primeng/select';
 import { ButtonModule } from 'primeng/button';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 // import { Select } from 'primeng/select';
 
 @Component({
@@ -85,6 +83,7 @@ export class BlogFormComponent {
     'At-risk Customer',
   ];
   purposeArray = [
+    'Sales and promotion',
     'Awareness (brand/ product)',
     'Sales enablement',
     'Lead generation',
@@ -107,7 +106,14 @@ export class BlogFormComponent {
   imageBox: string = '';
 
   formats = [
-    "Listicle", "Post Event", "Topical", "Guide", "Blog", "Thought Leadership", "Initiative Awareness", "Trends Blog"
+    'Listicle',
+    'Post Event',
+    'Topical',
+    'Guide',
+    'Blog',
+    'Thought Leadership',
+    'Initiative Awareness',
+    'Trends Blog',
   ];
   selectedTone: any;
   selectedToppings: any;
@@ -117,10 +123,10 @@ export class BlogFormComponent {
   blogPayload: any;
   constructor(
     private fb: FormBuilder,
-    // private dialog: MatDialog,
+    public socketConnection: SocketConnectionService,
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) { }
+  ) {}
 
   urlImage: any;
   onCreateProject(): void {
@@ -141,12 +147,16 @@ export class BlogFormComponent {
     this.blogPayload.append('target_reader', formValues?.readers || '');
     this.blogPayload.append('tone', formValues?.Type || '');
     this.blogPayload.append('image_details', formValues?.imageOpt || '');
+    this.blogPayload.append('brand', formValues.brand || '');
+    if (formValues?.imgDesc) {
+      this.blogPayload.append('image_description', formValues?.imgDesc || '');
+    }
 
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.blogPayload.append('additional_details', formValues?.additional);
     }
-    this.aiContentGenerationService.setData(formValues)
+    this.aiContentGenerationService.setData(formValues);
     this.aiContentGeneration(formValues, 'Blog Generation');
     this.navigateToForm();
     // if (this.uploadedImages.length == 0 && !this.urlImage) {
@@ -197,18 +207,19 @@ export class BlogFormComponent {
   }
 
   aiContentGeneration(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateContent(this.blogPayload).subscribe({
-      next: (data) => {
-        if (type == 'Blog Generation') {
-          this.aiContentGenerationService.setBlogResponseData(data);
-
-        }
-        console.log(`Response from API for ${type}:`, data);
-      },
-      error: (error) => {
-        console.error(`Error occurred for ${type}:`, error);
-      },
-    });
+    this.aiContentGenerationService
+      .generateContent(this.blogPayload)
+      .subscribe({
+        next: (data) => {
+          if (type == 'Blog Generation') {
+            this.aiContentGenerationService.setBlogResponseData(data);
+          }
+          console.log(`Response from API for ${type}:`, data);
+        },
+        error: (error) => {
+          console.error(`Error occurred for ${type}:`, error);
+        },
+      });
   }
 
   uploadedIamges: any;
@@ -228,11 +239,10 @@ export class BlogFormComponent {
     }
   }
 
-  onFloatingButtonClick(): void { }
-
-  // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
+  onFloatingButtonClick(): void {}
 
   ngOnInit(): void {
+    this.socketConnection.dataSignal.set({});
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
       taskId: [{ value: this.generateTaskId(), disabled: true }],
@@ -265,7 +275,6 @@ export class BlogFormComponent {
     const timestamp = Date.now();
     return `BL-2204-${timestamp}`;
   }
-
 
   resetForm(): void {
     this.taskForm.reset({
@@ -360,19 +369,15 @@ export class BlogFormComponent {
     var formValues = { ...this.socialwebsite.getRawValue() };
 
     var audiancePrompt = `Generate 3 audiance name based on the topic "${formValues.topic}" and brand "${formValues.brand} , Consider the purpose "${formValues.purpose}" and the blog format "${formValues.format}". Output only the 3 audiance name in a single string, separated by semicolons (","). Do not include any additional text, explanations, or formatting—just the 4 audiance name for blog in the required format.`;
-    this.aiContentGenerationService
-      .generateContent(formValues)
-      .subscribe({
-        next: (data) => {
-          console.log(`email subject prompt :`, audiancePrompt);
-          // this.aiContentGenerationService.setSubjectResponseData(data);
-          this.aiContentGenerationService.setAudianceResponseData(data);
-          console.log(`email subject from API for :`, data);
-        },
-        error: (error) => {
-          console.error(`Error occurred for email subject:`, error);
-        },
-      });
+    this.aiContentGenerationService.generateContent(formValues).subscribe({
+      next: (data) => {
+        // this.aiContentGenerationService.setSubjectResponseData(data);
+        this.aiContentGenerationService.setAudianceResponseData(data);
+       },
+      error: (error) => {
+        console.error(`Error occurred for email subject:`, error);
+      },
+    });
 
     this.aiContentGenerationService
       .getAudianceResponseData()
