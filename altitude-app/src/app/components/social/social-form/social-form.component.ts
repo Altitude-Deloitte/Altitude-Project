@@ -18,6 +18,7 @@ import { ButtonModule } from 'primeng/button';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router } from '@angular/router';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 @Component({
   selector: 'app-social-form',
   imports: [
@@ -130,11 +131,13 @@ export class SocialFormComponent {
   constructor(
     private fb: FormBuilder,
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService
+    private aiContentGenerationService: ContentGenerationService,
+    public socketConnection: SocketConnectionService
   ) { }
 
 
   ngOnInit(): void {
+      this.socketConnection.dataSignal.set({});
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
       taskId: [{ value: this.generateTaskId(), disabled: true }],
@@ -175,7 +178,9 @@ export class SocialFormComponent {
     this.socialMediaPayload.append('topic', topic || '');
     this.socialMediaPayload.append('word_limit', formValues?.wordLimit || '');
     this.socialMediaPayload.append('image_details', formValues?.imageOpt);
-
+     if(formValues?.imgDesc ){
+      this.socialMediaPayload.append('image_description', formValues?.imgDesc || '');
+    } 
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.socialMediaPayload.append('additional_details', formValues?.additional);

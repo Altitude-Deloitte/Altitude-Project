@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, effect } from '@angular/core';
+import { ChangeDetectorRef, Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule, KeyValue } from '@angular/common';
@@ -7,6 +7,8 @@ import { HeaderComponent } from '../../../shared/header/header.component';
 import { AccordionModule } from 'primeng/accordion';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog'
+import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 
 @Component({
   selector: 'app-blog-review',
@@ -16,7 +18,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     HeaderComponent,
     AccordionModule,
     RouterLink,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
   templateUrl: './blog-review.component.html',
   styleUrl: './blog-review.component.css',
@@ -64,21 +66,24 @@ export class BlogReviewComponent {
   perfUrl: any;
   audianceData: string | undefined;
   socketData: any;
+   currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
+  
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
-    // private dialog: MatDialog,
     public socketConnection: SocketConnectionService,
-    private chnge: ChangeDetectorRef
-  ) {
-  }
+    private chnge: ChangeDetectorRef,
+    private dialog: MatDialog
+  ) {}
 
   formData: any;
+  blog_title:any;
   ngOnInit(): void {
+     this.socketConnection.dataSignal.set({});
     this.loading = true;
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
     });
 
     // this.aiContentGenerationService.getImage().subscribe((data) => {
@@ -92,7 +97,6 @@ export class BlogReviewComponent {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data; // Use the data received from the service
-      console.log('Form data received:', this.formData);
     });
 
     this.contentDisabled = true;
@@ -101,73 +105,64 @@ export class BlogReviewComponent {
       .getAudianceResponseData()
       .subscribe((data) => {
         this.audianceData = data?.content;
-        console.log('audiance string : ', this.audianceData);
         this.chnge.detectChanges();
       });
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.result?.generation.html;
-      this.imageUrl = data?.result?.generation.image_url;
-      const cleanedString = this.editorContentSocialMedia
-        .replace(/^```html/, '')
-        .replace(/```$/, '');
-      console.log('blog response data:', cleanedString);
-      this.editorContentSocialMedia = cleanedString;
-      this.editorContentSocialMedia = this.editorContentSocialMedia
-        .replace(/"/g, '')
-        .trim();
+      setTimeout(() => {
+        this.editorContentSocialMedia = data?.result?.generation.html;
+        this.imageUrl = data?.result?.generation.image_url;
+        this.blog_title = data?.result?.generation?.blog_title;
+        const cleanedString = this.editorContentSocialMedia
+          .replace(/^```html/, '')
+          .replace(/```$/, '');
+        console.log('blog response data:', cleanedString);
 
-      // const titlePattern = /(?:<p><b>SEO Title:<\/b>|<b>SEO Title:<\/b>|<b>SEO Title:)(.*?)(?=<\/b>|\n|$)/;
-      // const descriptionPattern = /(?:<p><b>SEO Description:<\/b>|<b>SEO Description:<\/b>|<b>SEO Description:)(.*?)(?=<\/b>|\n|$)/;
+        this.editorContentSocialMedia = cleanedString.replace(/"/g, '').trim();
 
-      const titlePattern =
-        /(?:<p><b>SEO Title:\s*<\/b>|<b>SEO Title:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
-      const descriptionPattern =
-        /(?:<p><b>SEO Description:\s*<\/b>|<b>SEO Description:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
+        const titlePattern =
+          /(?:<p><b>SEO Title:\s*<\/b>|<b>SEO Title:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
+        const descriptionPattern =
+          /(?:<p><b>SEO Description:\s*<\/b>|<b>SEO Description:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
 
-      const titleMatch = this.editorContentSocialMedia.match(titlePattern);
-      const descriptionMatch =
-        this.editorContentSocialMedia.match(descriptionPattern);
+        const titleMatch = this.editorContentSocialMedia.match(titlePattern);
+        const descriptionMatch =
+          this.editorContentSocialMedia.match(descriptionPattern);
 
-      if (titleMatch) {
-        this.seoTitle = titleMatch[1].trim();
-      }
+        if (titleMatch) {
+          this.seoTitle = titleMatch[1].trim();
+        }
 
-      if (descriptionMatch) {
-        this.seoDescription = descriptionMatch[1].trim();
-      }
+        if (descriptionMatch) {
+          this.seoDescription = descriptionMatch[1].trim();
+        }
 
-      // Remove head section from original HTML
-      this.blogContent = this.editorContentSocialMedia
-        .replace(/<title>.*?<\/title>/s, '')
-        .trim();
-      //this.blogContent = this.blogContent .replace(/<p><b>SEO Title:<\/b>.*?<\/p>/, '').replace(/<p><b>SEO Description:<\/b>.*?<\/p>/, '').trim();
-      this.blogContent = this.blogContent
-        .replace(titlePattern, '')
-        .replace(descriptionPattern, '')
-        .trim();
-      this.loading = false;
-      //refine content
-      this.existingContent = this.editorContentSocialMedia;
-      this.contentDisabled = false;
-      // Function to count words in a string
-      const countWords = (emailContent: any) => {
-        if (!emailContent) return 0;
-        // Normalize spaces and split by space to get words
-        return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-      };
-      // Count words in different parts of the email content
-      this.totalWordCount = countWords(this.editorContentSocialMedia);
+        // Remove head and SEO parts from blog content
+        this.blogContent = this.editorContentSocialMedia
+          .replace(/<title>.*?<\/title>/s, '')
+          .replace(titlePattern, '')
+          .replace(descriptionPattern, '')
+          .trim();
 
-      //this.isContentLoaded= false;
-      this.isEMailPromptDisabled = false;
-      this.commonPromptIsLoading = false;
-      this.isImageRegenrateDisabled = false;
-      this.isImageRefineDisabled = false;
+        this.loading = false;
+        this.existingContent = this.editorContentSocialMedia;
+        this.contentDisabled = false;
 
-      console.log('Total word count:', this.totalWordCount);
-      this.chnge.detectChanges();
+        const countWords = (content: string) => {
+          if (!content) return 0;
+          return content.trim().replace(/\s+/g, ' ').split(' ').length;
+        };
 
-      this.chnge.detectChanges();
+        this.totalWordCount = countWords(this.editorContentSocialMedia);
+
+        this.isEMailPromptDisabled = false;
+        this.commonPromptIsLoading = false;
+        this.isImageRegenrateDisabled = false;
+        this.isImageRefineDisabled = false;
+
+        console.log('Total word count:', this.totalWordCount);
+
+        this.chnge.detectChanges(); // Trigger view update
+      }, 8000);
     });
 
     this.getPerformanceData();
@@ -180,7 +175,7 @@ export class BlogReviewComponent {
   // }
   keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
     return 0; // Or implement custom sorting logic if needed
-  }
+  };
   loadImage(url: any) {
     const img = new Image();
     img.src = url;
@@ -204,13 +199,13 @@ export class BlogReviewComponent {
     this.imageWidth = width;
   }
 
-  // onCreateProject() {
-  //   const dialogConfig = new MatDialogConfig();
-  //   dialogConfig.disableClose = true;
-  //   dialogConfig.autoFocus = true;
-  //   dialogConfig.width = '400px';
-  //   this.dialog.open(SuccessDialogComponent, dialogConfig);
-  // }
+  onCreateProject() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = false;
+    dialogConfig.width = '400px';
+    this.dialog.open(DialogSuccessComponent, dialogConfig);
+  }
 
   inputChange(fileInputEvent: any) {
     console.log(fileInputEvent.target.files[0]);
@@ -248,7 +243,6 @@ export class BlogReviewComponent {
       this.commonPromptIsLoading = true;
       prompt = `This is my existing blog "${this.existingContent}" in that don't change whole content from my existing blog, just add the new fact / content without removing existing post blog based on user input and this is the prompt which user want to add in existing blog " ${prompt} ". just directly show blog content only don't show addition details.`;
     }
-
   }
 
   imageRegenrate() {

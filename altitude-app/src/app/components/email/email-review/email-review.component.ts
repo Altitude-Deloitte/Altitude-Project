@@ -1,6 +1,5 @@
 import {
   Component,
-  effect,
   ElementRef,
   inject,
   input,
@@ -22,6 +21,8 @@ import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 @Component({
   selector: 'app-email-review',
   imports: [
@@ -37,7 +38,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     RouterLink,
     MenuModule,
     DialogModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
   templateUrl: './email-review.component.html',
   styleUrl: './email-review.component.css',
@@ -170,10 +171,13 @@ export class EmailReviewComponent {
   formData: any;
   socketData: any;
   socketMessage: any = [];
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService, // private dialog: MatDialog,
-    public socketConnection: SocketConnectionService
+    public socketConnection: SocketConnectionService,
+     private dialog: MatDialog
   ) {
     // effect(() => {
     //   this.socketData = this.socketConnection.dataSignal();
@@ -182,12 +186,10 @@ export class EmailReviewComponent {
     //     this.socketMessage.push(this.socketData);
     //   }
     // })
-
-
   }
 
   ngOnInit() {
-
+     this.socketConnection.dataSignal.set({});
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
@@ -230,54 +232,50 @@ export class EmailReviewComponent {
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        // console.log('get headering for email ', data);
-        this.contentDisabled = false;
-        this.emailHeader = data.result.generation.email_header;
-        this.imageUrl = data.result.generation.image_url;
-        this.subjctEmail = data.result.generation.email_subjects;
-        if (data.result.generation.html) {
-          // Determine if the content is a string or JSON and parse accordingly
+        setTimeout(() => {
           this.contentDisabled = false;
-          let emailContent =
-            typeof data.result.generation.html === 'string'
-              ? data.result.generation.html
-              : JSON.parse(data.result.generation.html);
-          emailContent = emailContent.replace(/"/g, '').trim();
-          this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
-          // console.log('email para : ', this.editorContentEmail);
-          this.existingEmailContent = this.editorContentEmail;
-          // Function to count words in a string
-          const countWords = (emailContent: any) => {
-            if (!emailContent) return 0;
-            // Normalize spaces and split by space to get words
-            return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-          };
-          // Count words in different parts of the email content
-          this.totalWordCount = countWords(this.editorContentEmail);
+          this.emailHeader = data.result.generation.email_header;
+          this.imageUrl = data.result.generation.image_url;
+          this.subjctEmail = data.result.generation.email_subjects;
 
-          this.loading = false;
-          this.isEMailPromptDisabled = false;
-          this.commonPromptIsLoading = false;
-          this.translateIsLoading = false;
-          this.isImageRegenrateDisabled = false;
-          this.isImageRefineDisabled = false;
+          if (data.result.generation.html) {
+            let emailContent =
+              typeof data.result.generation.html === 'string'
+                ? data.result.generation.html
+                : JSON.parse(data.result.generation.html);
+            emailContent = emailContent.replace(/"/g, '').trim();
+            this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+            this.existingEmailContent = this.editorContentEmail;
 
-          this.contentDisabled = false;
-        }
+            const countWords = (emailContent: any) => {
+              if (!emailContent) return 0;
+              return emailContent?.trim().replace(/\s+/g, ' ').split(' ')
+                .length;
+            };
 
-        let brandName = this.formData?.brand?.trim();
-        if (brandName) {
-          brandName = brandName.replace(/\s+/g, '');
-          this.brandlogoTop =
-            brandName !== 'babycheramy.lk'
-              ? 'https://img.logo.dev/' +
-              brandName +
-              '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
-              : 'https://www.babycheramy.lk/images/logo.webp';
-          console.log('logo:', this.brandlogoTop);
-        }
+            this.totalWordCount = countWords(this.editorContentEmail);
+
+            this.loading = false;
+            this.isEMailPromptDisabled = false;
+            this.commonPromptIsLoading = false;
+            this.translateIsLoading = false;
+            this.isImageRegenrateDisabled = false;
+            this.isImageRefineDisabled = false;
+          }
+
+          let brandName = this.formData?.brand?.trim();
+          if (brandName) {
+            brandName = brandName.replace(/\s+/g, '');
+            this.brandlogoTop =
+              brandName !== 'babycheramy.lk'
+                ? 'https://img.logo.dev/' +
+                  brandName +
+                  '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+                : 'https://www.babycheramy.lk/images/logo.webp';
+            console.log('logo:', this.brandlogoTop);
+          }
+        }, 8000);
       });
-
 
     this.aiContentGenerationService
       .getEmailResponsetData()
@@ -294,7 +292,6 @@ export class EmailReviewComponent {
               // Example usage
               this.darkHexCode = this.fetchHexCodeByType('dark');
               this.lightHexCode = this.fetchHexCodeByType('accent');
-
             },
             error: (err) => {
               console.error(err);
@@ -325,6 +322,14 @@ export class EmailReviewComponent {
           this.onSubjectChange(replaceSub);
         }
       });
+  }
+
+    onCreateProject() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = false;
+    dialogConfig.width = '400px';
+    this.dialog.open(DialogSuccessComponent, dialogConfig);
   }
 
   ngAfterViewInit() {
@@ -421,29 +426,27 @@ The html tags are separate and it should not be part of word count.`;
       prompt = `Create a mail content based on topic ${this.formData?.topic}" . the intended tone of the mail is "${this.formData?.Type}". Some more details to be consider for generating email body is  "${this.formData?.purpose}".The target reader is "${this.formData?.readers} but, don't include in Salutation", the content should be equal  "${this.formData?.wordLimit}" words. Structure the email such that it can be displayed in an Angular application with html tags except <html> or <code> on this email parts which are Subject as Bold and it whole subject and its content inside into <p> tag , Salutation as Italics in next paragraph, Email Body in next paragraph , and Regards in next paragraphe. whole mail content should start from subject.`;
     }
 
-    this.aiContentGenerationService
-      .generateContent(prompt)
-      .subscribe({
-        next: (data) => {
-          if (type === 'blog') {
-            this.aiContentGenerationService.setBlogResponseData(data);
-            // this.chnge.detectChanges();
-          } else if (type === 'regenerate') {
-            this.aiContentGenerationService.setEmailResponseData(data);
-          } else if (type === 'social_media') {
-            this.aiContentGenerationService.setSocialResponseData(data);
-          } else if (type === 'common_prompt') {
-            this.aiContentGenerationService.setEmailResponseData(data);
-          } else if (type === 'Translate') {
-            this.aiContentGenerationService.setEmailResponseData(data);
-          }
-          console.log(`Response from API for ${type}:`, data);
+    this.aiContentGenerationService.generateContent(prompt).subscribe({
+      next: (data) => {
+        if (type === 'blog') {
+          this.aiContentGenerationService.setBlogResponseData(data);
           // this.chnge.detectChanges();
-        },
-        error: (error) => {
-          console.error(`Error occurred for ${type}:`, error);
-        },
-      });
+        } else if (type === 'regenerate') {
+          this.aiContentGenerationService.setEmailResponseData(data);
+        } else if (type === 'social_media') {
+          this.aiContentGenerationService.setSocialResponseData(data);
+        } else if (type === 'common_prompt') {
+          this.aiContentGenerationService.setEmailResponseData(data);
+        } else if (type === 'Translate') {
+          this.aiContentGenerationService.setEmailResponseData(data);
+        }
+        console.log(`Response from API for ${type}:`, data);
+        // this.chnge.detectChanges();
+      },
+      error: (error) => {
+        console.error(`Error occurred for ${type}:`, error);
+      },
+    });
   }
 
   imageRegenrate() {
@@ -458,8 +461,6 @@ The html tags are separate and it should not be part of word count.`;
         console.error('Error generating image:', err);
       },
     });
-
-    //image offer and event
 
     var eventImage = `Create an "${this.formData?.brand}" event image on "${this.formData?.topic}"`;
     var offerImage = `Create an "${this.formData?.brand}" offer image on "${this.formData?.topic}"`;
@@ -501,7 +502,7 @@ The html tags are separate and it should not be part of word count.`;
   }
   keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
     return 0; // Or implement custom sorting logic if needed
-  }
+  };
 
   onTypographyChange(event: any) {
     this.selectedTypography = event.value;
@@ -518,5 +519,4 @@ The html tags are separate and it should not be part of word count.`;
     body.style.fontFamily = this.selectedTypography;
     body.style.fontSize = this.selectedFontSize;
   }
-
 }

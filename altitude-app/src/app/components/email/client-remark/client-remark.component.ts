@@ -51,6 +51,8 @@ export class ClientRemarkComponent {
   editorContentBlog: any;
   isToastVisible = false;
   totalWordCount: any;
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
   ispublisLoaderDisabled = false;
   images: { src: string; checked: boolean }[] = [
     { src: 'assets/car1.png', checked: false },

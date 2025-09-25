@@ -60,7 +60,7 @@ const ThemePreset = definePreset(Aura, {
           contrastColor: '#09040E',
           hoverColor: '#d8b4fe',
           activeColor: '#e9d5ff',
-          backgroundColor: '#8D4BFF',
+          // backgroundColor: '#8D4BFF',
         },
       },
     },

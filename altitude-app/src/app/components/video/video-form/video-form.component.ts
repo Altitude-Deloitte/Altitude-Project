@@ -1,15 +1,11 @@
 import {
   Component,
-  ElementRef,
   inject,
-  OnInit,
   signal,
-  Signal,
-  viewChild,
 } from '@angular/core';
 
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { SelectModule } from 'primeng/select';
 import {
@@ -23,9 +19,8 @@ import {
 import { ButtonModule } from 'primeng/button';
 
 import { ContentGenerationService } from '../../../services/content-generation.service';
-import { Router, RouterLink } from '@angular/router';
-import { SelectionStore } from '../../../store/campaign.store';
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 
 @Component({
   selector: 'app-video-form',
@@ -69,11 +64,15 @@ export class VideoFormComponent {
   selectedToppings: any;
   announcer = inject(LiveAnnouncer);
   imageUrl: null | undefined;
+    currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
+  
   constructor(
     private fb: FormBuilder,
 
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService
+    private aiContentGenerationService: ContentGenerationService,
+     public socketConnection: SocketConnectionService
   ) { }
 
   urlImage: any;
@@ -126,6 +125,7 @@ export class VideoFormComponent {
   // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
   ngOnInit(): void {
+     this.socketConnection.dataSignal.set({});
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
       taskId: [{ value: this.generateTaskId(), disabled: true }],

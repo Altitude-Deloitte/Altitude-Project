@@ -39,20 +39,22 @@ export class SocketConnectionService {
     this.socket.emit(event, payload);
   }
 
-  private startProcessingQueue() {
+ private startProcessingQueue() {
     this.processingInterval = setInterval(() => {
       if (this.messageQueue.length > 0) {
         const message = this.messageQueue.shift();
+        
         const timestamp = new Date().toLocaleTimeString();
-
-        this.dataSignal.update((current) => ({
-          ...current,
-          [message!.name]: {
-            ...message!,
-            updatedAt: timestamp
-          }
-        }));
+        setTimeout(() => {
+          this.dataSignal.update((current) => ({
+            ...current,
+            [message!.name]: {
+              ...message!,
+              updatedAt: timestamp
+            }
+          }));
+        }, 100);
       }
-    }, 300);
+    }, 600);
   }
 }

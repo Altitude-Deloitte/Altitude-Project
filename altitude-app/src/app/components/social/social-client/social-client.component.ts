@@ -69,7 +69,8 @@ export class SocialClientComponent {
   ) {}
 
   formData: any;
-
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
   ngOnInit(): void {
     this.ispublisLoaderDisabled = false;
     this.aiContentGenerationService.getData().subscribe((data) => {

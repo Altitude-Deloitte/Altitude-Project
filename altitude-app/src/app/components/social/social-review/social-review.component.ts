@@ -14,6 +14,8 @@ import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 @Component({
   selector: 'app-social-review',
   imports: [
@@ -34,7 +36,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     RouterLink,
     MenuModule,
     DialogModule,
-    ProgressSpinnerModule
+    ProgressSpinnerModule,
   ],
   templateUrl: './social-review.component.html',
   styleUrl: './social-review.component.css',
@@ -72,14 +74,18 @@ export class SocialReviewComponent {
   loading = true;
   @Input() activeTabIndex = 0;
   formData: any;
-
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
+  activeTabIndexa:any = 0;
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
-    public socketConnection: SocketConnectionService
-  ) { }
+    public socketConnection: SocketConnectionService,
+     private dialog: MatDialog
+  ) {}
 
   ngOnInit(): void {
+    this.socketConnection.dataSignal.set({});
     this.imageUrl = null;
     this.imageFBUrlSocialmedia = null;
     this.imageInstaUrlSocialmedia = null;
@@ -91,53 +97,67 @@ export class SocialReviewComponent {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
+      this.updateActiveTab();
     });
 
     this.contentDisabled = true;
-    this.aiContentGenerationService
-      .getSocialResponsetData()
-      .subscribe((data) => {
-        if (data.result.generation) {
-          if (data.result.generation.Facebook)
-            this.editorContentSocialMedia = data.result.generation.Facebook.text;
-          this.imageFBUrlSocialmedia =
-            data.result.generation.Facebook.image_url;
-        }
-        if (data.result.generation.Instagram) {
-          this.imageInstaUrlSocialmedia =
-            data.result.generation.Instagram.image_url;
-          this.editorContentSocialMedia1 =
-            data.result.generation.Instagram.text;
-
+   this.aiContentGenerationService
+  .getSocialResponsetData()
+  .subscribe((data) => {
+    setTimeout(() => {
+      if (data.result.generation) {
+        if (
+          data.result.generation.Facebook !== undefined &&
+          data.result.generation.Facebook !== null &&
+          data.result.generation.Facebook !== ''
+        ) {
+          this.editorContentSocialMedia = data.result.generation.Facebook.text;
+          this.imageFBUrlSocialmedia = data.result.generation.Facebook.image_url;
         }
 
-        this.editorContentSocialMedia = this.editorContentSocialMedia
-          ?.replace(/"/g, '')
-          .trim();
-        this.characterCount = this.editorContentSocialMedia?.length;
-        this.existingContent = this.editorContentSocialMedia;
-        this.contentDisabled = false;
-        const countWords = (emailContent: any) => {
-          if (!emailContent) return 0;
-          return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-        };
-        this.totalWordCount = countWords(this.editorContentSocialMedia);
-        this.isEMailPromptDisabled = false;
-        this.commonPromptIsLoading = false;
-        this.isImageRegenrateDisabled = false;
-        this.isImageRefineDisabled = false;
-        this.hyperUrl = this.formData?.Hashtags;
-        let brandName = this.formData?.brand?.trim();
-        if (brandName) {
-          brandName = brandName.replace(/\s+/g, '');
-          this.brandlogo =
-            'https://img.logo.dev/' +
-            brandName +
-            '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+        if (
+          data.result.generation.Instagram !== undefined &&
+          data.result.generation.Instagram !== null &&
+          data.result.generation.Instagram !== ''
+        ) {
+          this.editorContentSocialMedia1 = data.result.generation.Instagram.text;
+          this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
         }
-        this.loading = false;
-      });
+      }
 
+      this.editorContentSocialMedia = this.editorContentSocialMedia
+        ?.replace(/"/g, '')
+        .trim();
+      this.characterCount = this.editorContentSocialMedia?.length;
+      this.existingContent = this.editorContentSocialMedia;
+
+      const countWords = (emailContent: any) => {
+        if (!emailContent) return 0;
+        return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
+      };
+
+      this.totalWordCount = countWords(this.editorContentSocialMedia);
+
+      this.isEMailPromptDisabled = false;
+      this.commonPromptIsLoading = false;
+      this.isImageRegenrateDisabled = false;
+      this.isImageRefineDisabled = false;
+
+      this.hyperUrl = this.formData?.Hashtags;
+
+      let brandName = this.formData?.brand?.trim();
+      if (brandName) {
+        brandName = brandName.replace(/\s+/g, '');
+        this.brandlogo =
+          'https://img.logo.dev/' +
+          brandName +
+          '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+      }
+
+      this.contentDisabled = false;
+      this.loading = false;
+    }, 8000);
+  });
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
@@ -192,11 +212,34 @@ export class SocialReviewComponent {
       });
   }
 
+
+  updateActiveTab() {
+  const campaign = this.formData.get('campaign').value || [];
+  
+  if (campaign.includes('Facebook') && !campaign.includes('Instagram')) {
+    this.activeTabIndexa = 0;  // Facebook tab
+  } else if (!campaign.includes('Facebook') && campaign.includes('Instagram')) {
+    this.activeTabIndexa = 1;  // Instagram tab
+  } else if (campaign.includes('Facebook') && campaign.includes('Instagram')) {
+    this.activeTabIndexa = 0; // or whatever default when both selected
+  } else {
+    this.activeTabIndexa = 0; // fallback default
+  }
+}
+
   setImageDimensions(height: string, width: string) {
     this.imageContainerHeight = height;
     this.imageContainerWidth = width;
     this.imageHeight = height;
     this.imageWidth = width;
+  }
+
+   onCreateProject() {
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = false;
+    dialogConfig.width = '400px';
+    this.dialog.open(DialogSuccessComponent, dialogConfig);
   }
 
   inputChange(fileInputEvent: any) {
@@ -218,9 +261,12 @@ export class SocialReviewComponent {
       this.editorContentSocialMedia
     );
   }
+
   keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
     return 0; // Or implement custom sorting logic if needed
-  }
+  };
+
+
   aiContentGeneration(prompt: string, type: string): void {
     const wordLimitValue = this.formData?.wordLimit;
 
@@ -250,33 +296,29 @@ export class SocialReviewComponent {
       console.log('Insta limit: ', this.inLimit);
       // var instaPrompt = `Create a social media post for the platform "Instagram" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "${formValues.Type2}" and intractive description and caption. The purpose of the post is "${formValues.purpose}". The intended target audience is "${formValues.target2}". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
       var instaPrompt = `Generate a Instagram post on "${this.formData?.topic}" in "${this.formData?.lang}" with a "${this.formData?.Type2}" tone for "${this.formData?.target2}". The purpose is "${this.formData?.purpose}". Keep the post within "${this.inLimit}" characters, ensuring clarity, engagement, and smooth flow. Use trending hashtags and emojis where relevant.Ensure the response does not exceed the character limit. Return only the post content—no extra text.`;
-      this.aiContentGenerationService
-        .generateContent(instaPrompt)
-        .subscribe({
-          next: (data) => {
-            this.aiContentGenerationService.setSocialResponseData1(data);
-          },
-          error: (error) => {
-            console.error(`Error occurred for :social_media`, error);
-          },
-        });
+      this.aiContentGenerationService.generateContent(instaPrompt).subscribe({
+        next: (data) => {
+          this.aiContentGenerationService.setSocialResponseData1(data);
+        },
+        error: (error) => {
+          console.error(`Error occurred for :social_media`, error);
+        },
+      });
     } else if (type === 'common_prompt') {
       this.commonPromptIsLoading = true;
       prompt = `This is my existing post "${this.existingContent}" in that don't change whole content from my existing post, just add the new fact / content without removing existing post content based on user input or rephrase withput exced the word limit, The content of post should not exceed "${this.formData?.wordLimit}" words limit. and this is the prompt which user want to add in existing post " ${prompt} ". The content of post characters not exceeding "${this.formData?.wordLimit}" limit, with all sentences closed properly. Also include socially relevant tags for the post. Also include emotions if required. only show content and hastags not any type of additional details or notes `;
 
-      this.aiContentGenerationService
-        .generateContent(prompt)
-        .subscribe({
-          next: (data) => {
-            if (type === 'common_prompt') {
-              this.aiContentGenerationService.setSocialResponseData(data);
-              this.commonPromptIsLoading = false;
-            }
-          },
-          error: (error) => {
-            console.error(`Error occurred for ${type}:`, error);
-          },
-        });
+      this.aiContentGenerationService.generateContent(prompt).subscribe({
+        next: (data) => {
+          if (type === 'common_prompt') {
+            this.aiContentGenerationService.setSocialResponseData(data);
+            this.commonPromptIsLoading = false;
+          }
+        },
+        error: (error) => {
+          console.error(`Error occurred for ${type}:`, error);
+        },
+      });
     }
   }
 
