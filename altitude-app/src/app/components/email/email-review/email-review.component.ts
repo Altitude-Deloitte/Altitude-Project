@@ -189,7 +189,7 @@ export class EmailReviewComponent {
   }
 
   ngOnInit() {
-     this.socketConnection.dataSignal.set({});
+   this.socketConnection.dataSignal.set({});
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
@@ -226,7 +226,9 @@ export class EmailReviewComponent {
     let brandName = this.formData?.brand?.trim();
     brandName = brandName?.replace(/\s+/g, '');
     this.showMore = 'https://www.' + brandName;
-
+    this.emailHeader = null;
+    this.imageUrl = null;
+    this.subjctEmail = null;
     this.contentDisabled = true;
     this.isLoading = true;
     this.aiContentGenerationService

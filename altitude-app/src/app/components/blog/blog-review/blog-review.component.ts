@@ -7,7 +7,7 @@ import { HeaderComponent } from '../../../shared/header/header.component';
 import { AccordionModule } from 'primeng/accordion';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
-import { MatDialog, MatDialogConfig } from '@angular/material/dialog'
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 
 @Component({
@@ -66,9 +66,9 @@ export class BlogReviewComponent {
   perfUrl: any;
   audianceData: string | undefined;
   socketData: any;
-   currentDate: any = new Date();
+  currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
-  
+
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
@@ -78,20 +78,13 @@ export class BlogReviewComponent {
   ) {}
 
   formData: any;
-  blog_title:any;
+  blog_title: any;
   ngOnInit(): void {
-     this.socketConnection.dataSignal.set({});
+    this.socketConnection.dataSignal.set({});
     this.loading = true;
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
     });
-
-    // this.aiContentGenerationService.getImage().subscribe((data) => {
-    //   console.log('getImagegetImage', data);
-    //   if (data) {
-    //     this.imageUrl = data;
-    //   }
-    // });
 
     this.blogstructure = this.blogGuideLines();
 
@@ -100,7 +93,9 @@ export class BlogReviewComponent {
     });
 
     this.contentDisabled = true;
-
+    this.editorContentSocialMedia = null;
+    this.imageUrl = null;
+    this.blog_title = null;
     this.aiContentGenerationService
       .getAudianceResponseData()
       .subscribe((data) => {
@@ -115,7 +110,6 @@ export class BlogReviewComponent {
         const cleanedString = this.editorContentSocialMedia
           .replace(/^```html/, '')
           .replace(/```$/, '');
-        console.log('blog response data:', cleanedString);
 
         this.editorContentSocialMedia = cleanedString.replace(/"/g, '').trim();
 
@@ -136,7 +130,6 @@ export class BlogReviewComponent {
           this.seoDescription = descriptionMatch[1].trim();
         }
 
-        // Remove head and SEO parts from blog content
         this.blogContent = this.editorContentSocialMedia
           .replace(/<title>.*?<\/title>/s, '')
           .replace(titlePattern, '')

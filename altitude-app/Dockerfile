@@ -1,34 +1,17 @@
-# Stage 1: Build the Angular Universal app
-FROM node:20-alpine AS build
- 
-WORKDIR /usr/src/app
- 
-# Copy package files and install dependencies
-COPY package*.json ./
-RUN npm install
- 
-# Copy the rest of the project
-COPY . .
- 
-# Build the SSR app
-RUN npm run build
- 
-# Stage 2: Serve the Angular Universal app
-FROM node:20-alpine
- 
-WORKDIR /usr/src/app
- 
-# Copy built files from the build stage
-COPY --from=build /usr/src/app/dist ./dist
-COPY --from=build /usr/src/app/package*.json ./
- 
-# Install production dependencies only
-RUN npm install --omit=dev
- 
-# Expose port 8080 (Cloud Run default)
-EXPOSE 8080
- 
-# Run the SSR server
-CMD ["node", "dist/altitude-app/server/server.mjs"]
- 
- 
+# Use Nginx to serve static Angular files
+FROM nginx:1.27-alpine
+
+# Remove default nginx files
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy pre-built Angular dist files
+COPY Html-Dist/ /usr/share/nginx/html
+
+# Copy custom nginx config for SPA routing
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Expose Cloud Run port
+EXPOSE 80
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]
