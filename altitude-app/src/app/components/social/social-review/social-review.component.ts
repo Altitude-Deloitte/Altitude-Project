@@ -105,6 +105,14 @@ export class SocialReviewComponent {
     });
 
     this.contentDisabled = true;
+    this.imageLinkedInUrlSocialmedia = null;
+    this.editorContentSocialMedia = null;
+    this.imageFBUrlSocialmedia = null; 
+    this.editorContentSocialMedia1 = null;
+    this.imageInstaUrlSocialmedia = null;
+    this.contentXSocialMedia = null;
+    this.imageXUrlSocialmedia = null;
+    this.contentLinkdInSocialMedia = null;
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
