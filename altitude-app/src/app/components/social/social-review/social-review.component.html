@@ -1,58 +1,35 @@
 <app-header></app-header>
 
-<div class="">
   <div
     class="max-w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
     <div class="flex w-full flex-wrap justify-between items-center">
       <div class="flex flex-col justify-center gap-2">
         <div class="flex items-center gap-2">
-          <a routerLink="/generate-request" class="text-2xl cursor-pointer"><i class="pi pi-angle-left mr-1"></i>Social
-            Media Post
-            <i class="pi pi-pencil ml-1"></i></a>
+          <a routerLink="/generate-request" class="text-2xl cursor-pointer">
+            <i class="pi pi-angle-left mr-1"></i>Social Media Post
+            <i class="pi pi-pencil ml-1"></i>
+          </a>
         </div>
         <div class="flex items-center gap-2">
-          <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2"><img
-              src="assets/images/InstagramLogo.svg" />Social Media
-            Campaign</a>
-          <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">{{ currentsDate
-            }}</a>
+          <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2">
+            <img src="assets/images/InstagramLogo.svg" />Social Media Campaign
+          </a>
+          <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">
+            {{ currentsDate }}
+          </a>
         </div>
       </div>
-      <!-- <div class="flex items-center gap-4">
-
-                <button (click)="showComments = true" class="border border-2 border-[#BB93FF] px-5 py-3 rounded-full">
-                    View All Comments
-                </button>
-
-                <p-dialog [(visible)]="showComments" [modal]="true" [closable]="true" [dismissableMask]="true"
-                    [style]="{width: '500px', borderRadius: '12px', overflow: 'hidden'}"
-                    contentStyleClass="p-4 bg-[#181B22]" header="Comments ({{commentsList.length}})" [showHeader]="true"
-                    [closeOnEscape]="true">
-                    <div class="p-0 bg-[#181B22]">
-                        <div *ngFor="let comment of commentsList"
-                            class="bg-[#23262E] rounded-lg p-3 mb-3 flex gap-3 items-start">
-                            <img [src]="comment.avatar" alt="avatar" class="w-8 h-8 rounded-full object-cover mt-1" />
-                            <div class="flex-1">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="font-semibold text-white text-sm">{{ comment.name }}</span>
-                                    <span class="text-xs text-gray-400">{{ comment.time }}</span>
-                                </div>
-                                <div class="text-xs text-gray-300">{{ comment.text }}</div>
-                            </div>
-                        </div>x
-                    </div>
-                </p-dialog>
-            </div> -->
     </div>
+
     <div class="flex flex-wrap mt-5 gap-4 w-full">
       <div class="md:flex-1">
-        <div class="">
+        <div>
+          <!-- Accordion panels -->
           <p-accordion value="0">
             <p-accordion-panel value="0">
               <p-accordion-header class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
                 Agentic Workflow
               </p-accordion-header>
-
               <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636] bg-[#121212]">
                 <div class="flex flex-col gap-4">
                   <div *ngFor="
@@ -81,6 +58,7 @@
               </p-accordion-content>
             </p-accordion-panel>
           </p-accordion>
+
           <p-accordion value="1">
             <p-accordion-panel value="1">
               <p-accordion-header class="border-1 p-4 bg-[#121212] border-b-0 rounded-none border-[#363636]">
@@ -109,33 +87,33 @@
               </p-accordion-content>
             </p-accordion-panel>
           </p-accordion>
+
           <p-accordion value="2">
             <p-accordion-panel value="2">
               <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
                 Task Details
               </p-accordion-header>
-
               <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl bg-[#121212]">
                 <div class="flex justify-between items-start">
                   <div class="flex flex-col gap-3">
                     <h4 class="text-[#9b9b9b]">Client Name</h4>
-                    <p>{{ this.brand }}</p>
+                    <p>{{ brand }}</p>
                     <h4 class="text-[#9b9b9b]">Purpose</h4>
-                    <p>{{ this.formData?.purpose }}</p>
+                    <p>{{ formData?.purpose }}</p>
                     <h4 class="text-[#9b9b9b]">Due Date</h4>
-                    <p>{{ this.formData?.dueDate }}</p>
+                    <p>{{ formData?.dueDate }}</p>
                     <h4 class="text-[#9b9b9b]">Word Limit</h4>
-                    <p>{{ this.formData?.wordLimit || "" }}</p>
+                    <p>{{ formData?.wordLimit || "" }}</p>
                     <h4 class="text-[#9b9b9b]">Additional Details</h4>
-                    <p>{{ this.formData?.Additional || "" }}</p>
+                    <p>{{ formData?.Additional || "" }}</p>
                     <h4 class="text-[#9b9b9b]">Image Description</h4>
-                    <p>{{ this.formData?.image || "" }}</p>
+                    <p>{{ formData?.image || "" }}</p>
                   </div>
                   <div class="flex flex-col gap-3">
                     <h4 class="text-[#9b9b9b]">Topic</h4>
-                    <p>{{ this.formData?.topic || "" }}</p>
+                    <p>{{ formData?.topic || "" }}</p>
                     <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
-                    <p>{{ this.formData?.campaign || "" }}</p>
+                    <p>{{ formData?.campaign || "" }}</p>
                   </div>
                 </div>
               </p-accordion-content>
@@ -146,7 +124,7 @@
 
       <div class="md:flex-2">
         <div class="flex flex-col">
-          <p-tabs value="0">
+          <p-tabs [(value)]="activeTabIndexa">
             <div class="rounded-t-xl bg-[#363636]">
               <div class="flex justify-between items-center p-4 flex-wrap">
                 <div class="flex items-center gap-2">
@@ -156,128 +134,118 @@
                   <h2 class="text-2xl font-bold">Generated Results</h2>
                 </div>
 
-                <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center bg-[#363636]">
+                <p-tablist class="p-3 border-[#4D4D4D] rounded-full items-center bg-[#363636]">
                   <div class="flex gap-4 items-center justify-center bg-[#363636]">
-                    <p-tab class="gap-2 p-4"
-                      *ngIf="formData?.campaign?.includes('Facebook') && !formData?.campaign?.includes('Instagram')"
-                      value="0" class="bg-[#363636]">Facebook</p-tab>
-                    <p-tab class="gap-2 p-4"
-                      *ngIf="formData?.campaign?.includes('Instagram') && !formData?.campaign?.includes('Facebook')"
-                      value="0" class="bg-[#363636]">Instagram</p-tab>
-                    @if(formData?.campaign?.includes('Facebook') && formData?.campaign?.includes('Instagram')){
-                    <p-tab value="0" class="bg-[#363636]">Facebook</p-tab>
-                    <p-tab value="1" class="bg-[#363636]">Instagram</p-tab>
-                    }
+                    <p-tab *ngFor="let campaign of activeCampaigns; let i = index" [value]="i"
+                      class="gap-2 p-4 bg-[#363636]">{{ campaign }}</p-tab>
                   </div>
-
                 </p-tablist>
-
 
                 <div class="flex items-center gap-2">
                   <img src="assets/images/ListMagnifyingGlass.svg" alt="" />
-                  <p class="font-semibold text-lg" style="cursor: pointer" (click)="onCreateProject()"> Check Plagiarism
+                  <p class="font-semibold text-lg" style="cursor: pointer" (click)="onCreateProject()">
+                    Check Plagiarism
                   </p>
                 </div>
               </div>
             </div>
+
             <div class="border-t-1 border-[#686868] bg-[#363636] p-5 rounded-b-xl">
               <div class="flex my-4 flex-col justify-center items-center">
                 <div class="flex justify-center items-center">
                   <p-tabpanels
                     class="bg-[#F6F5EF] rounded-2xl border-4 shadow-xl max-w-3xl w-full overflow-hidden p-16">
-                    <p-tabpanel
-                      *ngIf="formData?.campaign?.includes('Facebook') && !formData?.campaign?.includes('Instagram')"
-                      value="0">
-                      @if(!contentDisabled){
-                      <h3 class="post-caption text-black" class="dark:text-black text-white">
-                        {{ this.editorContentSocialMedia }}
-                      </h3>
-                      @if (hyperUrl) {
-                      <p class="post-caption text-black">
-                        For more details, visit our website:
-                        <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                          {{ this.hyperUrl }}
-                        </a>
-                      </p>
-                      } @if (imageFBUrlSocialmedia) {
-                      <img [src]="imageFBUrlSocialmedia" alt="Facebook Post" class="post-image mt-3" />
-                      } }@else{
-                      <p-progress-spinner strokeWidth="2" fill="transparent" animationDuration=".5s"
-                        styleClass="custom-spinner" [style]="{ width: '50px', height: '50px' }" />
-                      }
-                    </p-tabpanel>
-                    <p-tabpanel
-                      *ngIf="formData?.campaign?.includes('Instagram') && !formData?.campaign?.includes('Facebook')"
-                      value="0">
-                      @if(!contentDisabled){
-                      <div class="instagram-post">
-                        @if (imageInstaUrlSocialmedia) {
-                        <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post" class="post-image" />
-                        }
-                        <p class="post-caption text-black mt-3">
-                          {{ this.editorContentSocialMedia1 }}
-                        </p>
-                        <p class="post-caption text-black">
-                          For more details, visit our website:
-                          <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                            {{ this.hyperUrl }}
-                          </a>
-                        </p>
-                      </div>
-                      }@else{
-                      <p-progress-spinner strokeWidth="2" fill="transparent" animationDuration=".5s"
-                        styleClass="custom-spinner" [style]="{ width: '50px', height: '50px' }" />
-                      }
-                    </p-tabpanel>
+                    <p-tabpanel *ngFor="let campaign of activeCampaigns; let i = index" [value]="i">
+                      <ng-container [ngSwitch]="campaign">
+                        <!-- Facebook Panel -->
+                        <div *ngSwitchCase="'Facebook'">
+                          <ng-container *ngIf="!contentDisabled; else loadingTemplate">
+                            <h3 class="post-caption text-black dark:text-black text-white">
+                              {{ editorContentSocialMedia }}
+                            </h3>
+                            <p *ngIf="hyperUrl" class="post-caption text-black">
+                              For more details, visit our website:
+                              <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
+                                {{ hyperUrl }}
+                              </a>
+                            </p>
+                            <img *ngIf="imageFBUrlSocialmedia" [src]="imageFBUrlSocialmedia" alt="Facebook Post"
+                              class="post-image mt-3" />
+                          </ng-container>
+                        </div>
 
-                    <!-- Both -->
-                    @if(formData?.campaign?.includes('Facebook') && formData?.campaign?.includes('Instagram')){
-                    <p-tabpanel value="0">
-                      @if(!contentDisabled){
-                      <h3 class="post-caption text-black" class="dark:text-black text-white">
-                        {{ this.editorContentSocialMedia }}
-                      </h3>
-                      @if (hyperUrl) {
-                      <p class="post-caption text-black">
-                        For more details, visit our website:
-                        <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                          {{ this.hyperUrl }}
-                        </a>
-                      </p>
-                      } @if (imageFBUrlSocialmedia) {
-                      <img [src]="imageFBUrlSocialmedia" alt="Facebook Post" class="post-image mt-3" />
-                      } }@else{
-                      <p-progress-spinner strokeWidth="2" fill="transparent" animationDuration=".5s"
-                        styleClass="custom-spinner" [style]="{ width: '50px', height: '50px' }" />
-                      }
+                        <!-- Instagram Panel -->
+                        <div *ngSwitchCase="'Instagram'">
+                          <ng-container *ngIf="!contentDisabled; else loadingTemplate">
+                            <div class="instagram-post">
+                              <img *ngIf="imageInstaUrlSocialmedia" [src]="imageInstaUrlSocialmedia"
+                                alt="Instagram Post" class="post-image" />
+                              <p class="post-caption text-black mt-3">
+                                {{ editorContentSocialMedia1 }}
+                              </p>
+                              <p *ngIf="hyperUrl" class="post-caption text-black">
+                                For more details, visit our website:
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                            </div>
+                          </ng-container>
+                        </div>
+
+                        <!-- X Panel -->
+                        <div *ngSwitchCase="'X'">
+                          <ng-container *ngIf="!contentDisabled; else loadingTemplate">
+                            <div class="instagram-post">
+                              <img *ngIf="imageXUrlSocialmedia" [src]="imageXUrlSocialmedia" alt="Instagram Post"
+                                class="post-image" />
+                              <p class="post-caption text-black mt-3">
+                                {{ contentXSocialMedia }}
+                              </p>
+                              <p *ngIf="hyperUrl" class="post-caption text-black">
+                                For more details, visit our website:
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                            </div>
+                          </ng-container>
+                        </div>
+
+                        <!-- LinkedIn Panel -->
+                        <div *ngSwitchCase="'LinkedIn'">
+                          <ng-container *ngIf="!contentDisabled; else loadingTemplate">
+                            <div class="instagram-post">
+                              <img *ngIf="imageLinkedInUrlSocialmedia" [src]="imageLinkedInUrlSocialmedia"
+                                alt="Instagram Post" class="post-image" />
+                              <p class="post-caption text-black mt-3">
+                                {{ contentLinkdInSocialMedia }}
+                              </p>
+                              <p *ngIf="hyperUrl" class="post-caption text-black">
+                                For more details, visit our website:
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                            </div>
+                          </ng-container>
+                        </div>
+
+                        <!-- Default -->
+                        <div *ngSwitchDefault>
+                          <p>No content available for this campaign.</p>
+                        </div>
+                      </ng-container>
+
+                      <ng-template #loadingTemplate>
+                        <p-progress-spinner strokeWidth="2" animationDuration=".5s" styleClass="custom-spinner"
+                          [style]="{ width: '50px', height: '50px' }"></p-progress-spinner>
+                      </ng-template>
                     </p-tabpanel>
-                    <p-tabpanel value="1">
-                      @if(!contentDisabled){
-                      <div class="instagram-post">
-                        @if (imageInstaUrlSocialmedia) {
-                        <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post" class="post-image" />
-                        }
-                        <p class="post-caption text-black mt-3">
-                          {{ this.editorContentSocialMedia1 }}
-                        </p>
-                        <p class="post-caption text-black">
-                          For more details, visit our website:
-                          <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                            {{ this.hyperUrl }}
-                          </a>
-                        </p>
-                      </div>
-                      }@else{
-                      <p-progress-spinner strokeWidth="2" fill="transparent" animationDuration=".5s"
-                        styleClass="custom-spinner" [style]="{ width: '50px', height: '50px' }" />
-                      }
-                    </p-tabpanel>
-                    }
                   </p-tabpanels>
-
-
                 </div>
               </div>
+
               <div class="flex items-center gap-2 mt-4">
                 <button class="border-1 border-white rounded-full p-3">
                   Use an informal tone for communication
@@ -316,9 +284,5 @@
       </div>
     </div>
   </div>
-  <!-- <div class="flex  items-center">
-        
-        </div> -->
-  <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 rounded-full float-right" label="Send For Approval"
+  <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 pt-2 rounded-full float-right" label="Send For Approval"
     (onClick)="navigateToForm()"></p-button>
-</div>

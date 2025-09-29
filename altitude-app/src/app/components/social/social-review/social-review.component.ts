@@ -47,6 +47,8 @@ export class SocialReviewComponent {
   imageUrl: any;
   imageFBUrlSocialmedia: any;
   imageInstaUrlSocialmedia: any;
+  imageXUrlSocialmedia: any;
+  imageLinkedInUrlSocialmedia: any;
   imageContainerHeight = '0px';
   imageContainerWidth = '0px';
   imageHeight = '0px';
@@ -63,6 +65,8 @@ export class SocialReviewComponent {
   totalWordCount: any;
   brandlogo!: string;
   editorContentSocialMedia1: any;
+  contentXSocialMedia: any;
+  contentLinkdInSocialMedia: any;
   audianceData1: any;
   audianceData2: any;
   hyperUrl: any;
@@ -76,12 +80,12 @@ export class SocialReviewComponent {
   formData: any;
   currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
-  activeTabIndexa:any = 0;
+  activeTabIndexa: any = 0;
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
     public socketConnection: SocketConnectionService,
-     private dialog: MatDialog
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -101,63 +105,87 @@ export class SocialReviewComponent {
     });
 
     this.contentDisabled = true;
-   this.aiContentGenerationService
-  .getSocialResponsetData()
-  .subscribe((data) => {
-    setTimeout(() => {
-      if (data.result.generation) {
-        if (
-          data.result.generation.Facebook !== undefined &&
-          data.result.generation.Facebook !== null &&
-          data.result.generation.Facebook !== ''
-        ) {
-          this.editorContentSocialMedia = data.result.generation.Facebook.text;
-          this.imageFBUrlSocialmedia = data.result.generation.Facebook.image_url;
-        }
+    this.aiContentGenerationService
+      .getSocialResponsetData()
+      .subscribe((data) => {
+        setTimeout(() => {
+          if (data.result.generation) {
+            if (
+              data.result.generation.Facebook !== undefined &&
+              data.result.generation.Facebook !== null &&
+              data.result.generation.Facebook !== ''
+            ) {
+              this.editorContentSocialMedia =
+                data.result.generation.Facebook.text;
+              this.imageFBUrlSocialmedia =
+                data.result.generation.Facebook.image_url;
+            }
 
-        if (
-          data.result.generation.Instagram !== undefined &&
-          data.result.generation.Instagram !== null &&
-          data.result.generation.Instagram !== ''
-        ) {
-          this.editorContentSocialMedia1 = data.result.generation.Instagram.text;
-          this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
-        }
-      }
+            if (
+              data.result.generation.Instagram !== undefined &&
+              data.result.generation.Instagram !== null &&
+              data.result.generation.Instagram !== ''
+            ) {
+              this.editorContentSocialMedia1 =
+                data.result.generation.Instagram.text;
+              this.imageInstaUrlSocialmedia =
+                data.result.generation.Instagram.image_url;
+            }
 
-      this.editorContentSocialMedia = this.editorContentSocialMedia
-        ?.replace(/"/g, '')
-        .trim();
-      this.characterCount = this.editorContentSocialMedia?.length;
-      this.existingContent = this.editorContentSocialMedia;
+            if (
+              data.result.generation.X !== undefined &&
+              data.result.generation.X !== null &&
+              data.result.generation.X !== ''
+            ) {
+              this.contentXSocialMedia = data.result.generation.X.text;
+              this.imageXUrlSocialmedia = data.result.generation.X.image_url;
+            }
 
-      const countWords = (emailContent: any) => {
-        if (!emailContent) return 0;
-        return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-      };
+            if (
+              data.result.generation.LinkedIn !== undefined &&
+              data.result.generation.LinkedIn !== null &&
+              data.result.generation.LinkedIn !== ''
+            ) {
+              this.imageLinkedInUrlSocialmedia =
+                data.result.generation.LinkedIn.image_url;
+              this.contentLinkdInSocialMedia =
+                data.result.generation.LinkedIn.text;
+            }
+          }
 
-      this.totalWordCount = countWords(this.editorContentSocialMedia);
+          this.editorContentSocialMedia = this.editorContentSocialMedia
+            ?.replace(/"/g, '')
+            .trim();
+          this.characterCount = this.editorContentSocialMedia?.length;
+          this.existingContent = this.editorContentSocialMedia;
 
-      this.isEMailPromptDisabled = false;
-      this.commonPromptIsLoading = false;
-      this.isImageRegenrateDisabled = false;
-      this.isImageRefineDisabled = false;
+          const countWords = (emailContent: any) => {
+            if (!emailContent) return 0;
+            return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
+          };
 
-      this.hyperUrl = this.formData?.Hashtags;
+          this.totalWordCount = countWords(this.editorContentSocialMedia);
 
-      let brandName = this.formData?.brand?.trim();
-      if (brandName) {
-        brandName = brandName.replace(/\s+/g, '');
-        this.brandlogo =
-          'https://img.logo.dev/' +
-          brandName +
-          '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-      }
+          this.isEMailPromptDisabled = false;
+          this.commonPromptIsLoading = false;
+          this.isImageRegenrateDisabled = false;
+          this.isImageRefineDisabled = false;
 
-      this.contentDisabled = false;
-      this.loading = false;
-    }, 8000);
-  });
+          this.hyperUrl = this.formData?.Hashtags;
+
+          let brandName = this.formData?.brand?.trim();
+          if (brandName) {
+            brandName = brandName.replace(/\s+/g, '');
+            this.brandlogo =
+              'https://img.logo.dev/' +
+              brandName +
+              '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+          }
+
+          this.contentDisabled = false;
+          this.loading = false;
+        }, 8000);
+      });
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
@@ -212,20 +240,25 @@ export class SocialReviewComponent {
       });
   }
 
-
   updateActiveTab() {
-  const campaign = this.formData.get('campaign').value || [];
-  
-  if (campaign.includes('Facebook') && !campaign.includes('Instagram')) {
-    this.activeTabIndexa = 0;  // Facebook tab
-  } else if (!campaign.includes('Facebook') && campaign.includes('Instagram')) {
-    this.activeTabIndexa = 1;  // Instagram tab
-  } else if (campaign.includes('Facebook') && campaign.includes('Instagram')) {
-    this.activeTabIndexa = 0; // or whatever default when both selected
-  } else {
-    this.activeTabIndexa = 0; // fallback default
+    const campaign = this.formData.get('campaign').value || [];
+
+    if (campaign.includes('Facebook') && !campaign.includes('Instagram')) {
+      this.activeTabIndexa = 0; // Facebook tab
+    } else if (
+      !campaign.includes('Facebook') &&
+      campaign.includes('Instagram')
+    ) {
+      this.activeTabIndexa = 1; // Instagram tab
+    } else if (
+      campaign.includes('Facebook') &&
+      campaign.includes('Instagram')
+    ) {
+      this.activeTabIndexa = 0; // or whatever default when both selected
+    } else {
+      this.activeTabIndexa = 0; // fallback default
+    }
   }
-}
 
   setImageDimensions(height: string, width: string) {
     this.imageContainerHeight = height;
@@ -234,7 +267,7 @@ export class SocialReviewComponent {
     this.imageWidth = width;
   }
 
-   onCreateProject() {
+  onCreateProject() {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = false;
@@ -265,7 +298,6 @@ export class SocialReviewComponent {
   keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
     return 0; // Or implement custom sorting logic if needed
   };
-
 
   aiContentGeneration(prompt: string, type: string): void {
     const wordLimitValue = this.formData?.wordLimit;
@@ -348,5 +380,12 @@ export class SocialReviewComponent {
         console.log('Error refine image', er);
       },
     });
+  }
+
+  get activeCampaigns(): string[] {
+    if (!this.formData?.campaign) return [];
+    return this.formData?.campaign.filter((tab: any) =>
+      this.formData.campaign.includes(tab)
+    );
   }
 }
