@@ -127,7 +127,7 @@ export class ClientRemarkComponent {
     private aiContentGenerationService: ContentGenerationService,
 
     private chnge: ChangeDetectorRef
-  ) {}
+  ) { }
 
   formData: any;
   ngOnInit(): void {
@@ -170,17 +170,17 @@ export class ClientRemarkComponent {
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        this.emailSubject =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');  
+        this.emailSubject = data.result.generation.email_subjects[0]?.replace(/\n/g, '');
         this.emailHeader = data.result.generation.email_header;
-       const emailContent =
-            typeof  data.result.generation.html === 'string'
-              ? data.result.generation.html
-              : JSON.parse(data.result.generation.html);
+        const emailContent =
+          typeof data.result.generation.html === 'string'
+            ? data.result.generation.html
+            : JSON.parse(data.result.generation.html);
 
-          this.editorContentEmail = emailContent.replace(/\\n\\n/g, '<br>');
+        this.editorContentEmail = emailContent.replace(/\\n\\n/g, '<br>');
         this.imageUrl = data.result.generation.image_url;
-        this.subjctEmail =  data.result.generation.email_subjects[0]?.replace(/\n/g, '');
-          this.contentWithImage = `
+        this.subjctEmail = data.result.generation.email_subjects[0]?.replace(/\n/g, '');
+        this.contentWithImage = `
     <div  style="padding:40px;">
     <div><b>${this.subjctEmail}</b></div>
     <div style="text-align: center; padding:40px;">
@@ -208,8 +208,8 @@ export class ClientRemarkComponent {
       this.brandlogoTop =
         brandName !== 'babycheramy.lk'
           ? 'https://img.logo.dev/' +
-            brandName +
-            '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+          brandName +
+          '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
           : 'https://www.babycheramy.lk/images/logo.webp';
       console.log('logo:', this.brandlogoTop);
     }
@@ -242,11 +242,11 @@ export class ClientRemarkComponent {
     this.aiContentGenerationService
       .getEmailResponsetData()
       .subscribe((data) => {
-          
-        if ( data.result.generation.html) {
+
+        if (data.result.generation.html) {
           // Determine if the content is a string or JSON and parse accordingly
           const emailContent =
-            typeof  data.result.generation.html === 'string'
+            typeof data.result.generation.html === 'string'
               ? data.result.generation.html
               : JSON.parse(data.result.generation.html);
 
@@ -283,7 +283,7 @@ export class ClientRemarkComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-         
+
         this.isSocialMediaPromptDisabled = false;
         this.editorContentSocialMedia = data?.content;
         this.chnge.detectChanges();
@@ -294,7 +294,7 @@ export class ClientRemarkComponent {
 
     this.aiContentGenerationService.storeImage(this.imageUrl).subscribe(
       (response) => {
-          
+
         console.log('Response banner:', response);
         this.imageUrlS3 = response.s3Url;
         console.log('bammer image:', this.imageUrlS3);
@@ -360,7 +360,7 @@ export class ClientRemarkComponent {
       this.editorComponent.editor.setContent(this.editorContentBlog);
     }
   }
- 
+
   inputChange(fileInputEvent: any) {
     console.log(fileInputEvent.target.files[0]);
   }
@@ -429,9 +429,31 @@ export class ClientRemarkComponent {
     var contentWithImages = this.contentWithImage.replace(/\n+/g, '').trim();
     contentWithImages?.replace(/\\n/g, '<br>');
 
-    const emailhtmlUrl: string = `http://18.116.64.253:3434/send-email?to=masoomithakar@gmail.com,mthakar@deloitte.com,shrirangp@gmail.com,mandeepsingh.1998@outlook.com&subject=${this.emailSubject}`;
-    const emailHtmlBody: string = `<!DOCTYPE html>
-<html lang="en">
+    /* this.aiContentGenerationService     
+      .publishContent(contentWithImages, '2093', 'FreeTextContent')
+      .subscribe({
+        next: (data) => {
+          this.ispublisLoaderDisabled = false;
+          if (data) {
+            const dialogRef = this.dialog.open(EmailConfirmationComponent, {
+              width: '574px',
+              height: '346px',
+            });
+          }
+          console.log('publishContentpublishContent', data);
+        },
+        error: (error) => {
+          console.error(`Error occurred for publishContent:`, error);
+        },
+      });*/
+
+    //html format content
+    var subjectEmail = this.selectedSubject.replace(/"/g, '');
+    console.log('email body client :', this.editorContentEmail);
+    console.log('baner body :', this.emailHeader);
+    console.log('subject mail :', subjectEmail);
+
+    const newEmail = `<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -455,118 +477,76 @@ export class ClientRemarkComponent {
     </style>
 </head>
 <body>
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 0 auto;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
         <tbody>
+            <!-- Header Section -->
             <tr>
-                <td valign="top" style="word-break: break-word; hyphens: none; border-collapse: collapse;">
-                    <table width="640" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;">
-                        <tbody>
-                            <tr>
-                                <td style="background-color: #fff;">
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="margin: 0 auto; width: 600px;">
-                                        <tbody>
-                                            <tr>
-                                                <td height="15" style="line-height: 1px; font-size: 1px;">&nbsp;</td>
-                                            </tr>
-                                            <tr>
-                                                <td width="70" valign="top" align="center">
-                                                    <div>
-                                                        <img border="0" alt="Nike Logo" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;" src="${this.brandlogoTop}">
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <table width="640" align="center" id="boxing" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto; min-width: 640px;">
-                        <tbody>
-                            <tr>
-                                <td style="word-break: break-word; hyphens: none; border-collapse: collapse;">
-                                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%">
-                                        <tbody>
-                                            <tr>
-                                                <td bgcolor="#ffff" style="background-color: #ffff;">
-                                                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="width: 640px; margin: 0 auto; text-align: center; border-collapse: collapse;">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td align="center" style="font-size: 1px; line-height: 1px; height: 440px; width: 640px;">
-                                                                    <div>
-                                                                        <img border="0" alt="Banner Image" src="${this.imageUrlS3}" style="height: 440px; width: 640px;">
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td height="20" style="line-height: 1px; font-size: 1px;">&nbsp;</td>
-                                                            </tr>
-                                                          
-                                                             <tr>
-                                                                <td style="text-align:left;">
-                                                                    <div style="padding: 15px; background-color: rgb(233 233 233 / 15%); font-family: 'Open Sans', sans-serif;"  [innerHTML]=${this.editorContentEmail}
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>
-                                                                    <div style="padding: 15px; background-color: #e9ecef; font-family: 'Open Sans', sans-serif;"  [innerHTML]=${this.emailHeader} 
-                                                                    </div>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>
-                                                    <table align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fff; padding-top: 20px;">
-                                                        <tbody>
-                                                            <tr>
-                                                                <td align="center" style="padding: 10px;">
-                                                                    <a href="https://www.nike.com/in/t/air-max-dn-shoes-FtLNfm/DV3337-010" target="_blank" style="text-decoration: none;">
-                                                                        <img alt="Product 1" width="300" src="${this.imageOfferUrlS3}">
-                                                                    </a>
-                                                                </td>
-                                                                <td align="center" style="padding: 10px;">
-                                                                    <a href="https://www.nike.com/in/t/al8-shoes-Xs723b/FJ3794-002" target="_blank" style="text-decoration: none;">
-                                                                        <img alt="Product 2" width="300" src="${this.imageEventUrlS3}">
-                                                                    </a>
-                                                                </td>
-                                                            </tr>
-                                                        </tbody>
-                                                    </table>
-                                                </td>
-                                            </tr>
-                                            <tr><table _ngcontent-ng-c3086008022="" id="Button" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" class="mktoModule" style="-webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; mso-table-lspace: 0pt; mso-table-rspace: 0pt; border-spacing: 0; border-collapse: collapse;"><tbody _ngcontent-ng-c3086008022=""><tr _ngcontent-ng-c3086008022=""><td _ngcontent-ng-c3086008022="" bgcolor="#E9E9E9" style="background-color: #E9E9E9;"><table _ngcontent-ng-c3086008022="" align="center" border="0" cellpadding="0" cellspacing="0" width="600" class="inner_table" style="width: 600px; margin: 0 auto; text-align: center; border-collapse: collapse;"><tbody _ngcontent-ng-c3086008022=""><tr _ngcontent-ng-c3086008022=""><td _ngcontent-ng-c3086008022="" height="20" style="line-height: 1px; font-size: 1px;">&nbsp;</td></tr><tr _ngcontent-ng-c3086008022=""><td _ngcontent-ng-c3086008022="" valign="top"><div _ngcontent-ng-c3086008022="" id="banner-button1" class="mktoText"><table _ngcontent-ng-c3086008022="" width="auto" align="center" border="0" cellpadding="0" cellspacing="0" style="margin: 0 auto;"><tbody _ngcontent-ng-c3086008022=""><tr _ngcontent-ng-c3086008022=""><td _ngcontent-ng-c3086008022="" valign="middle" style="background-color: #000000; border: 1px solid #026160; border-radius: 20px; font-family: Arial,Helvetica,sans-serif; font-size: 16px; mso-line-height-rule: exactly; line-height: 22px; text-align: center; vertical-align: middle; color: #000000; display: block; padding: 9px 40px 8px;"><a _ngcontent-ng-c3086008022="" target="_blank" style="text-decoration: none; color: #000000 !important; outline: none;" href="https://www.${this.formData?.brand}/"><span _ngcontent-ng-c3086008022="" style="color: #FFF;">Know More</span></a></td></tr></tbody></table></div></td></tr><tr _ngcontent-ng-c3086008022=""><td _ngcontent-ng-c3086008022="" height="20" style="line-height: 1px; font-size: 1px;">&nbsp;</td></tr></tbody></table></td></tr></tbody></table></tr>
-                                            <tr>
-                                                <td style="background-color: #000000; color: #FFFFFF; text-align: center; font-size: 12px; padding: 20px;">
-                                                    <p>© 2024. ${this.formData?.brand} All Right Reserved</p>
-                                                    <a href="https://www.facebook.com/${this.formData?.brand}/" target="_blank">Facebook</a> |
-                                                    <a href="https://x.com/${this.formData?.brand}" target="_blank">Twitter</a> |
-                                                    <a href="https://www.instagram.com/${this.formData?.brand}/?hl=en" target="_blank">Instagram</a>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <td width="70" valign="top" align="center">
+                    <div style="padding: 15px; background-color: #f8f8f8;">
+                        <img border="0" alt="Brand Logo" style="width: 65px; height: 65px; object-fit: cover; margin-bottom: 15px;" src="${this.brandlogoTop}">
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                    <h1 style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
+                        <span style="font-weight: bold;">${this.emailHeader || ''}</span>
+                    </h1>
+                </td>
+            </tr>
+            
+            ${(this.imageUrl || this.imageOfferUrl) ? `
+            <tr>
+                <td style="text-align: center; background-color: #ffffff;">
+                    <img src="${this.imageUrl ? this.imageUrl : this.imageOfferUrl}" alt="banner" style="max-width: 100%; height: auto;" />
+                </td>
+            </tr>
+            ` : ''}
+
+            <!-- Content Section -->
+            <tr>
+                <td style="background-color: #ffffff; padding: 30px 20px;">
+                    <div style="padding: 15px; color:#333333; font-family: 'Open Sans', sans-serif;">${this.editorContentEmail || ''}</div>
+                </td>
+            </tr>
+
+            <!-- Call to Action Section -->
+            <tr>
+                <td style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
+                    <a href="${this.showMore}" target="_blank" style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                        Know More
+                    </a>
+                </td>
+            </tr>
+
+            <!-- Footer Section -->
+            <tr>
+                <td style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
+                    <p style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
+                        www.${this.formData?.brand} | INFO${'@' + this.formData?.brand}
+                    </p>
+                    <p style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
+                        As a valued subscriber, we greatly appreciate your time. Thank you for your continued attention to our company news. You may unsubscribe from our email updates at any time.
+                    </p>
+                    <p style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
+                        Copyright © 2025 ${this.formData?.brand} All Rights Reserved.
+                    </p>
                 </td>
             </tr>
         </tbody>
     </table>
-    
 </body>
-</html>
- `;
+</html>`;
+    const emailhtmlUrl: string = `
+http://18.116.64.253:3434/send-email?to=masoomithakar@gmail.com,mthakar@deloitte.com,achintyadhingra00@gmail.com,shrirangp@gmail.com,mandeepsingh.1998@outlook.com&subject=${subjectEmail}`;
 
     this.aiContentGenerationService
-      .sendHtmlEmail(emailhtmlUrl, emailHtmlBody)
+      .sendHtmlEmail(emailhtmlUrl, newEmail)
       .subscribe({
         next: (response) => {
-          this.ispublisLoaderDisabled = false;
+          console.log(this.emailHeader);
+          console.log(newEmail);
+          console.log('Email sent successfully:', response);
         },
         error: (error) => {
           this.ispublisLoaderDisabled = false;
@@ -600,6 +580,6 @@ export class ClientRemarkComponent {
       };
     }
   }
-  saveComment() {}
-  
+  saveComment() { }
+
 }
