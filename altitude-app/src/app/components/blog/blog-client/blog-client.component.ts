@@ -1,5 +1,6 @@
 import {
   Component,
+  effect,
 } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { ButtonModule } from 'primeng/button';
@@ -49,7 +50,15 @@ export class BlogClientComponent {
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) { }
+  ) {
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
+  }
   formData: any;
   ngOnInit(): void {
     this.ispublisLoaderDisabled = false;
@@ -267,5 +276,45 @@ export class BlogClientComponent {
       default:
         return '';
     }
+  }
+
+  // Process chat response data
+  processChatResponse(generationData: any) {
+    console.log('Processing chat response in blog client:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.image_url) {
+      this.imageUrl = generationData.image_url;
+    }
+
+    if (generationData.html) {
+      const cleanedString = generationData.html
+        .replace(/^```html/, '')
+        .replace(/```$/, '');
+      this.editorContentSocialMedia = cleanedString;
+
+      // Extract SEO title and description
+      const titlePattern =
+        /(?:<p><b>SEO Title:<\/b>|<b>SEO Title:<\/b>|<b>SEO Title:)(.*?)(?=<\/b>|\n|$)/;
+      const descriptionPattern =
+        /(?:<p><b>SEO Description:<\/b>|<b>SEO Description:<\/b>|<b>SEO Description:)(.*?)(?=<\/b>|\n|$)/;
+
+      const titleMatch = this.editorContentSocialMedia.match(titlePattern);
+      const descriptionMatch =
+        this.editorContentSocialMedia.match(descriptionPattern);
+
+      if (titleMatch) {
+        this.seoTitle = titleMatch[1].trim();
+      }
+
+      if (descriptionMatch) {
+        this.seoDescription = descriptionMatch[1].trim();
+      }
+    }
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
   }
 }

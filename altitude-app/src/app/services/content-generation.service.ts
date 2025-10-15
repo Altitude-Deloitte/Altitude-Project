@@ -8,6 +8,7 @@ import { catchError, map, switchMap } from 'rxjs/operators';
 })
 export class ContentGenerationService {
   private apiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-content';
+  private chatApiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/chat-generate-content';
   private videoUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-video'
   private baseUrl = 'http://18.116.64.253:3000/generate-content';
   private campaignUrl = 'http://18.116.64.253:3301/campaign/2676';
@@ -99,7 +100,14 @@ export class ContentGenerationService {
   private templateId = signal('');
   private memeFormData = signal(null);
   private hashTags = signal(null);
-  
+
+  // Chat response signal for review screens
+  private chatResponseSignal = signal<any>(null);
+
+  // Email content sharing between review and client screens
+  private emailContentSubject = new BehaviorSubject<any>(null);
+  public emailContent$ = this.emailContentSubject.asObservable();
+
   constructor(private http: HttpClient) { }
 
   getTemplateId(): string {
@@ -117,6 +125,40 @@ export class ContentGenerationService {
   setMemeFormData(data: any): void {
     this.memeFormData.set(data);
   }
+
+  // Chat response signal methods
+  getChatResponse(): any {
+    return this.chatResponseSignal();
+  }
+
+  setChatResponse(data: any): void {
+    this.chatResponseSignal.set(data);
+  }
+
+  // Clear chat response
+  clearChatResponse(): void {
+    this.chatResponseSignal.set(null);
+  }
+
+  // Get chat response as signal (for reactive updates)
+  get chatResponse() {
+    return this.chatResponseSignal.asReadonly();
+  }
+
+  // Email content sharing methods
+  setEmailContent(data: any): void {
+    console.log('Setting email content:', data);
+    this.emailContentSubject.next(data);
+  }
+
+  getEmailContent(): Observable<any> {
+    return this.emailContent$;
+  }
+
+  clearEmailContent(): void {
+    this.emailContentSubject.next(null);
+  }
+
   setTemplateId(value: string): void {
     this.templateId.set(value);
   }
@@ -325,7 +367,7 @@ export class ContentGenerationService {
   getProductResponsetData(): Observable<any[]> {
     return this.productResponses.asObservable();
   }
-  generateOtherContent (prompt: string, type: string): Observable<any> {
+  generateOtherContent(prompt: string, type: string): Observable<any> {
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
     const body = { prompt, type };
 
@@ -932,5 +974,12 @@ export class ContentGenerationService {
       hashtags: hashtags,
     };
     return this.http.post<any>(`${this.memeApiUrl}/generate-meme`, requestBody);
+  }
+
+  // Chat API method
+  generateChatContent(payload: { collected: Record<string, any>; message: string }): Observable<any> {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.post<any>(this.chatApiUrl, payload, { headers })
+      .pipe(catchError(this.handleError('generateChatContent', {})));
   }
 }

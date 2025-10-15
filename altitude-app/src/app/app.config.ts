@@ -11,6 +11,7 @@ import ThemePreset from '../theme-preset';
 import { providePrimeNG } from 'primeng/config';
 import { provideHttpClient } from '@angular/common/http';
 import { SelectionStore } from './store/campaign.store';
+import { ChatStore } from './store/chat.store';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -32,5 +33,6 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     SelectionStore,
+    ChatStore,
   ],
 };

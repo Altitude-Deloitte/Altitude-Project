@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ViewChild, effect } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule } from '@angular/common';
@@ -41,10 +41,18 @@ export class VideoClientComponent {
   thumbLabel = false;
   value = 0;
   isImageRegenrateDisabled = false;
-      currentDate: any = new Date();
+  currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
-  
-  constructor(private aiContentGenerationService: ContentGenerationService) {}
+
+  constructor(private aiContentGenerationService: ContentGenerationService) {
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
+  }
   ngOnInit(): void {
     this.contentDisabled = true;
 
@@ -69,6 +77,24 @@ export class VideoClientComponent {
     return url.toLowerCase().endsWith('.mp4');
   }
 
+  // Process chat response data
+  processChatResponse(generationData: any) {
+    console.log('Processing chat response in video client:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.image_url || generationData.video_url) {
+      const url = generationData.video_url || generationData.image_url;
+      this.imageUrl = url;
+      this.isVideoFormat = this.isMp4(url);
+      this.contentDisabled = false;
+    }
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
+  }
+
   onPanelClick(event: MouseEvent) {
     this.clickEvent = event;
     this.commentPanel.show(event);
@@ -81,5 +107,5 @@ export class VideoClientComponent {
       };
     }
   }
-  saveComment() {}
+  saveComment() { }
 }

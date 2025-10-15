@@ -48,41 +48,10 @@
         <div class="flex flex-wrap mt-5 gap-4 w-full">
             <div class="md:flex-1">
                 <div class="">
-                    <p-accordion value="0">
+                    <p-accordion value="0" class="bg-[#121212]">
                         <p-accordion-panel value="0">
                             <p-accordion-header
-                                class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
-                                Agentic Workflow
-                            </p-accordion-header>
-
-                            <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
-                                <div class="flex flex-col gap-4">
-                                    <div *ngFor="let key of socketConnection.dataSignal() | keyvalue : keepOrder"
-                                        class="flex items-center gap-3 p-3 bg-[#23262E] rounded-lg">
-                                        <i class="pi pi-check-circle text-green-500 text-xl"></i>
-                                        <div>
-                                            <p class="text-white font-semibold">
-                                                {{ key.value.name | titlecase }}
-                                            </p>
-                                            <p class="text-gray-300 text-sm" [ngClass]="{
-          'text-green-400': key.value.status === 'COMPLETED',
-          'text-yellow-400': key.value.status === 'IN_PROGRESS',
-          'text-red-400': key.value.status === 'FAILED',
-          'text-gray-300': key.value.status !== 'COMPLETED' && key.value.status !== 'IN_PROGRESS' && key.value.status !== 'FAILED'
-        }">
-                                                Status: {{ key.value.status }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </p-accordion-content>
-                        </p-accordion-panel>
-                    </p-accordion>
-
-                    <p-accordion value="1" class="bg-[#121212]">
-                        <p-accordion-panel value="1">
-                            <p-accordion-header
-                                class="border-1 p-4 bg-[#121212] border-b-0 rounded-none border-[#363636]">
+                                class="border-1 p-4 bg-[#121212] border-b-0 rounded-t-xl border-[#363636]">
                                 Brand Guidelines & Assets
                             </p-accordion-header>
                             <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
@@ -114,8 +83,8 @@
                         </p-accordion-panel>
                     </p-accordion>
 
-                    <p-accordion value="2">
-                        <p-accordion-panel value="2">
+                    <p-accordion value="1">
+                        <p-accordion-panel value="1">
                             <p-accordion-header
                                 class="bg-[#121212] border-s-1 border-e-1 rounded-none p-4 border-[#363636]">
                                 Task Details
@@ -127,31 +96,32 @@
 
                                     <div class="flex flex-col gap-3">
                                         <h4 class="text-[#9b9b9b]">Client Name</h4>
-                                        <p>{{this.brand}}</p>
+                                        <p>{{this.brand | titlecase}}</p>
                                         <h4 class="text-[#9b9b9b]">Purpose</h4>
-                                        <p>{{this.formData?.purpose}}</p>
+                                        <p>{{this.formData?.purpose | titlecase}}</p>
                                         <h4 class="text-[#9b9b9b]">Due Date</h4>
-                                        <p>{{this.formData?.dueDate}}</p>
+                                        <p>{{this.formData?.dueDate | titlecase}}</p>
                                         <h4 class="text-[#9b9b9b]">Word Limit</h4>
-                                        <p>{{this.formData?.wordLimit || ''}}</p>
+                                        <p>{{this.formData?.wordLimit || this.formData?.word_limit}}</p>
                                         <h4 class="text-[#9b9b9b]">Additional Details</h4>
-                                        <p>{{this.formData?.Additional || ''}}</p>
+                                        <p>{{this.formData?.Additional || '' | titlecase}}</p>
                                         <h4 class="text-[#9b9b9b]">Image Description</h4>
-                                        <p>{{this.formData?.image || ''}}</p>
+                                        <p>{{this.formData?.image || '' | titlecase}}</p>
 
                                     </div>
                                     <div class="flex flex-col gap-3">
                                         <h4 class="text-[#9b9b9b]">Topic</h4>
-                                        <p>{{this.formData?.topic || ''}}</p>
+                                        <p>{{this.formData?.topic || '' | titlecase}}</p>
                                         <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
-                                        <p>{{this.formData?.campaign || ''}}</p>
+                                        <p>{{this.formData?.campaign || this.formData?.platform_campaign[0]
+                                            | titlecase}}</p>
                                     </div>
                                     @if (this.selection === 'image' || this.selection === 'video') {
                                     <div class="flex flex-col gap-3">
                                         <h4 class="text-[#9b9b9b]">Topic</h4>
-                                        <p>{{this.formData?.topic || ''}}</p>
+                                        <p>{{this.formData?.topic || '' | titlecase}}</p>
                                         <h4 class="text-[#9b9b9b]">Due Date</h4>
-                                        <p>{{this.formData?.dueDate}}</p>
+                                        <p>{{this.formData?.dueDate | titlecase}}</p>
                                     </div>
                                     <div class="flex flex-col gap-3">
                                         <h4 class="text-[#9b9b9b]">Status</h4>
@@ -191,7 +161,8 @@
 
                             <div class="flex items-center gap-2">
                                 <img src="assets/images/ListMagnifyingGlass.svg" alt="">
-                                <p class="font-semibold text-lg" style="cursor: pointer;" (click)="onCreateProject()">Check Plagiarism</p>
+                                <p class="font-semibold text-lg" style="cursor: pointer;" (click)="onCreateProject()">
+                                    Check Plagiarism</p>
                             </div>
                         </div>
 

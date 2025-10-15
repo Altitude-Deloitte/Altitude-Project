@@ -1,0 +1,51 @@
+::ng-deep .custom-upload .p-menu-item-content {
+  padding: 15px !important;
+}
+
+/* Custom scrollbar styling with rounded thumb */
+#chat-messages::-webkit-scrollbar {
+  width: 8px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 10px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+  background: #363636;
+  border-radius: 10px;
+}
+
+#chat-messages::-webkit-scrollbar-thumb:hover {
+  background: #4a4a4a;
+}
+
+/* Breathing effect for loading dots */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.animate-breathe {
+  animation: breathe 1.5s ease-in-out infinite;
+}
+
+.animate-breathe:nth-child(1) {
+  animation-delay: 0s;
+}
+
+.animate-breathe:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.animate-breathe:nth-child(3) {
+  animation-delay: 0.4s;
+}

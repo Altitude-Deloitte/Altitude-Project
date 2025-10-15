@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   ViewChild,
+  effect,
 } from '@angular/core';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { ButtonModule } from 'primeng/button';
@@ -127,7 +128,15 @@ export class ClientRemarkComponent {
     private aiContentGenerationService: ContentGenerationService,
 
     private chnge: ChangeDetectorRef
-  ) { }
+  ) {
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
+  }
 
   formData: any;
   ngOnInit(): void {
@@ -161,9 +170,73 @@ export class ClientRemarkComponent {
       }
     });
 
-    let brandNames = this.formData?.brand?.trim();
-    brandNames = brandNames?.replace(/\s+/g, '');
-    this.showMore = 'https://www.' + brandNames + '/';
+    // Normalize brand name once - single source of truth
+    let brandName = this.formData?.brand?.trim();
+    if (brandName) {
+      brandName = brandName.replace(/\s+/g, '');
+      // Add .com if it doesn't contain domain extension
+      if (!brandName.includes('.com') && !brandName.includes('.lk')) {
+        brandName = brandName + '.com';
+      }
+    }
+
+    console.log("Normalized brand name:", brandName);
+
+    // Set brand display name (without .com)
+    this.brand = brandName?.replace('.com', '').replace('.lk', '');
+
+    // Use normalized brandName for all variables
+    this.showMore = 'https://www.' + brandName + '/';
+
+    // Set brandlogoTop using normalized brandName
+    this.brandlogoTop = brandName !== 'babycheramy.lk'
+      ? 'https://img.logo.dev/' + brandName + '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+      : 'https://www.babycheramy.lk/images/logo.webp';
+
+    console.log('Brand logo URL:', this.brandlogoTop);
+    console.log('Show more URL:', this.showMore);
+
+    // Subscribe to shared email content from review screen (if coming from chat)
+    this.aiContentGenerationService.getEmailContent().subscribe((emailData) => {
+      if (emailData) {
+        console.log('Received shared email content:', emailData);
+
+        // Use shared data if available (from chat flow)
+        if (emailData.imageUrl) {
+          this.imageUrl = emailData.imageUrl;
+        }
+        if (emailData.editorContentEmail) {
+          this.editorContentEmail = emailData.editorContentEmail;
+        }
+        if (emailData.emailHeader) {
+          this.emailHeader = emailData.emailHeader;
+        }
+        if (emailData.subjctEmail) {
+          this.subjctEmail = emailData.subjctEmail;
+        }
+        if (emailData.selectedSubject) {
+          this.emailSubject = emailData.selectedSubject;
+        }
+        if (emailData.totalWordCount) {
+          this.totalWordCount = emailData.totalWordCount;
+        }
+
+        // Update contentWithImage if we have the data
+        if (this.imageUrl && this.editorContentEmail && this.subjctEmail) {
+          this.contentWithImage = `
+    <div  style="padding:40px;">
+    <div><b>${this.subjctEmail}</b></div>
+    <div style="text-align: center; padding:40px;">
+      <img class="size-image" alt="" src="${this.imageUrl}" />
+    </div><br/>
+    <div>${this.editorContentEmail}</div>
+    </div>
+  `;
+        }
+
+        this.loading = false;
+      }
+    });
 
     //heading
 
@@ -201,18 +274,8 @@ export class ClientRemarkComponent {
 
     this.ispublisLoaderDisabled = false;
 
-    let brandName = this.formData?.brand?.trim();
-    this.brand = this.formData?.brand.replace('.com', ' ');
-    if (brandName) {
-      brandName = brandName.replace(/\s+/g, '');
-      this.brandlogoTop =
-        brandName !== 'babycheramy.lk'
-          ? 'https://img.logo.dev/' +
-          brandName +
-          '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
-          : 'https://www.babycheramy.lk/images/logo.webp';
-      console.log('logo:', this.brandlogoTop);
-    }
+    // brandName and brandlogoTop already set above - no need to redeclare
+
     //brand logo and links
     this.aiContentGenerationService
       .getBrandData(this.formData?.brand)
@@ -568,6 +631,62 @@ http://18.116.64.253:3434/send-email?to=masoomithakar@gmail.com,mthakar@deloitte
         console.error('Navigation error:', error);
       });
   }
+  // Process chat response data
+  processChatResponse(generationData: any) {
+    console.log('Processing chat response in client:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.email_header) {
+      this.emailHeader = generationData.email_header;
+    }
+
+    if (generationData.image_url) {
+      this.imageUrl = generationData.image_url;
+    }
+
+    if (generationData.email_subjects) {
+      this.subjctEmail = generationData.email_subjects;
+    }
+
+    if (generationData.html) {
+      let emailContent = typeof generationData.html === 'string'
+        ? generationData.html
+        : JSON.parse(generationData.html);
+
+      emailContent = emailContent.replace(/"/g, '').trim();
+      this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+
+      // Calculate word count
+      const countWords = (emailContent: any) => {
+        if (!emailContent) return 0;
+        return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
+      };
+
+      this.totalWordCount = countWords(this.editorContentEmail);
+    }
+
+    // Update contentWithImage if we have all the data
+    if (this.imageUrl && this.editorContentEmail && this.subjctEmail) {
+      this.contentWithImage = `
+    <div  style="padding:40px;">
+    <div><b>${this.subjctEmail}</b></div>
+    <div style="text-align: center; padding:40px;">
+      <img class="size-image" alt="" src="${this.imageUrl}" />
+    </div><br/>
+    <div>${this.editorContentEmail}</div>
+    </div>
+  `;
+    }
+
+    // Set loading states
+    this.loading = false;
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
+  }
+
   onPanelClick(event: MouseEvent) {
     this.clickEvent = event;
     this.commentPanel.show(event);

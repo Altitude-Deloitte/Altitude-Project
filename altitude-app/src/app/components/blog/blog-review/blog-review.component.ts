@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, effect } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule, KeyValue } from '@angular/common';
@@ -75,7 +75,15 @@ export class BlogReviewComponent {
     public socketConnection: SocketConnectionService,
     private chnge: ChangeDetectorRef,
     private dialog: MatDialog
-  ) {}
+  ) {
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
+  }
 
   formData: any;
   blog_title: any;
@@ -528,10 +536,66 @@ Ensure keyword integration feels natural, and content is engaging and informativ
 Output the entire blog in HTML format, followed by:
  - A <p> tag containing "<b>SEO Title:</b> " with the blog's main title.
  - A <p> tag containing "<b>SEO Description:</b> " with a description relevant to the blog's purpose and target audience.
--Don,t add heading like Title, Subtitle,Body,  Introduction, Main Content and Conclusion. just write their body only. `;
+Don't add heading like Title, Subtitle, Body, Introduction, Main Content and Conclusion. just write their body only.`;
 
       default:
         return '';
     }
+  }
+
+  // Process chat response data for blog
+  processChatResponse(generationData: any) {
+    console.log('Processing blog chat response:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.image_url) {
+      this.imageUrl = generationData.image_url;
+    }
+
+    if (generationData.blog_title) {
+      this.blogTitle = generationData.blog_title;
+      this.blog_title = generationData.blog_title;
+    }
+
+    if (generationData.meta_description) {
+      this.metaDescription = generationData.meta_description;
+    }
+
+    if (generationData.html || generationData.content) {
+      let blogContent = generationData.html || generationData.content;
+
+      if (typeof blogContent !== 'string') {
+        blogContent = JSON.stringify(blogContent);
+      }
+
+      blogContent = blogContent.replace(/"/g, '').trim();
+      this.editorContentSocialMedia = blogContent.replace(/\\n\\n/g, '');
+      this.existingContent = this.editorContentSocialMedia;
+
+      // Calculate word count
+      const countWords = (content: any) => {
+        if (!content) return 0;
+        return content?.trim().replace(/\s+/g, ' ').split(' ').length;
+      };
+
+      this.totalWordCount = countWords(this.editorContentSocialMedia);
+    }
+
+    // Set loading states
+    this.loading = false;
+    this.contentDisabled = false;
+    this.isContentLoaded = true;
+    this.isEMailPromptDisabled = false;
+    this.commonPromptIsLoading = false;
+    this.isImageRegenrateDisabled = false;
+    this.isImageRefineDisabled = false;
+
+    // Trigger change detection
+    this.chnge.detectChanges();
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
   }
 }

@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, effect } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { TabsModule } from 'primeng/tabs';
@@ -86,7 +86,15 @@ export class SocialReviewComponent {
     private aiContentGenerationService: ContentGenerationService,
     public socketConnection: SocketConnectionService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
+  }
 
   ngOnInit(): void {
     this.socketConnection.dataSignal.set({});
@@ -107,7 +115,7 @@ export class SocialReviewComponent {
     this.contentDisabled = true;
     this.imageLinkedInUrlSocialmedia = null;
     this.editorContentSocialMedia = null;
-    this.imageFBUrlSocialmedia = null; 
+    this.imageFBUrlSocialmedia = null;
     this.editorContentSocialMedia1 = null;
     this.imageInstaUrlSocialmedia = null;
     this.contentXSocialMedia = null;
@@ -395,5 +403,55 @@ export class SocialReviewComponent {
     return this.formData?.campaign.filter((tab: any) =>
       this.formData.campaign.includes(tab)
     );
+  }
+
+  // Process chat response data for social media
+  processChatResponse(generationData: any) {
+    console.log('Processing social media chat response:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.image_url) {
+      this.imageUrl = generationData.image_url;
+    }
+
+    if (generationData.facebook_image_url) {
+      this.imageFBUrlSocialmedia = generationData.facebook_image_url;
+    }
+
+    if (generationData.instagram_image_url) {
+      this.imageInstaUrlSocialmedia = generationData.instagram_image_url;
+    }
+
+    if (generationData.twitter_image_url || generationData.x_image_url) {
+      this.imageXUrlSocialmedia = generationData.twitter_image_url || generationData.x_image_url;
+    }
+
+    if (generationData.html || generationData.content || generationData.social_media_content) {
+      let socialContent = generationData.html || generationData.content || generationData.social_media_content;
+
+      if (typeof socialContent !== 'string') {
+        socialContent = JSON.stringify(socialContent);
+      }
+
+      socialContent = socialContent.replace(/"/g, '').trim();
+      this.editorContentSocialMedia = socialContent.replace(/\\n\\n/g, '');
+      this.existingContent = this.editorContentSocialMedia;
+
+      // Update character count
+      this.characterCount = this.editorContentSocialMedia.length;
+    }
+
+    // Set loading states
+    this.loading = false;
+    this.contentDisabled = false;
+    this.isEMailPromptDisabled = false;
+    this.commonPromptIsLoading = false;
+    this.isImageRegenrateDisabled = false;
+    this.isImageRefineDisabled = false;
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
   }
 }

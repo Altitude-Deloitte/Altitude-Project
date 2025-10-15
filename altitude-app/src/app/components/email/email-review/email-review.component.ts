@@ -4,6 +4,7 @@ import {
   inject,
   input,
   ViewChild,
+  effect,
 } from '@angular/core';
 
 import { SelectModule } from 'primeng/select';
@@ -177,24 +178,25 @@ export class EmailReviewComponent {
     private route: Router,
     private aiContentGenerationService: ContentGenerationService, // private dialog: MatDialog,
     public socketConnection: SocketConnectionService,
-     private dialog: MatDialog
+    private dialog: MatDialog
   ) {
-    // effect(() => {
-    //   this.socketData = this.socketConnection.dataSignal();
-    //   if (this.socketData) {
-    //     console.log(this.socketData)
-    //     this.socketMessage.push(this.socketData);
-    //   }
-    // })
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
   }
 
   ngOnInit() {
-   this.socketConnection.dataSignal.set({});
+    this.socketConnection.dataSignal.set({});
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
+      console.log("form data", this.formData);
     });
 
     // console.log(this.brand);
@@ -221,11 +223,32 @@ export class EmailReviewComponent {
         this.imageEventUrl = data;
       }
     });
-    this.brand = this.formData?.brand?.replace('.com', ' ');
-    // console.log('brand', this.brand);
+    // Normalize brand name once - single source of truth
     let brandName = this.formData?.brand?.trim();
-    brandName = brandName?.replace(/\s+/g, '');
+    if (brandName) {
+      brandName = brandName.replace(/\s+/g, '');
+      // Add .com if it doesn't contain domain extension
+      if (!brandName.includes('.com') && !brandName.includes('.lk')) {
+        brandName = brandName + '.com';
+      }
+    }
+
+    console.log("Normalized brand name:", brandName);
+
+    // Set brand display name (without .com)
+    this.brand = brandName?.replace('.com', '').replace('.lk', '');
+
+    // Use normalized brandName for all variables
     this.showMore = 'https://www.' + brandName;
+
+    // Set brandlogoTop using normalized brandName
+    this.brandlogoTop = brandName !== 'babycheramy.lk'
+      ? 'https://img.logo.dev/' + brandName + '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+      : 'https://www.babycheramy.lk/images/logo.webp';
+
+    console.log('Brand logo URL:', this.brandlogoTop);
+    console.log('Show more URL:', this.showMore);
+
     this.emailHeader = null;
     this.imageUrl = null;
     this.subjctEmail = null;
@@ -263,18 +286,6 @@ export class EmailReviewComponent {
             this.translateIsLoading = false;
             this.isImageRegenrateDisabled = false;
             this.isImageRefineDisabled = false;
-          }
-
-          let brandName = this.formData?.brand?.trim();
-          if (brandName) {
-            brandName = brandName.replace(/\s+/g, '');
-            this.brandlogoTop =
-              brandName !== 'babycheramy.lk'
-                ? 'https://img.logo.dev/' +
-                  brandName +
-                  '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
-                : 'https://www.babycheramy.lk/images/logo.webp';
-            console.log('logo:', this.brandlogoTop);
           }
         }, 8000);
       });
@@ -326,7 +337,7 @@ export class EmailReviewComponent {
       });
   }
 
-    onCreateProject() {
+  onCreateProject() {
     const dialogConfig = new MatDialogConfig();
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = false;
@@ -520,5 +531,86 @@ The html tags are separate and it should not be part of word count.`;
     const body = document.body;
     body.style.fontFamily = this.selectedTypography;
     body.style.fontSize = this.selectedFontSize;
+  }
+
+  // Process chat response data
+  processChatResponse(generationData: any) {
+    console.log('Processing chat response:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.email_header) {
+      this.emailHeader = generationData.email_header;
+    }
+
+    if (generationData.image_url) {
+      this.imageUrl = generationData.image_url;
+    }
+
+    if (generationData.email_subjects) {
+      this.subjctEmail = generationData.email_subjects;
+
+      // Parse subjects if it's a semicolon-separated string
+      if (typeof this.subjctEmail === 'string') {
+        this.subjctsEmail = this.subjctEmail
+          .split(';')
+          .map((subject: string) => subject.replace(/"/g, '').trim())
+          .filter((subject: string) => subject !== '');
+
+        if (this.subjctsEmail.length > 0) {
+          this.selectedSubject = this.subjctsEmail[0]?.replace(/\n/g, '');
+          this.onSubjectChange(this.selectedSubject);
+        }
+      }
+    }
+
+    if (generationData.html) {
+      let emailContent = typeof generationData.html === 'string'
+        ? generationData.html
+        : JSON.parse(generationData.html);
+
+      emailContent = emailContent.replace(/"/g, '').trim();
+      this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+      this.existingEmailContent = this.editorContentEmail;
+
+      // Calculate word count
+      const countWords = (emailContent: any) => {
+        if (!emailContent) return 0;
+        return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
+      };
+
+      this.totalWordCount = countWords(this.editorContentEmail);
+
+      // Update editor content
+      setTimeout(() => {
+        if (this.editorComponent) {
+          this.editorComponent.editor.setContent(this.editorContentEmail);
+        }
+      }, 100);
+    }
+
+    // Set loading states
+    this.loading = false;
+    this.contentDisabled = false;
+    this.isLoading = false;
+    this.isEMailPromptDisabled = false;
+    this.commonPromptIsLoading = false;
+    this.translateIsLoading = false;
+    this.isImageRegenrateDisabled = false;
+    this.isImageRefineDisabled = false;
+
+    // Share email content with client-remark screen
+    this.aiContentGenerationService.setEmailContent({
+      imageUrl: this.imageUrl,
+      editorContentEmail: this.editorContentEmail,
+      emailHeader: this.emailHeader,
+      subjctEmail: this.subjctEmail,
+      selectedSubject: this.selectedSubject,
+      totalWordCount: this.totalWordCount
+    });
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
   }
 }

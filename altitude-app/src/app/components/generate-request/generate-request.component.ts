@@ -34,6 +34,7 @@ import { ProductDescComponent } from '../product/product-desc/product-desc.compo
 import { VideoFormComponent } from '../video/video-form/video-form.component';
 import { CombinedFormComponent } from '../Combined/combined-form/combined-form.component';
 import { InputTextModule } from 'primeng/inputtext';
+import { ChatAppComponent } from '../../shared/chat-app/chat-app.component';
 @Component({
   selector: 'app-generate-request',
   imports: [
@@ -55,6 +56,7 @@ import { InputTextModule } from 'primeng/inputtext';
     VideoFormComponent,
     CombinedFormComponent,
     InputTextModule,
+    ChatAppComponent
   ],
   templateUrl: './generate-request.component.html',
   styleUrl: './generate-request.component.css',

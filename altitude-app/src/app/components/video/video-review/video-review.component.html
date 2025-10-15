@@ -13,7 +13,8 @@
                 <div class="flex items-center gap-2">
                     <a class="text-decoration-none flex p-3 rounded-full border-1 border-[#363636] gap-2"><img
                             src="assets/images/Video.svg" alt="">AI Video</a>
-                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">{{currentsDate}}</a>
+                    <a
+                        class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">{{currentsDate}}</a>
                 </div>
             </div>
             <div class="flex items-center gap-4">
@@ -27,32 +28,7 @@
                     <p-accordion value="0">
                         <p-accordion-panel value="0">
                             <p-accordion-header
-                                class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
-                                Agentic Workflow
-                            </p-accordion-header>
-
-                            <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
-                                <div class="flex flex-col gap-4">
-                                    <div *ngFor="let key of socketConnection.dataSignal() | keyvalue : keepOrder"
-                                        class="flex items-center gap-3 p-3 bg-[#23262E] rounded-lg">
-                                        <i class="pi pi-check-circle text-green-500 text-xl"></i>
-                                        <div>
-                                            <p class="text-white font-semibold">
-                                                {{ key.value.name }}
-                                            </p>
-                                            <p class="text-gray-300 text-sm">
-                                                Status: {{ key.value.status }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </p-accordion-content>
-                        </p-accordion-panel>
-                    </p-accordion>
-                    <p-accordion value="1">
-                        <p-accordion-panel value="1">
-                            <p-accordion-header
-                                class="border-1 p-4 bg-[#121212] border-b-0 rounded-none border-[#363636]">
+                                class="border-1 p-4 bg-[#121212] border-b-0 rounded-t-xl border-[#363636]">
                                 Task Details
                             </p-accordion-header>
 

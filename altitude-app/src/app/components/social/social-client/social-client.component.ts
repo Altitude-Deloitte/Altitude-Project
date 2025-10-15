@@ -1,6 +1,7 @@
 import {
   Component,
   ViewChild,
+  effect,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
@@ -44,8 +45,8 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 })
 export class SocialClientComponent {
   editorContentSocialMedia: any;
-  imageUrlSocialmedia:any;
-    imageFBUrlSocialmedia: any;
+  imageUrlSocialmedia: any;
+  imageFBUrlSocialmedia: any;
   imageInstaUrlSocialmedia: any;
   imageUrl: any;
   brand: any;
@@ -66,7 +67,15 @@ export class SocialClientComponent {
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) {
+    // Watch for chat response from AI chat
+    effect(() => {
+      const chatResponse = this.aiContentGenerationService.chatResponse();
+      if (chatResponse?.result?.generation) {
+        this.processChatResponse(chatResponse.result.generation);
+      }
+    });
+  }
 
   formData: any;
   currentDate: any = new Date();
@@ -90,7 +99,7 @@ export class SocialClientComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-           if (data.result.generation.Facebook) {
+        if (data.result.generation.Facebook) {
           this.editorContentSocialMedia = data.result.generation.Facebook.text;
           this.imageFBUrlSocialmedia =
             data.result.generation.Facebook.image_url;
@@ -105,7 +114,7 @@ export class SocialClientComponent {
       .getSocialResponsetData1()
       .subscribe((data) => {
         debugger;
-       if (data.result.generation.Facebook) {
+        if (data.result.generation.Facebook) {
           this.editorContentSocialMedia = data.result.generation.Facebook.text;
           this.imageFBUrlSocialmedia =
             data.result.generation.Facebook.image_url;
@@ -128,7 +137,7 @@ export class SocialClientComponent {
     this.aiContentGenerationService
       .getAudianceResponseData1()
       .subscribe((data) => {
-           
+
         this.audianceData1 = data.result.generation.text;
       });
 
@@ -166,6 +175,31 @@ export class SocialClientComponent {
       });
   }
 
+  // Process chat response data
+  processChatResponse(generationData: any) {
+    console.log('Processing chat response in social client:', generationData);
+
+    // Update component data based on chat response
+    if (generationData.Facebook) {
+      this.editorContentSocialMedia = generationData.Facebook.text;
+      this.imageFBUrlSocialmedia = generationData.Facebook.image_url;
+    }
+
+    if (generationData.Instagram) {
+      this.imageInstaUrlSocialmedia = generationData.Instagram.image_url;
+      this.editorContentSocialMedia1 = generationData.Instagram.text;
+    }
+
+    if (generationData.image_url) {
+      this.imageUrl = generationData.image_url;
+    }
+
+    // Clear chat response after processing
+    setTimeout(() => {
+      this.aiContentGenerationService.clearChatResponse();
+    }, 1000);
+  }
+
   onPanelClick(event: MouseEvent) {
     this.clickEvent = event;
     this.commentPanel.show(event);
@@ -178,5 +212,5 @@ export class SocialClientComponent {
       };
     }
   }
-  saveComment() {}
+  saveComment() { }
 }

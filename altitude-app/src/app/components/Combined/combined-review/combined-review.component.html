@@ -1,33 +1,6 @@
 <app-header></app-header>
 
-@if (contentDisabled) {
-<!-- Main container that doesn't cover the header -->
-<div class="relative min-h-[70vh] w-full overflow-hidden" style="height: calc(100vh - var(--header-height, 80px));">
-    <!-- Background Video -->
-    <video src="assets/videos/dark-particles.mp4" autoplay muted loop playsinline
-        class="absolute inset-0 w-full h-full object-cover z-0"></video>
 
-    <!-- Centered Content with Heading and Loader -->
-    <div class="relative z-10 flex flex-col items-center justify-center h-full">
-        <!-- Heading Section -->
-        <div class="mb-4 text-center">
-            <h1 class="text-center text-[3.6rem]">Creating <span class="email-glow italic">Magic!</span></h1>
-        </div>
-
-        <!-- Container for both loader elements -->
-        <div class="relative w-full flex justify-center">
-            <!-- LoaderAnimation.svg (background - full width) -->
-            <img src="assets/images/LoaderAnimation.svg" alt="Loader Animation"
-                class="w-full h-auto object-contain max-w-none" draggable="false" />
-
-            <!-- LogoLoader.svg (positioned on top center) -->
-            <img src="assets/images/LogoLoader.svg" alt="Logo Loader"
-                class="absolute top-1/2 left-1/2 w-[102px] h-[102px] -translate-x-1/2 -translate-y-1/2 z-10"
-                draggable="false" />
-        </div>
-    </div>
-</div> }
-@else {
 <div class="">
     <p-tabs value="0">
 
@@ -292,7 +265,8 @@
                                                         </p>
                                                         <p
                                                             style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
-                                                            Copyright © 2025 {{formData?.brand}} All Rights Reserved.
+                                                            Copyright © 2025 {{formData?.brand}} All Rights
+                                                            Reserved.
                                                         </p>
                                                     </td>
                                                 </tr>
@@ -300,7 +274,8 @@
                                         </table>
                                     </div>
                                     <div class="flex items-center gap-2 mt-4">
-                                        <button class="border-1 border-white rounded-full p-3">Use an informal tone for
+                                        <button class="border-1 border-white rounded-full p-3">Use an informal tone
+                                            for
                                             communication</button>
                                         <button class="border-1 border-white rounded-full p-3">Make Another
                                             Version</button>
@@ -463,7 +438,8 @@
                                                             {{
                                                             this.editorContentSocialMedia1 }}</p>
                                                         @if (hyperUrl) {
-                                                        <p class="post-caption text-black">For more details, visit our
+                                                        <p class="post-caption text-black">For more details, visit
+                                                            our
                                                             website:
                                                             <a [href]="this.hyperUrl" target="_blank"
                                                                 rel="noopener noreferrer" style="color: #0866ff;">
@@ -501,7 +477,8 @@
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-2 mt-4">
-                                            <button class="border-1 border-white rounded-full p-3">Use an informal tone
+                                            <button class="border-1 border-white rounded-full p-3">Use an informal
+                                                tone
                                                 for
                                                 communication</button>
                                             <button class="border-1 border-white rounded-full p-3">Make Another
@@ -603,7 +580,8 @@
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Format</span>
-                                                        <span class="font-semibold">{{ formData?.format || '-' }}</span>
+                                                        <span class="font-semibold">{{ formData?.format || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Status</span>
@@ -619,7 +597,8 @@
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Tone</span>
-                                                        <span class="font-semibold">{{ formData?.tone || '-' }}</span>
+                                                        <span class="font-semibold">{{ formData?.tone || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Keywords</span>
@@ -633,7 +612,8 @@
                                                     </div>
                                                     <div class="flex flex-col col-span-2">
                                                         <span class="text-[#9b9b9b] text-sm">Target Audience</span>
-                                                        <span class="font-semibold">{{ formData?.target || '-' }}</span>
+                                                        <span class="font-semibold">{{ formData?.target || '-'
+                                                            }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -697,7 +677,8 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center gap-2 mt-4">
-                                        <button class="border-1 border-white rounded-full p-3">Use an informal tone for
+                                        <button class="border-1 border-white rounded-full p-3">Use an informal tone
+                                            for
                                             communication</button>
                                         <button class="border-1 border-white rounded-full p-3">Make Another
                                             Version</button>
@@ -743,4 +724,4 @@
     <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 rounded-full float-right" label="Send For Approval"
         (onClick)="navigateToForm()"></p-button>
 </div>
-}
+<!-- } -->
