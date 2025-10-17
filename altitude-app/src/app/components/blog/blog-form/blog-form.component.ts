@@ -126,7 +126,7 @@ export class BlogFormComponent {
     public socketConnection: SocketConnectionService,
     private route: Router,
     private aiContentGenerationService: ContentGenerationService
-  ) {}
+  ) { }
 
   urlImage: any;
   onCreateProject(): void {
@@ -203,6 +203,8 @@ export class BlogFormComponent {
   }
 
   navigateToForm(): void {
+    // Clear any existing blog content before navigating to review
+    this.aiContentGenerationService.clearBlogContent();
     this.route.navigateByUrl('blog-review');
   }
 
@@ -239,7 +241,7 @@ export class BlogFormComponent {
     }
   }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   ngOnInit(): void {
     this.socketConnection.dataSignal.set({});
@@ -373,7 +375,7 @@ export class BlogFormComponent {
       next: (data) => {
         // this.aiContentGenerationService.setSubjectResponseData(data);
         this.aiContentGenerationService.setAudianceResponseData(data);
-       },
+      },
       error: (error) => {
         console.error(`Error occurred for email subject:`, error);
       },

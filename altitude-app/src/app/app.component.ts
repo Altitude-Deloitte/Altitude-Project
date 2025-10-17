@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { SocketConnectionService } from './services/socket-connection.service';
 
 @Component({
   selector: 'app-root',
@@ -9,4 +10,10 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'altitude-app';
+
+  // Inject socket service to establish connection on app initialization
+
+
+  constructor() {
+  }
 }

@@ -19,6 +19,10 @@
                 </div>
             </div>
             <div class="flex items-center gap-4">
+                <button (click)="showAgenticWorkflow = true"
+                    class="border border-2 border-[#BB93FF] text-[#BB93FF] px-5 py-3 rounded-full">
+                    Agentic Workflow
+                </button>
 
                 <button (click)="showComments = true"
                     class="border border-2 border-[#BB93FF] text-[#BB93FF] px-5 py-3 rounded-full">
@@ -43,6 +47,68 @@
                         </div>
                     </div>
                 </p-dialog>
+
+                <!-- Agentic Workflow Drawer -->
+                <p-drawer [(visible)]="showAgenticWorkflow" position="right" [style]="{width: '600px'}" [modal]="true"
+                    header="Agentic Workflow">
+                    <div class="workflow-container p-4">
+                        <svg class="workflow-svg" width="100%" height="600" viewBox="0 0 550 600">
+                            <defs>
+                                <!-- Arrow markers - smaller size -->
+                                <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                                    markerUnits="strokeWidth">
+                                    <path d="M0,0 L0,6 L6,3 z" fill="#22c55e" />
+                                </marker>
+                                <marker id="arrowYellow" markerWidth="6" markerHeight="6" refX="5" refY="3"
+                                    orient="auto" markerUnits="strokeWidth">
+                                    <path d="M0,0 L0,6 L6,3 z" fill="#eab308" />
+                                </marker>
+                                <marker id="arrowGray" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                                    markerUnits="strokeWidth">
+                                    <path d="M0,0 L0,6 L6,3 z" fill="#6b7280" />
+                                </marker>
+                            </defs>
+
+                            <!-- Workflow nodes and connections -->
+                            <ng-container *ngFor="let agent of getWorkflowAgents(); let i = index">
+                                <!-- Connection line from previous node -->
+                                <ng-container *ngIf="i > 0">
+                                    <line [attr.x1]="275" [attr.y1]="70 + (i - 1) * 120 + 80" [attr.x2]="275"
+                                        [attr.y2]="70 + i * 120" [attr.stroke]="getLineColor(agent.status)"
+                                        [attr.stroke-width]="2"
+                                        [attr.stroke-dasharray]="agent.status === 'IN_PROGRESS' ? '8,4' : '0'"
+                                        [attr.marker-end]="getMarkerUrl(agent.status)"
+                                        [class.animated-dashes]="agent.status === 'IN_PROGRESS'" />
+                                </ng-container>
+
+                                <!-- Agent node -->
+                                <g [attr.transform]="'translate(100, ' + (70 + i * 120) + ')'">
+                                    <rect x="0" y="0" width="350" height="80" rx="10"
+                                        [attr.fill]="getNodeColor(agent.status)" stroke="#4a5568" stroke-width="2" />
+
+                                    <!-- Status icon -->
+                                    <circle [attr.cx]="20" [attr.cy]="40" r="8"
+                                        [attr.fill]="getStatusIconColor(agent.status)" />
+
+                                    <!-- Agent name -->
+                                    <text x="40" y="35" fill="#fff" font-size="16" font-weight="600">
+                                        {{ agent.name | titlecase }}
+                                    </text>
+
+                                    <!-- Status text -->
+                                    <text x="40" y="55" [attr.fill]="getStatusTextColor(agent.status)" font-size="12">
+                                        Status: {{ agent.status }}
+                                    </text>
+
+                                    <!-- Updated time -->
+                                    <text x="280" y="55" fill="#9ca3af" font-size="11">
+                                        {{ agent.updatedAt }}
+                                    </text>
+                                </g>
+                            </ng-container>
+                        </svg>
+                    </div>
+                </p-drawer>
             </div>
         </div>
         <div class="flex flex-wrap mt-5 gap-4 w-full">

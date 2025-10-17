@@ -60,6 +60,10 @@ export class BlogClientComponent {
     });
   }
   formData: any;
+  blog_title: any;
+  blogTitle: any;
+  metaDescription: any;
+
   ngOnInit(): void {
     this.ispublisLoaderDisabled = false;
     this.aiContentGenerationService.getData().subscribe((data) => {
@@ -81,41 +85,77 @@ export class BlogClientComponent {
       console.log('Form data received:', this.formData);
     });
 
+    // Subscribe to shared blog content from review screen (if coming from chat)
+    this.aiContentGenerationService.getBlogContent().subscribe((blogData) => {
+      if (blogData) {
+        console.log('Received shared blog content:', blogData);
+
+        // Use shared data if available (from chat flow)
+        if (blogData.imageUrl) {
+          this.imageUrl = blogData.imageUrl;
+        }
+        if (blogData.blogContent) {
+          this.blogContent = blogData.blogContent;
+          this.editorContentSocialMedia = blogData.blogContent;
+        }
+        if (blogData.blog_title) {
+          this.blog_title = blogData.blog_title;
+        }
+        if (blogData.blogTitle) {
+          this.blogTitle = blogData.blogTitle;
+        }
+        if (blogData.metaDescription) {
+          this.metaDescription = blogData.metaDescription;
+        }
+        if (blogData.seoTitle) {
+          this.seoTitle = blogData.seoTitle;
+        }
+        if (blogData.seoDescription) {
+          this.seoDescription = blogData.seoDescription;
+        }
+      }
+    });
+
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.result?.generation.html;
-      this.imageUrl = data?.result?.generation.image_url;
-      const cleanedString = this.editorContentSocialMedia
-        .replace(/^```html/, '')
-        .replace(/```$/, '');
-      console.log('blog response data:', cleanedString);
-      this.editorContentSocialMedia = cleanedString;
-      // Remove head section from original HTML
-      const titlePattern =
-        /(?:<p><b>SEO Title:<\/b>|<b>SEO Title:<\/b>|<b>SEO Title:)(.*?)(?=<\/b>|\n|$)/;
-      const descriptionPattern =
-        /(?:<p><b>SEO Description:<\/b>|<b>SEO Description:<\/b>|<b>SEO Description:)(.*?)(?=<\/b>|\n|$)/;
+      // Only process if data exists to prevent overwriting shared blog content
+      if (data?.result?.generation) {
+        this.editorContentSocialMedia = data?.result?.generation.html;
+        this.imageUrl = data?.result?.generation.image_url;
+        this.blog_title = data?.result?.generation.blog_title;
 
-      const titleMatch = this.editorContentSocialMedia.match(titlePattern);
-      const descriptionMatch =
-        this.editorContentSocialMedia.match(descriptionPattern);
+        const cleanedString = this.editorContentSocialMedia
+          .replace(/^```html/, '')
+          .replace(/```$/, '');
+        console.log('blog response data:', cleanedString);
+        this.editorContentSocialMedia = cleanedString;
+        // Remove head section from original HTML
+        const titlePattern =
+          /(?:<p><b>SEO Title:<\/b>|<b>SEO Title:<\/b>|<b>SEO Title:)(.*?)(?=<\/b>|\n|$)/;
+        const descriptionPattern =
+          /(?:<p><b>SEO Description:<\/b>|<b>SEO Description:<\/b>|<b>SEO Description:)(.*?)(?=<\/b>|\n|$)/;
 
-      if (titleMatch) {
-        this.seoTitle = titleMatch[1].trim();
+        const titleMatch = this.editorContentSocialMedia.match(titlePattern);
+        const descriptionMatch =
+          this.editorContentSocialMedia.match(descriptionPattern);
+
+        if (titleMatch) {
+          this.seoTitle = titleMatch[1].trim();
+        }
+
+        if (descriptionMatch) {
+          this.seoDescription = descriptionMatch[1].trim();
+        }
+
+        // Remove head section from original HTML
+        this.blogContent = this.editorContentSocialMedia
+          .replace(/<title>.*?<\/title>/s, '')
+          .trim();
+        //this.blogContent = this.blogContent .replace(/<p><b>SEO Title:<\/b>.*?<\/p>/, '').replace(/<p><b>SEO Description:<\/b>.*?<\/p>/, '').trim();
+        this.blogContent = this.blogContent
+          .replace(titlePattern, '')
+          .replace(descriptionPattern, '')
+          .trim();
       }
-
-      if (descriptionMatch) {
-        this.seoDescription = descriptionMatch[1].trim();
-      }
-
-      // Remove head section from original HTML
-      this.blogContent = this.editorContentSocialMedia
-        .replace(/<title>.*?<\/title>/s, '')
-        .trim();
-      //this.blogContent = this.blogContent .replace(/<p><b>SEO Title:<\/b>.*?<\/p>/, '').replace(/<p><b>SEO Description:<\/b>.*?<\/p>/, '').trim();
-      this.blogContent = this.blogContent
-        .replace(titlePattern, '')
-        .replace(descriptionPattern, '')
-        .trim();
     });
   }
 
@@ -287,8 +327,18 @@ export class BlogClientComponent {
       this.imageUrl = generationData.image_url;
     }
 
-    if (generationData.html) {
-      const cleanedString = generationData.html
+    if (generationData.blog_title) {
+      this.blog_title = generationData.blog_title;
+      this.blogTitle = generationData.blog_title;
+    }
+
+    if (generationData.meta_description) {
+      this.metaDescription = generationData.meta_description;
+    }
+
+    if (generationData.html || generationData.content) {
+      let blogHtml = generationData.html || generationData.content;
+      const cleanedString = blogHtml
         .replace(/^```html/, '')
         .replace(/```$/, '');
       this.editorContentSocialMedia = cleanedString;
@@ -310,6 +360,13 @@ export class BlogClientComponent {
       if (descriptionMatch) {
         this.seoDescription = descriptionMatch[1].trim();
       }
+
+      // Set blogContent by removing title and description patterns
+      this.blogContent = this.editorContentSocialMedia
+        .replace(/<title>.*?<\/title>/s, '')
+        .replace(titlePattern, '')
+        .replace(descriptionPattern, '')
+        .trim();
     }
 
     // Clear chat response after processing

@@ -108,6 +108,10 @@ export class ContentGenerationService {
   private emailContentSubject = new BehaviorSubject<any>(null);
   public emailContent$ = this.emailContentSubject.asObservable();
 
+  // Blog content sharing between review and client screens
+  private blogContentSubject = new BehaviorSubject<any>(null);
+  public blogContent$ = this.blogContentSubject.asObservable();
+
   constructor(private http: HttpClient) { }
 
   getTemplateId(): string {
@@ -157,6 +161,20 @@ export class ContentGenerationService {
 
   clearEmailContent(): void {
     this.emailContentSubject.next(null);
+  }
+
+  // Blog content sharing methods
+  setBlogContent(data: any): void {
+    console.log('Setting blog content:', data);
+    this.blogContentSubject.next(data);
+  }
+
+  getBlogContent(): Observable<any> {
+    return this.blogContent$;
+  }
+
+  clearBlogContent(): void {
+    this.blogContentSubject.next(null);
   }
 
   setTemplateId(value: string): void {

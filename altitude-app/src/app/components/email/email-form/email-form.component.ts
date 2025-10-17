@@ -116,7 +116,7 @@ export class EmailFormComponent {
   constructor(private aiContentGenerationService: ContentGenerationService, private socketConnection: SocketConnectionService) { }
 
   ngOnInit(): void {
-    this.socketConnection.dataSignal.set({});
+    // this.socketConnection.dataSignal.set({});
     console.log('store: ', this.store.campaignType());
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
@@ -157,9 +157,9 @@ export class EmailFormComponent {
     this.emailPayload.append('word_limit', formValues?.wordLimit || '');
     this.emailPayload.append('target_reader', formValues?.readers || '');
     this.emailPayload.append('image_details', formValues?.imageOpt || '');
-     if(formValues?.imgDesc ){
+    if (formValues?.imgDesc) {
       this.emailPayload.append('image_description', formValues?.imgDesc || '');
-    }  
+    }
 
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {

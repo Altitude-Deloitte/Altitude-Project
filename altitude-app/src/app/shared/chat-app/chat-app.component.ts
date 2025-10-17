@@ -189,10 +189,7 @@ export class ChatAppComponent implements OnDestroy {
 
     const routeMap: { [key: string]: string } = {
       'email campaign': '/email-review',
-      'email': '/email-review',
-      'blog campaign': '/blog-review',
-      'blog': '/blog-review',
-      'social media campaign': '/social-review',
+      'blog generation': '/blog-review',
       'social media': '/social-review',
       'social': '/social-review',
       'image campaign': '/image-review',
@@ -206,6 +203,13 @@ export class ChatAppComponent implements OnDestroy {
     const route = routeMap[campaignType.toLowerCase()];
 
     if (route) {
+      // Clear existing content before navigating to ensure fresh state
+      if (route === '/blog-review') {
+        this.contentService.clearBlogContent();
+      } else if (route === '/email-review') {
+        this.contentService.clearEmailContent();
+      }
+
       this.router.navigate([route]);
     } else {
       // Default to email review if no specific route found

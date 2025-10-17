@@ -21,15 +21,22 @@
         <div class="flex justify-center items-start gap-8 mt-8">
             <div class="flex-2 flex rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
                 <div class="bg-[#F6F5EF] rounded-2xl border-4 shadow-xl max-w-3xl w-full overflow-hidden">
-                    <!-- Article Content -->
+                    <!-- Blog Title -->
+                    <div style="background: black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                        <h1 style="margin: 0; font-size: 28px; font-family: Arial, sans-serif; line-height: 1.2;"
+                            [innerHTML]="blog_title">
+                        </h1>
+                    </div>
 
+                    <!-- Article Content -->
                     <div class="px-10 py-8">
                         <div>
                             <div class="w-full">
                                 @if (imageUrl) {
-                                <img [src]="imageUrl" alt="Main Visual" class="w-full object-cover" style="max-height:320px;" />
+                                <img [src]="imageUrl" alt="Main Visual" class="w-full object-cover"
+                                    style="max-height:320px;" />
                                 }
-                            
+
                             </div>
                             <div class="text-black" [innerHTML]="blogContent"></div>
                         </div>

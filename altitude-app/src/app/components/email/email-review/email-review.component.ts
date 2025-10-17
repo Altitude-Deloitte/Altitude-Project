@@ -24,6 +24,7 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
+import { DrawerModule } from 'primeng/drawer';
 @Component({
   selector: 'app-email-review',
   imports: [
@@ -40,6 +41,7 @@ import { DialogSuccessComponent } from '../../dialog-success/dialog-success.comp
     MenuModule,
     DialogModule,
     ProgressSpinnerModule,
+    DrawerModule,
   ],
   templateUrl: './email-review.component.html',
   styleUrl: './email-review.component.css',
@@ -76,6 +78,7 @@ export class EmailReviewComponent {
   errorMessage: string | null = null;
   brand: any;
   showComments = false;
+  showAgenticWorkflow = false;
 
   commentsList = [
     {
@@ -612,5 +615,101 @@ The html tags are separate and it should not be part of word count.`;
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
     }, 1000);
+  }
+
+  // Agentic Workflow Helper Methods
+  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+    const socketData = this.socketConnection.dataSignal();
+
+    // Define all agents in the correct order
+    const agentOrder = [
+      'Extraction Agent',
+      'prompt generation agent',
+      'content generation agent',
+      'reviewer agent'
+    ];
+
+    // Map agents with their current status from socket data or default to 'PENDING'
+    return agentOrder.map(agentName => {
+      const agentData = socketData[agentName];
+      return {
+        name: agentName,
+        status: agentData?.status || 'PENDING',
+        updatedAt: agentData?.updatedAt || '--:--:--'
+      };
+    });
+  }
+
+  getLineColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getMarkerUrl(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return 'url(#arrowGreen)';
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return 'url(#arrowYellow)';
+      case 'PENDING':
+      default:
+        return 'url(#arrowGray)';
+    }
+  }
+
+  getNodeColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#1e3a2e'; // Dark green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#3a2e1e'; // Dark yellow/orange
+      case 'FAILED':
+        return '#3a1e1e'; // Dark red
+      case 'PENDING':
+      default:
+        return '#1e1e1e'; // Dark gray
+    }
+  }
+
+  getStatusIconColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getStatusTextColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#86efac'; // Light green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#fde047'; // Light yellow
+      case 'FAILED':
+        return '#fca5a5'; // Light red
+      case 'PENDING':
+      default:
+        return '#d1d5db'; // Light gray
+    }
   }
 }

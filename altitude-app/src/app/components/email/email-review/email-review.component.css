@@ -5,3 +5,59 @@
 .custom-spinner .p-progress-spinner-circle {
   stroke: #8d4bff !important;
 }
+
+/* Agentic Workflow Animations */
+.workflow-container {
+  background: #0f0f0f;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.workflow-svg {
+  min-height: 600px;
+}
+
+/* Animated dashed line for IN_PROGRESS status - dashes move downwards */
+@keyframes dash-animation {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 12;
+  }
+}
+
+.animated-dashes {
+  animation: dash-animation 0.6s linear infinite;
+}
+
+/* Drawer custom styling */
+::ng-deep .p-drawer {
+  color: white !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header {
+  background: #121212 !important;
+  border-bottom: 1px solid #363636 !important;
+  color: white !important;
+  padding: 1.5rem !important;
+}
+
+::ng-deep .p-drawer .p-drawer-content {
+  background-color: #0f0f0f;
+  padding: 0 !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header .p-drawer-title {
+  color: white !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header-icons button {
+  color: white !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header-icons button:hover {
+  background: #363636 !important;
+}

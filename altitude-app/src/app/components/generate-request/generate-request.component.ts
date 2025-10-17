@@ -35,6 +35,8 @@ import { VideoFormComponent } from '../video/video-form/video-form.component';
 import { CombinedFormComponent } from '../Combined/combined-form/combined-form.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { ChatAppComponent } from '../../shared/chat-app/chat-app.component';
+import { SocketConnectionService } from '../../services/socket-connection.service';
+
 @Component({
   selector: 'app-generate-request',
   imports: [
@@ -83,9 +85,11 @@ export class GenerateRequestComponent implements OnInit {
       description: 'Use voice based method to input your idea.',
     },
   ];
+  private socketConnection = inject(SocketConnectionService);
 
   details: any = 'details';
   store = inject(SelectionStore);
+
   currentDate: any = new Date();
   dueDate: any = this.currentDate.toISOString().split('T')[0];
   taskID: any = ''; // Initialize with an empty string

@@ -1,0 +1,65 @@
+/* Agentic Workflow Styles */
+.workflow-container {
+  background: rgba(15, 15, 15, 0.8);
+  border-radius: 12px;
+  padding: 1rem;
+  backdrop-filter: blur(10px);
+}
+
+.workflow-svg {
+  min-height: 600px;
+}
+
+/* Animated dashed line for IN_PROGRESS status - dashes move downwards */
+@keyframes dash-animation {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 12;
+  }
+}
+
+.animated-dashes {
+  animation: dash-animation 0.6s linear infinite;
+}
+
+/* Border animation for IN_PROGRESS status - rotating border effect */
+@keyframes border-rotation {
+  0% {
+    stroke-dashoffset: 900;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.border-animation {
+  animation: border-rotation 2s linear infinite;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Completed border - solid purple border with smooth transition */
+.border-completed {
+  transition: stroke 0.5s ease-in-out, stroke-width 0.5s ease-in-out;
+}
+
+/* Smooth transitions for status changes */
+rect,
+circle,
+line {
+  transition: fill 0.5s ease-in-out, stroke 0.5s ease-in-out,
+    stroke-width 0.5s ease-in-out;
+}
+
+text {
+  transition: fill 0.3s ease-in-out;
+}
+
+/* Glow effect for email text (if not already defined globally) */
+.email-glow {
+  background: linear-gradient(90deg, #bb93ff 0%, #8d4bff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

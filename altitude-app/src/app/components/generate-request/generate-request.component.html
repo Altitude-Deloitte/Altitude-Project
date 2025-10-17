@@ -19,9 +19,9 @@
                             <div class="flex flex-col justify-center my-4">
 
                                 <div class="border border-[#363636] rounded-t-lg w-full">
-                                    <div class="flex gap-4 justify-center items-center p-8">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-8">
                                         @for (item of radiobtn; track $index) {
-                                        <a class="border  w-96 h-64 flex flex-wrap items-start justify-start p-8 rounded-2xl relative"
+                                        <a class="border flex flex-col items-start justify-start p-8 rounded-2xl relative min-h-64"
                                             [ngClass]="details === item.value ? 'border-[#FFFFFF]' : 'border-[#363636]'">
                                             <p-radioButton styleClass="absolute top-3 right-3 custom-radio-success"
                                                 size="large" name="details" [value]="item.value"
@@ -34,17 +34,19 @@
                                     </div>
                                 </div>
                                 <div class="border border-[#363636] rounded-b-lg border-t-0 p-4">
-                                    <div class="flex justify-between items-center flex-wrap">
-                                        <div class="flex gap-4 items-center justify-center">
+                                    <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+                                        <div
+                                            class="flex flex-col sm:flex-row gap-4 items-center justify-center w-full md:w-auto">
                                             <label for="taskId">
                                                 Task Id
                                             </label>
                                             <input type="text" pInputText [value]="taskID" disabled
-                                                class="bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]">
+                                                class="bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF] w-full sm:w-auto">
                                             <p class="text-xl"><b class="mr-2">Due Date:</b>{{dueDate}}</p>
                                         </div>
-                                        <p-button styleClass="px-6 py-3 bg-[#8D4BFF] rounded-full" label="Next"
-                                            (onClick)="activateCallback(2)" severity="help" rounded="true"></p-button>
+                                        <p-button styleClass="px-6 py-3 bg-[#8D4BFF] rounded-full w-full md:w-auto"
+                                            label="Next" (onClick)="activateCallback(2)" severity="help"
+                                            rounded="true"></p-button>
                                     </div>
 
                                 </div>
