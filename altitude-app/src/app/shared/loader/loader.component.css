@@ -1,13 +1,112 @@
+/* Loader wrapper - fixed height container */
+.loader-wrapper {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  max-height: 85vh;
+  overflow: hidden;
+}
+
+/* Background video container - stays fixed */
+.video-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.video-element {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+  object-fit: cover;
+}
+
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 1;
+}
+
+/* Scrollable content wrapper */
+.content-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 10;
+}
+
+/* Content inner container */
+.content-inner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100%;
+  padding: 2.5rem 0;
+  z-index: 10;
+}
+
+/* Spinning border - not used for now */
+.spinning-border {
+  display: none;
+}
+
+/* Custom scrollbar for content wrapper */
+.content-wrapper::-webkit-scrollbar {
+  width: 10px;
+}
+
+.content-wrapper::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  margin: 4px;
+}
+
+.content-wrapper::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #b66dff, #8d4bff);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.4);
+}
+
+.content-wrapper::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #8d4bff, #b66dff);
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
 /* Agentic Workflow Styles */
 .workflow-container {
   background: rgba(15, 15, 15, 0.8);
   border-radius: 12px;
   padding: 1rem;
   backdrop-filter: blur(10px);
+  position: relative;
+  width: 100%;
+  max-width: 500px;
 }
 
 .workflow-svg {
-  min-height: 600px;
+  height: 480px;
+  min-height: 480px;
+  max-height: 480px;
+  width: 100%;
+  position: relative;
+  display: block;
 }
 
 /* Animated dashed line for IN_PROGRESS status - dashes move downwards */
@@ -24,19 +123,24 @@
   animation: dash-animation 0.6s linear infinite;
 }
 
-/* Border animation for IN_PROGRESS status - rotating border effect */
+/* Border animation for IN_PROGRESS status - line travels around all 4 borders */
 @keyframes border-rotation {
   0% {
-    stroke-dashoffset: 900;
+    stroke-dashoffset: 0;
   }
   100% {
-    stroke-dashoffset: 0;
+    stroke-dashoffset: -720;
   }
 }
 
 .border-animation {
-  animation: border-rotation 2s linear infinite;
-  transition: all 0.3s ease-in-out;
+  stroke: #9a62e1 !important;
+  stroke-width: 3 !important;
+  fill: none !important;
+  stroke-dasharray: 180 540; /* 180 visible, 540 gap = 720 total (perimeter) */
+  stroke-dashoffset: 0;
+  animation: border-rotation 3s linear infinite;
+  stroke-linecap: round;
 }
 
 /* Completed border - solid purple border with smooth transition */

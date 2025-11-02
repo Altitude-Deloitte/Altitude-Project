@@ -300,6 +300,8 @@ The html tags are separate and it should not be part of word count`;
   }
 
   navigateToReview(): void {
+    // Set loading state to true before navigating
+    this.aiContentGenerationService.setEmailReviewLoading(true);
     this.route.navigateByUrl('email-review');
   }
 

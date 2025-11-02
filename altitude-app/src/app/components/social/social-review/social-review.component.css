@@ -1,0 +1,194 @@
+/* Toast Styling */
+::ng-deep .p-tablist-active-bar {
+  background-color: #09040e !important;
+}
+::ng-deep .p-toast .p-toast-message {
+  padding: 1.25rem;
+  margin: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+::ng-deep .p-toast .p-toast-message .p-toast-message-content,
+::ng-deep .p-toast .p-toast-message .p-toast-summary,
+::ng-deep .p-toast .p-toast-message .p-toast-detail {
+  color: #000000 !important;
+}
+
+::ng-deep .p-toast-message-success,
+::ng-deep .custom-toast-success {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+::ng-deep .custom-toast-success .p-toast-message-content,
+::ng-deep .custom-toast-success .p-toast-summary,
+::ng-deep .custom-toast-success .p-toast-detail,
+::ng-deep .custom-toast-success .p-toast-message-icon {
+  color: #000000 !important;
+}
+
+::ng-deep .p-toast-message-error {
+  background: rgba(239, 68, 68, 0.95);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+::ng-deep .p-toast-message-warn {
+  background: rgba(234, 179, 8, 0.95);
+  border: 1px solid rgba(234, 179, 8, 0.3);
+}
+
+/* Regeneration Section Styling */
+.regeneration-section {
+  padding: 1rem 0;
+}
+
+.regeneration-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e5e5e5;
+  margin-bottom: 0.75rem;
+}
+
+.regeneration-label i {
+  color: #b66dff;
+}
+
+/* Tab Container Background */
+::ng-deep .p-tablist {
+  background-color: #09040e !important;
+}
+
+/* Remove the active bar indicator */
+::ng-deep .p-tabs .p-tablist .p-activebar {
+  display: none !important;
+  background: transparent !important;
+  height: 0 !important;
+}
+
+/* Tab Styling - Active tab with purple background */
+::ng-deep .p-tablist .p-tab {
+  background-color: transparent !important;
+  color: white !important;
+  border-radius: 9999px !important;
+  transition: all 0.3s ease !important;
+  padding: 0.75rem 1.5rem !important;
+  margin: 0 0.25rem !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+::ng-deep .p-tablist .p-tab::before,
+::ng-deep .p-tablist .p-tab::after {
+  display: none !important;
+}
+
+::ng-deep .p-tab-header-action {
+  border-bottom: none !important;
+}
+
+::ng-deep .p-tablist .p-tab[data-p-active="true"] {
+  background-color: #8d4bff !important;
+  color: white !important;
+  border-bottom: none !important;
+}
+
+::ng-deep .p-tablist .p-tab[data-p-active="true"]::before,
+::ng-deep .p-tablist .p-tab[data-p-active="true"]::after {
+  display: none !important;
+}
+
+::ng-deep .p-tablist .p-tab:hover:not([data-p-active="true"]) {
+  background-color: rgba(141, 75, 255, 0.2) !important;
+}
+
+/* Fade-in animation for content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.6s ease-in-out;
+}
+
+/* Workflow animations */
+@keyframes dash-animation {
+  from {
+    stroke-dashoffset: 0;
+  }
+  to {
+    stroke-dashoffset: 12;
+  }
+}
+
+.animated-dashes {
+  animation: dash-animation 0.6s linear infinite;
+}
+
+@keyframes border-rotation {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -720;
+  }
+}
+
+.border-animation {
+  stroke-dasharray: 180 540;
+  animation: border-rotation 3s linear infinite;
+  stroke-linecap: round;
+}
+
+/* Workflow Container Styles */
+.workflow-container {
+  background: #0f0f0f;
+  border-radius: 8px;
+  overflow-x: auto;
+}
+
+.workflow-svg {
+  min-height: 600px;
+}
+
+/* Drawer custom styling */
+::ng-deep .p-drawer {
+  color: white !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header {
+  background: #121212 !important;
+  border-bottom: 1px solid #363636 !important;
+  color: white !important;
+  padding: 1.5rem !important;
+}
+
+::ng-deep .p-drawer .p-drawer-content {
+  background-color: #0f0f0f;
+  padding: 0 !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header .p-drawer-title {
+  color: white !important;
+  font-size: 1.25rem !important;
+  font-weight: 600 !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header-icons button {
+  color: white !important;
+}
+
+::ng-deep .p-drawer .p-drawer-header-icons button:hover {
+  background: #363636 !important;
+}

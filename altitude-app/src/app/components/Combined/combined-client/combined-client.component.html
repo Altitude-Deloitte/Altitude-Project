@@ -1,12 +1,12 @@
 <app-header></app-header>
 <div class="relative">
     <p-tabs value="0">
-        <div class="max-w-[90%] mt-4 mx-auto p-4">
+        <div class="max-w-[95%] combined-container px-2">
 
             <div class="flex justify-between items-center flex-wrap">
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center text-[#9B9B9B] gap-2">
-                        <a routerLink="/review">
+                        <a routerLink="/combined-review">
                             <i class="pi pi-angle-left"></i>
                             Back to Client Dashboard</a>
                     </div>
@@ -20,8 +20,8 @@
                     </div>
                 </div>
                 <div class="flex justify-center items-center gap-3">
-                    <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center bg-[#363636]">
-                        <div class="flex gap-4 items-center justify-center bg-[#363636]">
+                    <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
+                        <div class="flex gap-4 items-center justify-center bg-[#09040e]">
                             <p-tab value="0" class="text-white"><i class="pi pi-envelope text-white"></i>Email</p-tab>
                             <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
                                 Media</p-tab>
@@ -36,15 +36,15 @@
             </div>
             <p-tabpanels>
                 <p-tabpanel value="0">
-                    <div class="flex justify-center items-start gap-8 mt-8">
-                        <div class="flex-2 rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
+                    <div class="flex justify-center items-start gap-6 mt-8">
+                        <div class="flex-[3] rounded-xl bg-[#1A1A1A] p-6 justify-center items-center">
 
                             <div class="w-full text-center mb-8">
                                 <h1 class="text-3xl">{{this.selectedSubject}}</h1>
                             </div>
                             <div (click)="onPanelClick($event)" class="relative cursor-pointer">
                                 <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                    style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
+                                    style="max-width: 100%; margin: 0 auto; border-collapse: collapse;">
 
                                     <tbody>
 
@@ -233,8 +233,8 @@
                 </p-tabpanel>
                 <p-tabpanel value="1">
                     <p-tabs value="1">
-                        <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center bg-[#363636] w-46">
-                            <div class="flex gap-4 items-center justify-center bg-[#363636]">
+                        <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
+                            <div class="flex gap-4 items-center justify-center bg-[#09040e]">
                                 <p-tab value="0" class="bg-transparent text-decoration-none"
                                     style="color:var(--app-text-color);">Facebook</p-tab>
                                 <p-tab value="1" class="bg-transparent text-decoration-none"
@@ -408,6 +408,21 @@
                     <div class="flex justify-center items-start gap-8 mt-8">
                         <div class="flex-2 flex rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
                             <div class="bg-[#F6F5EF] rounded-2xl border-4 shadow-xl max-w-3xl w-full overflow-hidden">
+                                <!-- Blog Title -->
+                                @if (blog_title) {
+                                <div style="background: black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                    <h1 style="margin: 0; font-size: 28px; font-family: Arial, sans-serif; line-height: 1.2;"
+                                        [innerHTML]="blog_title">
+                                    </h1>
+                                </div>
+                                }
+                                <!-- Image Banner -->
+                                <div class="w-full">
+                                    @if (imageUrl) {
+                                    <img [src]="imageUrl" alt="Main Visual" class="w-full object-cover"
+                                        style="max-height:320px;" />
+                                    }
+                                </div>
                                 <!-- Article Content -->
 
                                 <div class="px-10 py-8">
@@ -477,13 +492,6 @@
                                             <div class="flex flex-col">
                                                 <span class="text-[#9b9b9b] text-sm">Format</span>
                                                 <span class="font-semibold">{{ formData?.format || '-' }}</span>
-                                            </div>
-                                            <div class="flex flex-col">
-                                                <span class="text-[#9b9b9b] text-sm">Status</span>
-                                                <span
-                                                    class="inline-block text-center w-28 px-4 py-3 rounded-full bg-[#E26F20] text-white font-semibold text-sm mt-1">
-                                                    {{ formData?.status || 'In-Progress' }}
-                                                </span>
                                             </div>
                                             <div class="flex flex-col">
                                                 <span class="text-[#9b9b9b] text-sm">Due Date</span>

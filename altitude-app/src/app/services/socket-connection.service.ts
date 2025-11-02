@@ -6,38 +6,79 @@ import { io, Socket } from 'socket.io-client';
 })
 export class SocketConnectionService {
   socket: any;
-  public dataSignal = signal<Record<string, { name: string; status: string; updatedAt: string }>>({});
-  private messageQueue: { name: string; status: string }[] = [];
+  public dataSignal = signal<Record<string, { name: string; status: string; updatedAt: string; message?: string; description?: string; order: number }>>({});
+  private messageQueue: { name: string; status: string; message?: string; description?: string }[] = [];
   private processingInterval: any;
+  private agentOrderCounter = 0; // Track the order agents are received
 
   connection = false;
   constructor() { this.connect(); this.startProcessingQueue(); }
   private connect() {
-    this.socket = io("https://campaign-content-creation-backend-392853354701.asia-south1.run.app/", {
-      transports: ["websocket"],   // force websocket (skip polling)
-    });  // Replace with your Socket.IO server URL
+    try {
+      this.socket = io("https://campaign-content-creation-backend-392853354701.asia-south1.run.app/", {
+        transports: ["websocket"],   // force websocket (skip polling)
+        reconnection: true,           // enable auto-reconnection
+        reconnectionAttempts: 5,      // limit reconnection attempts
+        reconnectionDelay: 1000,      // delay between reconnection attempts
+        timeout: 10000,               // connection timeout (10 seconds)
+        autoConnect: true,            // connect automatically
+      });
 
-    this.socket.on('connect', () => {
-      console.log('Socket connected:', this.socket);
-      this.connection = true;
-    });
+      this.socket.on('connect', () => {
+        console.log('✅ Socket connected successfully:', this.socket.id);
+        this.connection = true;
+      });
 
-    this.socket.on('disconnect', (reason: any) => {
-      console.warn('Socket disconnected:', reason);
-    });
+      this.socket.on('connect_error', (error: any) => {
+        console.error('❌ Socket connection error:', error.message);
+        this.connection = false;
+      });
 
-    this.socket.on('reconnect_attempt', () => {
-      console.log('Attempting to reconnect...');
-    });
-    this.socket.on('status', (message: { name: string; status: string }) => {
-      this.messageQueue.push(message);
-    });
-    // Listen for real-time data event
+      this.socket.on('connect_timeout', () => {
+        console.warn('⏱️ Socket connection timeout');
+        this.connection = false;
+      });
 
+      // this.socket.on('disconnect', (reason: any) => {
+      //   console.warn('🔌 Socket disconnected:', reason);
+      //   this.connection = false;
+      // });
+
+      this.socket.on('reconnect_attempt', (attemptNumber: number) => {
+        console.log(`🔄 Attempting to reconnect... (Attempt ${attemptNumber})`);
+      });
+
+      this.socket.on('reconnect_failed', () => {
+        console.error('❌ Socket reconnection failed after maximum attempts');
+        this.connection = false;
+      });
+
+      this.socket.on('status', (message: { name: string; status: string; message?: string; description?: string }) => {
+        this.messageQueue.push(message);
+      });
+    } catch (error) {
+      console.error('❌ Failed to initialize socket connection:', error);
+      this.connection = false;
+    }
   }
+
   sendMessage(event: string, payload: any) {
-    this.socket.emit(event, payload);
+    if (this.socket && this.connection) {
+      this.socket.emit(event, payload);
+    } else {
+      console.warn('⚠️ Socket not connected. Message not sent:', event, payload);
+    }
   }
+
+  // disconnect() {
+  //   if (this.socket) {
+  //     this.socket.disconnect();
+  //     console.log('🔌 Socket manually disconnected');
+  //   }
+  //   if (this.processingInterval) {
+  //     clearInterval(this.processingInterval);
+  //   }
+  // }
 
   private startProcessingQueue() {
     this.processingInterval = setInterval(() => {
@@ -46,15 +87,28 @@ export class SocketConnectionService {
 
         const timestamp = new Date().toLocaleTimeString();
         setTimeout(() => {
-          this.dataSignal.update((current) => ({
-            ...current,
-            [message!.name]: {
-              ...message!,
-              updatedAt: timestamp
-            }
-          }));
+          this.dataSignal.update((current) => {
+            // Assign order number if this is the first time we see this agent
+            const existingAgent = current[message!.name];
+            const order = existingAgent?.order ?? this.agentOrderCounter++;
+
+            return {
+              ...current,
+              [message!.name]: {
+                ...message!,
+                updatedAt: timestamp,
+                order
+              }
+            };
+          });
         }, 100);
       }
     }, 600);
+  }
+
+  // Method to clear agent data (called when starting new generation)
+  clearAgentData() {
+    this.dataSignal.set({});
+    this.agentOrderCounter = 0;
   }
 }

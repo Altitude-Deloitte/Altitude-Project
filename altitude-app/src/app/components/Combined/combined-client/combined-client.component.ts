@@ -122,6 +122,7 @@ export class CombinedClientComponent {
   title = 'AI-FACTORY';
   taskForm!: FormGroup;
   blogContent: any;
+  blog_title: any;
   ispublisLoaderDisabled = false;
   contentWithImage: any;
   brandlogoTop: any;
@@ -195,10 +196,35 @@ export class CombinedClientComponent {
         this.imageEventUrl = data;
       }
     });
-    this.brand = this.formData?.brand?.replace('.com', ' ');
-    let brandNames = this.formData?.brand?.trim();
-    brandNames = brandNames.replace(/\s+/g, '');
-    this.showMore = 'https://www.' + brandNames + '.com/';
+
+    // Normalize brand name once - single source of truth
+    let brandName = this.formData?.brand?.trim();
+    if (brandName) {
+      brandName = brandName.replace(/\s+/g, '');
+      // Add .com if it doesn't contain domain extension
+      if (!brandName.includes('.com') && !brandName.includes('.lk')) {
+        brandName = brandName + '.com';
+      }
+    }
+
+    console.log("Normalized brand name:", brandName);
+
+    // Set brand display name (without .com)
+    this.brand = brandName?.replace('.com', '').replace('.lk', '');
+
+    // Use normalized brandName for all variables
+    this.showMore = 'https://www.' + brandName;
+
+    // Set brandlogoTop using normalized brandName
+    this.brandlogoTop = brandName !== 'babycheramy.lk'
+      ? 'https://img.logo.dev/' + brandName + '?token=pk_SYZfwlzCQgO7up6SrPOrlw'
+      : 'https://www.babycheramy.lk/images/logo.webp';
+
+    // Set brandlogo for social media section (same as brandlogoTop)
+    this.brandlogo = this.brandlogoTop;
+
+    console.log('Brand logo URL:', this.brandlogoTop);
+    console.log('Show more URL:', this.showMore);
 
     //heading
     this.contentDisabled = true;
@@ -207,31 +233,40 @@ export class CombinedClientComponent {
       .subscribe((data) => {
         console.log('get headering for email ', data);
 
-        let emailContent =
-          typeof data.content === 'string'
-            ? data.content
-            : JSON.parse(data.content);
-        console.log('get header email heading content', emailContent);
-        this.emailHeader = emailContent;
-        console.log('get email header', this.emailHeader);
+        // Check for new API format
+        if (data?.result?.generation) {
+          this.emailHeader = data.result.generation.email_header;
+          this.subjctsEmail = data.result.generation.email_subjects || [];
+          this.imageUrl = data.result.generation.image_url;
+          console.log('Email header (new format):', this.emailHeader);
+          console.log('Email subjects:', this.subjctsEmail);
+        } else if (data?.content) {
+          // Old format fallback
+          let emailContent =
+            typeof data.content === 'string'
+              ? data.content
+              : JSON.parse(data.content);
+          console.log('get header email heading content', emailContent);
+          this.emailHeader = emailContent;
+          console.log('get email header', this.emailHeader);
+        }
       });
 
     this.ispublisLoaderDisabled = false;
-    let brandName = this.formData?.brand?.trim();
-    if (brandName) {
-      brandName = brandName.replace(/\s+/g, '');
-      this.brandlogoTop =
-        'https://img.logo.dev/' +
-        brandName +
-        '.com?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-      console.log('logo:', this.brandlogoTop);
-    }
     this.blogstructure = this.blogGuideLines();
     this.contentDisabled = true;
     this.aiContentGenerationService
       .getEmailResponsetData()
       .subscribe((data) => {
-        if (data?.content) {
+        console.log('Email body response:', data);
+
+        // Check for new API format
+        if (data?.result?.generation?.html) {
+          this.editorContentEmail = data.result.generation.html;
+          console.log('Email content (new format - html):', this.editorContentEmail);
+          this.existingEmailContent = this.editorContentEmail;
+        } else if (data?.content) {
+          // Old format fallback
           // Determine if the content is a string or JSON and parse accordingly
           let emailContent =
             typeof data.content === 'string'
@@ -260,16 +295,6 @@ export class CombinedClientComponent {
           this.contentDisabled = false;
           console.log('Total word count:', this.totalWordCount);
           this.chnge.detectChanges();
-        }
-
-        let brandName = this.formData?.brand?.trim();
-        if (brandName) {
-          brandName = brandName.replace(/\s+/g, '');
-          this.brandlogoTop =
-            'https://img.logo.dev/' +
-            brandName +
-            '.com?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-          console.log('logo:', this.brandlogoTop);
         }
 
         //brand logo and links
@@ -310,13 +335,73 @@ export class CombinedClientComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        console.log('social media response:', data?.content);
-        this.editorContentSocialMedia1 = data?.content;
-        this.editorContentSocialMedia1 = this.editorContentSocialMedia1
-          .replace(/"/g, '')
-          .trim();
+        console.log('social media complete response:', data);
+        console.log('Generation object:', data?.result?.generation);
+
+        // Extract Facebook content - check multiple possible structures
+        if (data?.result?.generation?.facebook) {
+          const fbData = data.result.generation.facebook;
+          console.log('Facebook data object:', fbData, 'Type:', typeof fbData);
+          // Handle if fbData is a string directly or has content/text properties
+          if (typeof fbData === 'string') {
+            this.editorContentSocialMedia1 = fbData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia1 = (fbData.content || fbData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Facebook content extracted:', this.editorContentSocialMedia1);
+        } else if (data?.result?.generation?.Facebook) {
+          const fbData = data.result.generation.Facebook;
+          console.log('Facebook data object (uppercase):', fbData, 'Type:', typeof fbData);
+          if (typeof fbData === 'string') {
+            this.editorContentSocialMedia1 = fbData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia1 = (fbData.content || fbData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Facebook content extracted (uppercase):', this.editorContentSocialMedia1);
+        } else if (data?.content) {
+          // Old format fallback
+          this.editorContentSocialMedia1 = data.content.replace(/"/g, '').trim();
+          console.log('Facebook content (old format):', this.editorContentSocialMedia1);
+        } else {
+          console.warn('No Facebook content found in response!');
+        }
+
+        // Extract Instagram content from the SAME response
+        console.log('Extracting Instagram content from same response:', data);
+        if (data?.result?.generation?.instagram) {
+          const instaData = data.result.generation.instagram;
+          console.log('Instagram data object:', instaData);
+          if (typeof instaData === 'string') {
+            this.editorContentSocialMedia2 = instaData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia2 = (instaData.content || instaData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Instagram content (new format lowercase):', this.editorContentSocialMedia2);
+        } else if (data?.result?.generation?.Instagram) {
+          const instaData = data.result.generation.Instagram;
+          console.log('Instagram data object (uppercase):', instaData);
+          if (typeof instaData === 'string') {
+            this.editorContentSocialMedia2 = instaData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia2 = (instaData.content || instaData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Instagram content (new format uppercase):', this.editorContentSocialMedia2);
+        } else if (data?.content && !this.editorContentSocialMedia2) {
+          // Old format fallback - use same content as Facebook if no separate Instagram data
+          this.editorContentSocialMedia2 = data.content.replace(/"/g, '').trim();
+          console.log('Instagram content (old format fallback):', this.editorContentSocialMedia2);
+        }
+
         //refine content
-        this.characterCount = this.editorContentSocialMedia1.length;
+        this.characterCount = this.editorContentSocialMedia1?.length || 0;
         this.existingContent = this.editorContentSocialMedia1;
         this.contentDisabled = false;
         // Function to count words in a string
@@ -337,64 +422,37 @@ export class CombinedClientComponent {
         console.log('Total word count:', this.totalWordCount);
         this.chnge.detectChanges();
 
-        let brandName = this.formData?.brand?.trim();
-        if (brandName) {
-          brandName = brandName.replace(/\s+/g, '');
-          this.brandlogo =
-            'https://img.logo.dev/' +
-            brandName +
-            '.com?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-          console.log('logo:', this.brandlogo);
-        }
-
-        this.chnge.detectChanges();
-      });
-
-    this.aiContentGenerationService
-      .getSocialResponsetData1()
-      .subscribe((data) => {
-        this.editorContentSocialMedia2 = data?.content;
-        this.editorContentSocialMedia2 = this.editorContentSocialMedia2
-          .replace(/"/g, '')
-          .trim();
-        //refine content
-        this.characterCount = this.editorContentSocialMedia1.length;
-        this.existingContent = this.editorContentSocialMedia2;
-        this.contentDisabled = false;
-        // Function to count words in a string
-        const countWords = (emailContent: any) => {
-          if (!emailContent) return 0;
-          // Normalize spaces and split by space to get words
-          return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-        };
-        // Count words in different parts of the email content
-        this.totalWordCount = countWords(this.editorContentSocialMedia2);
-
-        //this.isContentLoaded= false;
-        this.isEMailPromptDisabled = false;
-        this.commonPromptIsLoading = false;
-        this.isImageRegenrateDisabled = false;
-        this.isImageRefineDisabled = false;
-
-        console.log('Total word count:', this.totalWordCount);
-        this.chnge.detectChanges();
-
-        let brandName = this.formData?.brand?.trim();
-        if (brandName) {
-          brandName = brandName.replace(/\s+/g, '');
-          this.brandlogo =
-            'https://img.logo.dev/' +
-            brandName +
-            '.com?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-          console.log('logo:', this.brandlogo);
-        }
-
         this.chnge.detectChanges();
       });
 
     //blog
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.content;
+      console.log('blog response:', data);
+
+      // Check for new API format - expecting data.result.generation.html
+      if (data?.result?.generation?.html) {
+        this.editorContentSocialMedia = data.result.generation.html;
+        console.log('Blog content (new format - html field):', this.editorContentSocialMedia);
+
+        // Extract blog_title if available
+        if (data.result.generation.blog_title) {
+          this.blog_title = data.result.generation.blog_title;
+          console.log('Blog title extracted:', this.blog_title);
+        }
+      } else if (data?.result?.generation?.blog) {
+        this.editorContentSocialMedia = data.result.generation.blog;
+        console.log('Blog content (new format - blog field):', this.editorContentSocialMedia);
+
+        // Extract blog_title if available
+        if (data.result.generation.blog_title) {
+          this.blog_title = data.result.generation.blog_title;
+          console.log('Blog title extracted:', this.blog_title);
+        }
+      } else if (data?.content) {
+        // Old format fallback
+        this.editorContentSocialMedia = data.content;
+        console.log('Blog content (old format):', this.editorContentSocialMedia);
+      }
       const cleanedString = this.editorContentSocialMedia
         .replace(/^```html/, '')
         .replace(/```$/, '');

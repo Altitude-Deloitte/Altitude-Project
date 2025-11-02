@@ -1,0 +1,75 @@
+/* Tab Container Background - applies to all tab lists */
+::ng-deep .p-tablist {
+  background-color: #09040e !important;
+  border-radius: 9999px !important;
+}
+.combined-container{
+    margin: 2% 5% 0 5%;
+}
+/* Remove the active bar indicator */
+::ng-deep .p-tabs .p-tablist .p-activebar {
+  display: none !important;
+  background: transparent !important;
+  height: 0 !important;
+}
+
+/* Ensure nested tabs also get proper styling */
+::ng-deep .p-tabpanel .p-tabs .p-tablist {
+  background-color: #09040e !important;
+  border-radius: 9999px !important;
+  width: fit-content !important;
+  margin: 0 auto !important;
+}
+
+/* Tab Styling - Active tab with purple background */
+::ng-deep .p-tablist .p-tab {
+  background-color: transparent !important;
+  color: white !important;
+  border-radius: 9999px !important;
+  transition: all 0.3s ease !important;
+  padding: 0.75rem 1.5rem !important;
+  margin: 0 0.25rem !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-bottom: none !important;
+}
+
+::ng-deep .p-tablist .p-tab::before,
+::ng-deep .p-tablist .p-tab::after {
+  display: none !important;
+}
+
+::ng-deep .p-tab-header-action {
+  border-bottom: none !important;
+}
+
+::ng-deep .p-tablist .p-tab[data-p-active="true"] {
+  background-color: #8d4bff !important;
+  color: white !important;
+  border-bottom: none !important;
+}
+
+::ng-deep .p-tablist .p-tab[data-p-active="true"]::before,
+::ng-deep .p-tablist .p-tab[data-p-active="true"]::after {
+  display: none !important;
+}
+
+::ng-deep .p-tablist .p-tab:hover:not([data-p-active="true"]) {
+  background-color: rgba(141, 75, 255, 0.2) !important;
+}
+
+/* Fade-in animation for content */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}

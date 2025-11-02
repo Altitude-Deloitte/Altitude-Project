@@ -1,7 +1,12 @@
 <app-header></app-header>
 
+<!-- Toast for notifications -->
+<p-toast position="top-right" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"></p-toast>
 
-<div class="">
+@if (loading) {
+<app-loader></app-loader>
+} @else {
+<div class="fade-in" style="min-height: 110vh;">
     <div
         class="max-w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
         <div class="flex w-full flex-wrap justify-between items-center">
@@ -74,21 +79,17 @@
                                 <!-- Connection line from previous node -->
                                 <ng-container *ngIf="i > 0">
                                     <line [attr.x1]="275" [attr.y1]="70 + (i - 1) * 120 + 80" [attr.x2]="275"
-                                        [attr.y2]="70 + i * 120" [attr.stroke]="getLineColor(agent.status)"
-                                        [attr.stroke-width]="2"
-                                        [attr.stroke-dasharray]="agent.status === 'IN_PROGRESS' ? '8,4' : '0'"
-                                        [attr.marker-end]="getMarkerUrl(agent.status)"
-                                        [class.animated-dashes]="agent.status === 'IN_PROGRESS'" />
+                                        [attr.y2]="70 + i * 120" stroke="#22c55e" stroke-width="2"
+                                        marker-end="url(#arrowGreen)" />
                                 </ng-container>
 
                                 <!-- Agent node -->
                                 <g [attr.transform]="'translate(100, ' + (70 + i * 120) + ')'">
-                                    <rect x="0" y="0" width="350" height="80" rx="10"
-                                        [attr.fill]="getNodeColor(agent.status)" stroke="#4a5568" stroke-width="2" />
+                                    <rect x="0" y="0" width="350" height="80" rx="10" fill="#1e3a2e" stroke="#b66dff"
+                                        stroke-width="2" />
 
                                     <!-- Status icon -->
-                                    <circle [attr.cx]="20" [attr.cy]="40" r="8"
-                                        [attr.fill]="getStatusIconColor(agent.status)" />
+                                    <circle [attr.cx]="20" [attr.cy]="40" r="8" fill="#22c55e" />
 
                                     <!-- Agent name -->
                                     <text x="40" y="35" fill="#fff" font-size="16" font-weight="600">
@@ -96,13 +97,8 @@
                                     </text>
 
                                     <!-- Status text -->
-                                    <text x="40" y="55" [attr.fill]="getStatusTextColor(agent.status)" font-size="12">
-                                        Status: {{ agent.status }}
-                                    </text>
-
-                                    <!-- Updated time -->
-                                    <text x="280" y="55" fill="#9ca3af" font-size="11">
-                                        {{ agent.updatedAt }}
+                                    <text x="40" y="55" fill="#86efac" font-size="12">
+                                        Status: COMPLETED
                                     </text>
                                 </g>
                             </ng-container>
@@ -247,128 +243,166 @@
                                         (onChange)="onSubjectChange($event.value)"></p-select>
                                 </form>
                             </div>
-                            @if (loading) {
-                            <p-progress-spinner strokeWidth="2" fill="transparent" animationDuration=".5s"
-                                styleClass="custom-spinner" [style]="{ width: '50px', height: '50px'}" />
-                            }@else {
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%"
-                                style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
-                                <tbody>
 
-                                    <tr>
+                            <!-- Content Display Area with Spinner Overlay -->
+                            <div class="relative w-full">
+                                <!-- Loading Spinner Overlay -->
+                                <div *ngIf="isRegeneratingContent || isRegeneratingImage"
+                                    class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-2xl z-10">
+                                    <p-progressSpinner styleClass="w-16 h-16" strokeWidth="4" fill="transparent"
+                                        animationDuration=".8s"></p-progressSpinner>
+                                </div>
 
-                                        <td class="rounded-t-xl"
-                                            style="background-color:#ffffff; padding: 20px;display: flex; justify-content: center;align-items: center;">
-                                            <img [src]="this.brandlogoTop" alt="brandlogo">
-                                    </tr>
+                                <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                    style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
+                                    <tbody>
 
-                                    <tr>
-                                        <td
-                                            style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
-                                            <h1
-                                                style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
-                                                <span class="email-content" style="font-weight: bold;"
-                                                    [innerHTML]="this.emailHeader"></span>
-                                            </h1>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td [style.height]="imageContainerHeight" [style.width]="imageContainerWidth"
-                                            align="center" class="image-width" style="font-size: 1px;line-height: 1px;"
-                                            *ngIf="this.imageUrl && this.editorContentEmail ">
-                                            <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
-                                                <img [style.height]="imageContainerHeight"
-                                                    [style.width]="imageContainerWidth" border="0" alt="Banner Image"
-                                                    [src]="this.imageUrl" />
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td style=" text-align: center; background-color: #ffffff;">
-                                            <ng-container *ngIf="imageOfferUrl && !imageUrl; ">
-                                                <img [src]="this.imageOfferUrl" alt="banner"
-                                                    style="max-width: 100%; height: auto;" />
-                                            </ng-container>
+                                        <tr>
 
-                                        </td>
-                                    </tr>
+                                            <td class="rounded-t-xl"
+                                                style="background-color:#ffffff; padding: 20px;display: flex; justify-content: center;align-items: center;">
+                                                <img [src]="this.brandlogoTop" alt="brandlogo">
+                                        </tr>
 
-                                    <tr>
-                                        <td style="background-color: #ffffff; padding: 30px 20px;">
-                                            <div *ngIf="!contentDisabled"
-                                                style="font-family: 'Open Sans', sans-serif;font-size: 18px; color: #333333; line-height: 1.6;"
-                                                [innerHTML]="this.editorContentEmail"></div>
+                                        <tr>
+                                            <td
+                                                style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                                <h1
+                                                    style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
+                                                    <span class="email-content" style="font-weight: bold;"
+                                                        [innerHTML]="this.emailHeader"></span>
+                                                </h1>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td [style.height]="imageContainerHeight"
+                                                [style.width]="imageContainerWidth" align="center" class="image-width"
+                                                style="font-size: 1px;line-height: 1px;"
+                                                *ngIf="this.imageUrl && this.editorContentEmail ">
+                                                <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
+                                                    <img [style.height]="imageContainerHeight"
+                                                        [style.width]="imageContainerWidth" border="0"
+                                                        alt="Banner Image" [src]="this.imageUrl" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style=" text-align: center; background-color: #ffffff;">
+                                                <ng-container *ngIf="imageOfferUrl && !imageUrl; ">
+                                                    <img [src]="this.imageOfferUrl" alt="banner"
+                                                        style="max-width: 100%; height: auto;" />
+                                                </ng-container>
 
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
 
+                                        <tr>
+                                            <td style="background-color: #ffffff; padding: 30px 20px;">
+                                                <div *ngIf="!contentDisabled"
+                                                    style="font-family: 'Open Sans', sans-serif;font-size: 18px; color: #333333; line-height: 1.6;"
+                                                    [innerHTML]="this.editorContentEmail"></div>
 
-                                    <tr>
-                                        <td style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
-
-                                            <a [href]="this.showMore" target="_blank"
-                                                style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
-                                                Know More
-                                            </a>
-                                        </td>
-                                    </tr>
+                                            </td>
+                                        </tr>
 
 
-                                    <tr>
-                                        <td class="rounded-b-xl"
-                                            style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
-                                            <p
-                                                style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
-                                                www.{{formData?.brand }} | INFO{{'@'+formData?.brand}}
+                                        <tr>
+                                            <td
+                                                style="background-color: #f8f8f8; padding: 30px 20px; text-align: center;">
 
-                                            </p>
-                                            <p
-                                                style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
-                                                As a valued subscriber, we greatly appreciate your time. Thank you for
-                                                your
-                                                continued attention
-                                                to
-                                                our company news.
-                                                You may unsubscribe from our email updates at any time.
-                                            </p>
-                                            <p
-                                                style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
-                                                Copyright © 2025 {{formData?.brand}} All Rights Reserved.
-                                            </p>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            }
+                                                <a [href]="this.showMore" target="_blank"
+                                                    style="display: inline-block; padding: 12px 30px; background: black; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                                                    Know More
+                                                </a>
+                                            </td>
+                                        </tr>
+
+
+                                        <tr>
+                                            <td class="rounded-b-xl"
+                                                style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                                <p
+                                                    style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
+                                                    www.{{formData?.brand }} | INFO{{'@'+formData?.brand}}
+
+                                                </p>
+                                                <p
+                                                    style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
+                                                    As a valued subscriber, we greatly appreciate your time. Thank you
+                                                    for
+                                                    your
+                                                    continued attention
+                                                    to
+                                                    our company news.
+                                                    You may unsubscribe from our email updates at any time.
+                                                </p>
+                                                <p
+                                                    style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
+                                                    Copyright © 2025 {{formData?.brand}} All Rights Reserved.
+                                                </p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- End of Content Display Area with Spinner Overlay -->
 
                         </div>
                         <div class="flex items-center gap-2 mt-4">
-                            <button class="border-1 border-white rounded-full p-3">Use an informal tone for
-                                communication</button>
-                            <button class="border-1 border-white rounded-full p-3">Make Another Version</button>
+                            <button (click)="appendToContentFeedback('Use an informal tone for communication')"
+                                class="border-1 border-white rounded-full p-3 hover:bg-[#8D4BFF] transition cursor-pointer">
+                                Use an informal tone for communication
+                            </button>
+                            <button (click)="appendToContentFeedback('Use 200 words')"
+                                class="border-1 border-white rounded-full p-3 hover:bg-[#8D4BFF] transition cursor-pointer">
+                                Use 200 words
+                            </button>
                         </div>
-                        <div class="w-full mt-6 mb-6">
-                            <div class="bg-[#1A1A1A] rounded-2xl px-4 py-3 flex items-center gap-2 shadow-inner"
-                                style="box-shadow: 0 2px 16px 0 #00000040;">
-                                <!-- Attachment Icon Button -->
-                                <button
-                                    class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#1A1A1A] hover:bg-[#29252f] transition">
-                                    <i class="pi pi-paperclip text-2xl text-gray-400"></i>
-                                </button>
-                                <!-- Input -->
-                                <input pInputText
-                                    class="flex-1 bg-transparent border-none text-white text-lg placeholder-gray-400 focus:ring-0 focus:border-0 outline-none"
-                                    placeholder="Ask to modify" style="height: 48px;" />
-                                <!-- Mic Icon Button -->
-                                <button
-                                    class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#1A1A1A] hover:bg-[#29252f] transition ml-2">
-                                    <i class="pi pi-microphone text-2xl text-gray-400"></i>
-                                </button>
-                                <!-- Send Button -->
-                                <button
-                                    class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#8D4BFF] hover:bg-[#B66DFF] transition ml-2">
-                                    <i class="pi pi-send text-2xl text-white"></i>
-                                </button>
+
+                        <!-- Regeneration Section -->
+                        <div class="w-full mt-8 space-y-6">
+                            <!-- Content Regeneration -->
+                            <div class="regeneration-section">
+                                <label class="block text-white text-lg font-semibold mb-3">
+                                    <i class="pi pi-refresh mr-2"></i>Regenerate Content
+                                </label>
+                                <div class="bg-[#1A1A1A] rounded-2xl px-4 py-3 flex items-center gap-2 shadow-inner"
+                                    style="box-shadow: 0 2px 16px 0 #00000040;">
+                                    <!-- Input -->
+                                    <input pInputText [(ngModel)]="contentFeedback" [disabled]="isRegeneratingContent"
+                                        class="flex-1 bg-transparent border-none text-white text-lg placeholder-gray-400 focus:ring-0 focus:border-0 outline-none"
+                                        placeholder="Type to regenerate" style="height: 48px;" />
+                                    <!-- Submit Button -->
+                                    <button (click)="regenerateContent()" [disabled]="isRegeneratingContent"
+                                        class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#8D4BFF] hover:bg-[#B66DFF] transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <i *ngIf="!isRegeneratingContent" class="pi pi-send text-2xl text-white"></i>
+                                        <p-progressSpinner *ngIf="isRegeneratingContent" styleClass="w-6 h-6"
+                                            strokeWidth="4" fill="transparent"
+                                            animationDuration=".8s"></p-progressSpinner>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Image Regeneration -->
+                            <div class="regeneration-section">
+                                <label class="block text-white text-lg font-semibold mb-3">
+                                    <i class="pi pi-image mr-2"></i>Image Regenerate
+                                </label>
+                                <div class="bg-[#1A1A1A] rounded-2xl px-4 py-3 flex items-center gap-2 shadow-inner"
+                                    style="box-shadow: 0 2px 16px 0 #00000040;">
+                                    <!-- Input -->
+                                    <input pInputText [(ngModel)]="imageFeedback" [disabled]="isRegeneratingImage"
+                                        class="flex-1 bg-transparent border-none text-white text-lg placeholder-gray-400 focus:ring-0 focus:border-0 outline-none"
+                                        placeholder="Type to regenerate" style="height: 48px;" />
+                                    <!-- Submit Button -->
+                                    <button (click)="regenerateImage()" [disabled]="isRegeneratingImage"
+                                        class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#8D4BFF] hover:bg-[#B66DFF] transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <i *ngIf="!isRegeneratingImage" class="pi pi-send text-2xl text-white"></i>
+                                        <p-progressSpinner *ngIf="isRegeneratingImage" styleClass="w-6 h-6"
+                                            strokeWidth="4" fill="transparent"
+                                            animationDuration=".8s"></p-progressSpinner>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -377,9 +411,9 @@
         </div>
 
     </div>
-    <!-- <div class="flex  items-center">
-        
-        </div> -->
-    <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 rounded-full float-right" label="Send For Approval"
-        (onClick)="navigateToForm()"></p-button>
+    <div class="flex justify-end mr-4 mb-8">
+        <p-button class="bg-[#8D4BFF] p-4 rounded-full" label="Send For Approval"
+            (onClick)="navigateToForm()"></p-button>
+    </div>
 </div>
+}

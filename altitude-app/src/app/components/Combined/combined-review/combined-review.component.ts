@@ -5,6 +5,7 @@ import {
   Input,
   input,
   ViewChild,
+  OnDestroy,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
@@ -19,6 +20,9 @@ import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
+import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 
 @Component({
   selector: 'app-combined-review',
@@ -40,11 +44,12 @@ import { DialogModule } from 'primeng/dialog';
     RouterLink,
     MenuModule,
     DialogModule,
+    LoaderComponent,
   ],
   templateUrl: './combined-review.component.html',
   styleUrl: './combined-review.component.css',
 })
-export class CombinedReviewComponent {
+export class CombinedReviewComponent implements OnDestroy {
   subjctsEmail: string[] = [];
   selectedSubject: string = '';
   imageContainerHeight = '440px';
@@ -68,6 +73,7 @@ export class CombinedReviewComponent {
 
   //soccial media
   characterCount: number = 0;
+  selectedSocialPlatforms: string[] = [];
 
   images: { src: string; checked: boolean }[] = [
     { src: 'assets/car1.png', checked: false },
@@ -107,6 +113,8 @@ export class CombinedReviewComponent {
   isImageRegenrateDisabled = false;
   isImageRefineDisabled = false;
   translateIsLoading = false;
+  private dataLoadedCount = 0;
+  private totalDataToLoad = 3; // email, social, blog
   brandLinks: any[] = [];
   brandlogo: any;
   seoTitle: string = '';
@@ -115,6 +123,7 @@ export class CombinedReviewComponent {
   title = 'AI-FACTORY';
   taskForm!: FormGroup;
   blogContent: any;
+  blog_title: any;
   //social media
   hyperUrl: any;
   brand: any;
@@ -146,9 +155,20 @@ export class CombinedReviewComponent {
   editorContentSocialMedia2: any;
   constructor(
     private route: Router,
+    private dialog: MatDialog,
     private aiContentGenerationService: ContentGenerationService,
     private chnge: ChangeDetectorRef
   ) { }
+
+  private checkAllDataLoaded(): void {
+    this.dataLoadedCount++;
+    console.log(`Data loaded count: ${this.dataLoadedCount}/${this.totalDataToLoad}`);
+    if (this.dataLoadedCount >= this.totalDataToLoad) {
+      this.loading = false;
+      console.log('All data loaded, hiding loader');
+      this.chnge.detectChanges();
+    }
+  }
 
   formData: any;
   ngOnInit(): void {
@@ -158,6 +178,14 @@ export class CombinedReviewComponent {
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
       console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
+
+      // Get selected social media platforms from campaign2
+      if (data?.campaign2) {
+        this.selectedSocialPlatforms = Array.isArray(data.campaign2)
+          ? data.campaign2
+          : data.campaign2.split(',').map((p: string) => p.trim());
+        console.log('Selected social platforms:', this.selectedSocialPlatforms);
+      }
     });
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {
@@ -187,56 +215,71 @@ export class CombinedReviewComponent {
     brandName = brandName.replace(/\s+/g, '');
     this.showMore = 'https://www.' + brandName + '.com/';
 
-    //heading
+    //heading and email content - now using new API format
     this.contentDisabled = true;
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        console.log('get headering for email ', data);
+        console.log('get email complete response:', data);
 
-        let emailContent =
-          typeof data.content === 'string'
-            ? data.content
-            : JSON.parse(data.content);
-        console.log('get header email heading content', emailContent);
-        this.emailHeader = emailContent;
-        console.log('get email header', this.emailHeader);
-      });
+        // Check if data has the new format (result.generation) or old format (content)
+        if (data?.result?.generation) {
+          // New API format from generateContent
+          this.emailHeader = data.result.generation.email_header;
+          console.log('email header (new format):', this.emailHeader);
 
-    this.contentDisabled = true;
-    this.aiContentGenerationService
-      .getEmailResponsetData()
-      .subscribe((data) => {
-        if (data?.content) {
-          // Determine if the content is a string or JSON and parse accordingly
+          // Extract email body content
+          if (data.result.generation.html) {
+            let emailContent =
+              typeof data.result.generation.html === 'string'
+                ? data.result.generation.html
+                : JSON.parse(data.result.generation.html);
+            emailContent = emailContent.replace(/"/g, '').trim();
+            this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+            console.log('email body content:', this.editorContentEmail);
+            this.existingEmailContent = this.editorContentEmail;
+            this.hyperUrl = this.formData?.Hashtags;
+
+            // Function to count words in a string
+            const countWords = (emailContent: any) => {
+              if (!emailContent) return 0;
+              // Normalize spaces and split by space to get words
+              return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
+            };
+            // Count words in different parts of the email content
+            this.totalWordCount = countWords(this.editorContentEmail);
+
+            this.checkAllDataLoaded(); // Email data loaded
+            this.isEMailPromptDisabled = false;
+            this.commonPromptIsLoading = false;
+            this.translateIsLoading = false;
+            this.isImageRegenrateDisabled = false;
+            this.isImageRefineDisabled = false;
+
+            this.contentDisabled = false;
+            console.log('Total word count:', this.totalWordCount);
+            this.chnge.detectChanges();
+          }
+
+          // Extract email subjects from new format
+          if (data.result.generation.email_subjects) {
+            this.subjctsEmail = data.result.generation.email_subjects;
+            console.log('email subjects (new format):', this.subjctsEmail);
+          }
+
+          // Extract image URL from new format
+          if (data.result.generation.image_url) {
+            this.imageUrl = data.result.generation.image_url;
+            console.log('image URL (new format):', this.imageUrl);
+          }
+        } else if (data?.content) {
+          // Old API format fallback (for backward compatibility)
           let emailContent =
             typeof data.content === 'string'
               ? data.content
               : JSON.parse(data.content);
-          emailContent = emailContent.replace(/"/g, '').trim();
-          this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
-          console.log('email para : ', this.editorContentEmail);
-          this.existingEmailContent = this.editorContentEmail;
-          this.hyperUrl = this.formData?.Hashtags;
-          // Function to count words in a string
-          const countWords = (emailContent: any) => {
-            if (!emailContent) return 0;
-            // Normalize spaces and split by space to get words
-            return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-          };
-          // Count words in different parts of the email content
-          this.totalWordCount = countWords(this.editorContentEmail);
-
-          this.loading = false;
-          this.isEMailPromptDisabled = false;
-          this.commonPromptIsLoading = false;
-          this.translateIsLoading = false;
-          this.isImageRegenrateDisabled = false;
-          this.isImageRefineDisabled = false;
-
-          this.contentDisabled = false;
-          console.log('Total word count:', this.totalWordCount);
-          this.chnge.detectChanges();
+          this.emailHeader = emailContent;
+          console.log('email header (old format):', this.emailHeader);
         }
 
         let brandName = this.formData?.brand?.trim();
@@ -312,13 +355,43 @@ export class CombinedReviewComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        console.log('social media response:', data?.content);
-        this.editorContentSocialMedia1 = data?.content;
-        this.editorContentSocialMedia1 = this.editorContentSocialMedia1
-          .replace(/"/g, '')
-          .trim();
+        console.log('Social media complete response:', data);
+        console.log('Generation object:', data?.result?.generation);
+
+        // Extract Facebook content - check multiple possible structures
+        if (data?.result?.generation?.facebook) {
+          const fbData = data.result.generation.facebook;
+          console.log('Facebook data object:', fbData, 'Type:', typeof fbData);
+          // Handle if fbData is a string directly or has content/text properties
+          if (typeof fbData === 'string') {
+            this.editorContentSocialMedia1 = fbData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia1 = (fbData.content || fbData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Facebook content extracted:', this.editorContentSocialMedia1);
+        } else if (data?.result?.generation?.Facebook) {
+          const fbData = data.result.generation.Facebook;
+          console.log('Facebook data object (uppercase):', fbData, 'Type:', typeof fbData);
+          if (typeof fbData === 'string') {
+            this.editorContentSocialMedia1 = fbData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia1 = (fbData.content || fbData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Facebook content extracted (uppercase):', this.editorContentSocialMedia1);
+        } else if (data?.content) {
+          // Old format fallback
+          this.editorContentSocialMedia1 = data.content.replace(/"/g, '').trim();
+          console.log('Facebook content (old format):', this.editorContentSocialMedia1);
+        } else {
+          console.warn('No Facebook content found in response!');
+        }
+
         //refine content
-        this.characterCount = this.editorContentSocialMedia1.length;
+        this.characterCount = this.editorContentSocialMedia1?.length || 0;
         this.existingContent = this.editorContentSocialMedia1;
         this.contentDisabled = false;
         // Function to count words in a string
@@ -349,60 +422,77 @@ export class CombinedReviewComponent {
           console.log('logo:', this.brandlogo);
         }
 
-        this.chnge.detectChanges();
-      });
-    this.aiContentGenerationService
-      .getSocialResponsetData1()
-      .subscribe((data) => {
-        this.editorContentSocialMedia2 = data?.content;
-        this.editorContentSocialMedia2 = this.editorContentSocialMedia2
-          .replace(/"/g, '')
-          .trim();
-        //refine content
-        this.characterCount = this.editorContentSocialMedia1.length;
-        this.existingContent = this.editorContentSocialMedia2;
-        this.contentDisabled = false;
-        // Function to count words in a string
-        const countWords = (emailContent: any) => {
-          if (!emailContent) return 0;
-          // Normalize spaces and split by space to get words
-          return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-        };
-        // Count words in different parts of the email content
-        this.totalWordCount = countWords(this.editorContentSocialMedia2);
 
-        //this.isContentLoaded= false;
-        this.isEMailPromptDisabled = false;
-        this.commonPromptIsLoading = false;
-        this.isImageRegenrateDisabled = false;
-        this.isImageRefineDisabled = false;
-
-        console.log('Total word count:', this.totalWordCount);
-        this.chnge.detectChanges();
-
-        let brandName = this.formData?.brand?.trim();
-        if (brandName) {
-          brandName = brandName.replace(/\s+/g, '');
-          this.brandlogo =
-            'https://img.logo.dev/' +
-            brandName +
-            '.com?token=pk_SYZfwlzCQgO7up6SrPOrlw';
-          console.log('logo:', this.brandlogo);
+        // Extract Instagram content from the SAME response (not a separate subscription)
+        console.log('Extracting Instagram content from same response:', data);
+        if (data?.result?.generation?.instagram) {
+          const instaData = data.result.generation.instagram;
+          console.log('Instagram data object:', instaData);
+          if (typeof instaData === 'string') {
+            this.editorContentSocialMedia2 = instaData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia2 = (instaData.content || instaData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Instagram content (new format lowercase):', this.editorContentSocialMedia2);
+        } else if (data?.result?.generation?.Instagram) {
+          const instaData = data.result.generation.Instagram;
+          console.log('Instagram data object (uppercase):', instaData);
+          if (typeof instaData === 'string') {
+            this.editorContentSocialMedia2 = instaData.replace(/"/g, '').trim();
+          } else {
+            this.editorContentSocialMedia2 = (instaData.content || instaData.text || '')
+              .replace(/"/g, '')
+              .trim();
+          }
+          console.log('Instagram content (new format uppercase):', this.editorContentSocialMedia2);
+        } else if (data?.content && !this.editorContentSocialMedia2) {
+          // Old format fallback - use same content as Facebook if no separate Instagram data
+          this.editorContentSocialMedia2 = data.content.replace(/"/g, '').trim();
+          console.log('Instagram content (old format fallback):', this.editorContentSocialMedia2);
         }
 
+        this.checkAllDataLoaded(); // Social media data loaded
         this.chnge.detectChanges();
       });
 
     //blog
     this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      this.editorContentSocialMedia = data?.content;
+      console.log('blog response:', data);
+
+      // Check for new API format - expecting data.result.generation.html
+      if (data?.result?.generation?.html) {
+        this.editorContentSocialMedia = data.result.generation.html;
+        console.log('Blog content (new format - html field):', this.editorContentSocialMedia);
+
+        // Extract blog_title if available
+        if (data.result.generation.blog_title) {
+          this.blog_title = data.result.generation.blog_title;
+          console.log('Blog title extracted:', this.blog_title);
+        }
+      } else if (data?.result?.generation?.blog) {
+        this.editorContentSocialMedia = data.result.generation.blog;
+        console.log('Blog content (new format - blog field):', this.editorContentSocialMedia);
+
+        // Extract blog_title if available
+        if (data.result.generation.blog_title) {
+          this.blog_title = data.result.generation.blog_title;
+          console.log('Blog title extracted:', this.blog_title);
+        }
+      } else if (data?.content) {
+        // Old format fallback
+        this.editorContentSocialMedia = data.content;
+        console.log('Blog content (old format):', this.editorContentSocialMedia);
+      }
+
       const cleanedString = this.editorContentSocialMedia
-        .replace(/^```html/, '')
+        ?.replace(/^```html/, '')
         .replace(/```$/, '');
-      console.log('blog response data:', cleanedString);
+      console.log('blog response data after cleaning:', cleanedString);
       this.editorContentSocialMedia = cleanedString;
       this.editorContentSocialMedia = this.editorContentSocialMedia
-        .replace(/"/g, '')
+        ?.replace(/"/g, '')
         .trim();
 
       // const titlePattern = /(?:<p><b>SEO Title:<\/b>|<b>SEO Title:<\/b>|<b>SEO Title:)(.*?)(?=<\/b>|\n|$)/;
@@ -453,6 +543,7 @@ export class CombinedReviewComponent {
       this.isImageRefineDisabled = false;
 
       console.log('Total word count:', this.totalWordCount);
+      this.checkAllDataLoaded(); // Blog data loaded
       this.chnge.detectChanges();
 
       this.chnge.detectChanges();
@@ -534,11 +625,11 @@ export class CombinedReviewComponent {
     }
   }
   onCreateProject() {
-    // const dialogConfig = new MatDialogConfig();
-    // dialogConfig.disableClose = true;
-    // dialogConfig.autoFocus = true;
-    // dialogConfig.width = '400px';
-    // this.dialog.open(SuccessDialogComponent, dialogConfig);
+    const dialogConfig = new MatDialogConfig();
+    dialogConfig.disableClose = true;
+    dialogConfig.autoFocus = true;
+    dialogConfig.width = '400px';
+    this.dialog.open(DialogSuccessComponent, dialogConfig);
   }
 
   inputChange(fileInputEvent: any) {
@@ -981,5 +1072,21 @@ Output the entire blog in HTML format, followed by:
       default:
         return '';
     }
+  }
+
+  ngOnDestroy(): void {
+    // Clear all data when leaving the review screen to prevent retention
+    this.aiContentGenerationService.setData(null);
+    this.aiContentGenerationService.setEmailResponseData(null);
+    this.aiContentGenerationService.setEmailHeadResponseData(null);
+    this.aiContentGenerationService.setSocialResponseData(null);
+    this.aiContentGenerationService.setBlogResponseData(null);
+    this.aiContentGenerationService.setImage(null);
+    this.aiContentGenerationService.setOfferImage(null);
+    this.aiContentGenerationService.setEventImage(null);
+    this.aiContentGenerationService.setEmailSubResponseData(null);
+    this.aiContentGenerationService.setplagrism(null);
+
+    console.log('Combined review component destroyed - all data cleared');
   }
 }

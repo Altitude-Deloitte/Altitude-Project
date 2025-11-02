@@ -112,6 +112,10 @@ export class ContentGenerationService {
   private blogContentSubject = new BehaviorSubject<any>(null);
   public blogContent$ = this.blogContentSubject.asObservable();
 
+  // Loading state for email review screen
+  private emailReviewLoadingSubject = new BehaviorSubject<boolean>(false);
+  public emailReviewLoading$ = this.emailReviewLoadingSubject.asObservable();
+
   constructor(private http: HttpClient) { }
 
   getTemplateId(): string {
@@ -175,6 +179,15 @@ export class ContentGenerationService {
 
   clearBlogContent(): void {
     this.blogContentSubject.next(null);
+  }
+
+  // Email review loading state methods
+  setEmailReviewLoading(isLoading: boolean): void {
+    this.emailReviewLoadingSubject.next(isLoading);
+  }
+
+  getEmailReviewLoading(): Observable<boolean> {
+    return this.emailReviewLoading$;
   }
 
   setTemplateId(value: string): void {

@@ -9,6 +9,12 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { FormsModule } from '@angular/forms';
+import { InputTextModule } from 'primeng/inputtext';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
+import { DrawerModule } from 'primeng/drawer';
 
 @Component({
   selector: 'app-blog-review',
@@ -19,7 +25,13 @@ import { DialogSuccessComponent } from '../../dialog-success/dialog-success.comp
     AccordionModule,
     RouterLink,
     ProgressSpinnerModule,
+    ToastModule,
+    FormsModule,
+    InputTextModule,
+    LoaderComponent,
+    DrawerModule,
   ],
+  providers: [MessageService],
   templateUrl: './blog-review.component.html',
   styleUrl: './blog-review.component.css',
 })
@@ -68,13 +80,22 @@ export class BlogReviewComponent {
   socketData: any;
   currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
+  showAgenticWorkflow = false;
+
+  // Regeneration properties
+  contentFeedback: string = '';
+  imageFeedback: string = '';
+  isRegeneratingContent: boolean = false;
+  isRegeneratingImage: boolean = false;
+  blogPayload: FormData | null = null;
 
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
     public socketConnection: SocketConnectionService,
     private chnge: ChangeDetectorRef,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private messageService: MessageService
   ) {
     // Watch for chat response from AI chat
     effect(() => {
@@ -96,6 +117,9 @@ export class BlogReviewComponent {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
+
+      // Initialize payload for regeneration
+      this.initializeBlogPayload();
     });
 
     this.aiContentGenerationService.getData().subscribe((data) => {
@@ -439,5 +463,312 @@ export class BlogReviewComponent {
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
     }, 1000);
+  }
+
+  // Initialize blog payload from form data
+  // Initialize blog payload from form data or collected data from chat-app
+  initializeBlogPayload(): void {
+    if (!this.formData) return;
+
+    this.blogPayload = new FormData();
+
+    // Use collected data structure (from chat-app) if available, otherwise use formData (from blog-form)
+    const useCase = this.formData?.use_case || 'Blog';
+    const purpose = this.formData?.purpose || '';
+    const brand = this.formData?.brand || '';
+    const tone = this.formData?.tone || this.formData?.Type || '';
+    const topic = this.formData?.topic || '';
+    const wordLimit = this.formData?.word_limit || this.formData?.wordLimit || '';
+    const targetReader = this.formData?.target_reader || this.formData?.targetAudience || this.formData?.readers || '';
+    const imageDetails = this.formData?.image_details || this.formData?.imageOpt || '';
+    const imageDescription = this.formData?.image_description || this.formData?.imgDesc || '';
+
+    this.blogPayload.append('use_case', useCase);
+    this.blogPayload.append('purpose', purpose);
+    this.blogPayload.append('brand', brand);
+    this.blogPayload.append('tone', tone);
+    this.blogPayload.append('topic', topic);
+    this.blogPayload.append('word_limit', wordLimit);
+    this.blogPayload.append('target_reader', targetReader);
+    this.blogPayload.append('image_details', imageDetails);
+
+    if (imageDescription && imageDescription.trim() !== '') {
+      this.blogPayload.append('image_description', imageDescription);
+    }
+    if (this.formData?.additional && this.formData?.additional.trim() !== '') {
+      this.blogPayload.append('additional_details', this.formData?.additional);
+    }
+  }
+
+  // Validate content feedback input
+  validateContentFeedback(feedback: string): boolean {
+    const lowerFeedback = feedback.toLowerCase().trim();
+
+    // Check if feedback mentions word count/limit
+    const hasWordKeyword = lowerFeedback.includes('word count') || 
+                          lowerFeedback.includes('word limit') || 
+                          lowerFeedback.includes('words');
+
+    // If word count/limit is mentioned, extract the number and validate it's >= 50
+    if (hasWordKeyword) {
+      const numbers = feedback.match(/\b\d+\b/g);
+      if (numbers && numbers.length > 0) {
+        const wordLimit = parseInt(numbers[0], 10);
+        if (wordLimit < 50) {
+          return false; // Invalid: word limit less than 50
+        }
+      }
+    }
+
+    return true; // Valid feedback
+  }
+
+  // Regenerate content based on feedback
+  regenerateContent(): void {
+    if (!this.contentFeedback || this.contentFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter feedback to regenerate content',
+        life: 3000
+      });
+      return;
+    }
+
+    // Validate word limit is at least 50
+    if (!this.validateContentFeedback(this.contentFeedback)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Word Limit',
+        detail: 'Word limit should be more than 50 words.',
+        life: 5000,
+        icon: 'pi pi-exclamation-triangle'
+      });
+      return;
+    }
+
+    if (!this.blogPayload) {
+      this.initializeBlogPayload();
+    }
+
+    // Add feedback and regenerate flag to payload
+    this.blogPayload?.append('feedback', this.contentFeedback);
+    this.blogPayload?.append('regenerate', 'true');
+
+    this.isRegeneratingContent = true;
+    // Don't set loading = true for regeneration (keep loader hidden)
+    this.contentDisabled = true;
+
+    this.aiContentGenerationService.generateContent(this.blogPayload!).subscribe({
+      next: (data) => {
+        console.log('Content regenerated:', data);
+
+        // Process the regenerated content
+        if (data?.result?.generation) {
+          this.processChatResponse(data.result.generation);
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Content regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        // Clear feedback input
+        this.contentFeedback = '';
+
+        // Reinitialize payload for next regeneration
+        this.initializeBlogPayload();
+      },
+      error: (error) => {
+        console.error('Error regenerating content:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate content. Please try again.',
+          life: 3000
+        });
+        this.isRegeneratingContent = false;
+        this.contentDisabled = false;
+      },
+      complete: () => {
+        this.isRegeneratingContent = false;
+        this.contentDisabled = false;
+      }
+    });
+  }
+
+  // Regenerate image based on feedback
+  regenerateImage(): void {
+    if (!this.imageFeedback || this.imageFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter image feedback to regenerate',
+        life: 3000
+      });
+      return;
+    }
+
+    // Reinitialize payload to ensure all form data is fresh
+    this.initializeBlogPayload();
+
+    // Add image feedback and regenerate flag to payload
+    this.blogPayload?.append('image_feedback', this.imageFeedback);
+    this.blogPayload?.append('regenerate', 'true');
+
+    this.isRegeneratingImage = true;
+    // Don't set loading = true for regeneration (keep loader hidden)
+    this.contentDisabled = true;
+
+    this.aiContentGenerationService.generateContent(this.blogPayload!).subscribe({
+      next: (data) => {
+        console.log('Image regenerated:', data);
+
+        // Process the regenerated response using the same handler as content
+        if (data?.result?.generation) {
+          this.processChatResponse(data.result.generation);
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Image regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        // Clear feedback input
+        this.imageFeedback = '';
+
+        // Reinitialize payload for next regeneration
+        this.initializeBlogPayload();
+      },
+      error: (error) => {
+        console.error('Error regenerating image:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate image. Please try again.',
+          life: 3000
+        });
+        this.isRegeneratingImage = false;
+        this.contentDisabled = false;
+      },
+      complete: () => {
+        this.isRegeneratingImage = false;
+        this.contentDisabled = false;
+      }
+    });
+  }
+
+  // Workflow visualization methods
+  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+    const socketData = this.socketConnection.dataSignal();
+
+    // Define all agents in the correct order
+    const agentOrder = [
+      'Extraction Agent',
+      'prompt generation agent',
+      'content generation agent',
+      'reviewer agent'
+    ];
+
+    // Map agents with their current status from socket data or default to 'PENDING'
+    return agentOrder.map(agentName => {
+      const agentData = socketData[agentName];
+      return {
+        name: agentName,
+        status: agentData?.status || 'PENDING',
+        updatedAt: agentData?.updatedAt || '--:--:--'
+      };
+    });
+  }
+
+  getLineColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getMarkerUrl(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return 'url(#arrowGreen)';
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return 'url(#arrowYellow)';
+      case 'PENDING':
+      default:
+        return 'url(#arrowGray)';
+    }
+  }
+
+  getNodeColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#1e3a2e'; // Dark green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#3a2e1e'; // Dark yellow/orange
+      case 'FAILED':
+        return '#3a1e1e'; // Dark red
+      case 'PENDING':
+      default:
+        return '#1e1e1e'; // Dark gray
+    }
+  }
+
+  getStatusIconColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getStatusTextColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#86efac'; // Light green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#fde047'; // Light yellow
+      case 'FAILED':
+        return '#fca5a5'; // Light red
+      case 'PENDING':
+      default:
+        return '#d1d5db'; // Light gray
+    }
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  appendToContentFeedback(text: string): void {
+    if (this.contentFeedback) {
+      this.contentFeedback += ' ' + text;
+    } else {
+      this.contentFeedback = text;
+    }
   }
 }

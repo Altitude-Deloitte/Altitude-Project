@@ -1,13 +1,15 @@
 <app-header></app-header>
 
-
-<div class="">
+@if (loading) {
+<app-loader></app-loader>
+} @else {
+<div class="fade-in">
     <p-tabs value="0">
 
 
         <div
             class="max-w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
-            <div class="flex w-full flex-wrap justify-between items-center">
+            <div class="flex w-full flex-wrap justify-between items-center mb-5">
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center gap-2">
                         <a routerLink="/generate-request" class="text-2xl cursor-pointer"><i
@@ -22,7 +24,7 @@
                     </div>
                 </div>
                 <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
-                    <div class="flex gap-4 items-center justify-center">
+                    <div class="flex gap-4 items-center justify-center bg-[#09040e]">
                         <p-tab value="0" class="text-white"><i class="pi pi-envelope text-white"></i>Email</p-tab>
                         <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
                             Media</p-tab>
@@ -58,7 +60,7 @@
                 </div>
             </div>
 
-            <p-tabpanels>
+            <p-tabpanels class="bg-[#09040e]">
                 <p-tabpanel value="0">
                     <div class="flex flex-wrap mt-5 gap-4 w-full">
                         <div class="md:flex-1">
@@ -111,7 +113,7 @@
 
                                                 <div class="flex flex-col gap-3">
                                                     <h4 class="text-[#9b9b9b]">Client Name</h4>
-                                                    <p>{{this.brand}}</p>
+                                                    <p>{{this.formData?.brand}}</p>
                                                     <h4 class="text-[#9b9b9b]">Purpose</h4>
                                                     <p>{{this.formData?.purpose}}</p>
                                                     <h4 class="text-[#9b9b9b]">Due Date</h4>
@@ -158,7 +160,8 @@
 
                                         <div class="flex items-center gap-2">
                                             <img src="assets/images/ListMagnifyingGlass.svg" alt="">
-                                            <p class="font-semibold text-lg">Check Plagiarism</p>
+                                            <p class="font-semibold text-lg" style="cursor: pointer;"
+                                                (click)="onCreateProject()">Check Plagiarism</p>
                                         </div>
                                     </div>
 
@@ -406,9 +409,11 @@
 
                                             <p-tablist
                                                 class="p-3 border-1 border-[#4D4D4D] rounded-full items-center bg-[#363636]">
-                                                <div class="flex gap-4 items-center justify-center bg-[#363636]">
-                                                    <p-tab value="0" class="bg-[#363636]">Facebook</p-tab>
-                                                    <p-tab value="1" class="bg-[#363636]">Instagram</p-tab>
+                                                <div class="flex gap-4 items-center justify-center bg-[#09040e]">
+                                                    <p-tab
+                                                        *ngFor="let platform of selectedSocialPlatforms; let i = index"
+                                                        [value]="i.toString()" class="bg-[#363636]">{{ platform
+                                                        }}</p-tab>
                                                 </div>
 
                                             </p-tablist>
@@ -431,47 +436,56 @@
                                                     class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
 
 
-                                                    <p-tabpanel value="0">
-                                                        <!-- <div *ngIf="!contentDisabled"> -->
-                                                        <p class="post-caption text-black"
-                                                            style="color: var(--app-bg-color);">
-                                                            {{
-                                                            this.editorContentSocialMedia1 }}</p>
-                                                        @if (hyperUrl) {
-                                                        <p class="post-caption text-black">For more details, visit
-                                                            our
-                                                            website:
-                                                            <a [href]="this.hyperUrl" target="_blank"
-                                                                rel="noopener noreferrer" style="color: #0866ff;">
-                                                                {{this.hyperUrl}}
-                                                            </a>
-                                                        </p>
-                                                        }
-
-                                                        <!--<p *ngIf="formData?.Hashtags"> <b>Link : </b><a [href]="formData?.Hashtags" style="text-decoration: underline; color: #1717c5 !important;outline: none;" target="_blank"  > {{formData?.Hashtags}}</a></p>-->
-                                                        @if (imageUrl) {
-                                                        <img [src]="imageUrl" alt="Facebook Post" class="post-image" />
-                                                        }
-
-                                                        <!-- </div> -->
-                                                    </p-tabpanel>
-                                                    <p-tabpanel value="1">
-                                                        <div class="instagram-post">
-                                                            @if (imageUrl) {
-                                                            <img [src]="imageUrl" alt="Instagram Post"
-                                                                class="post-image" />
-                                                            }
-                                                            <p class="post-caption text-black">{{
-                                                                this.editorContentSocialMedia2 }}</p>
-                                                            <p class="post-caption text-black   ">For more details,
-                                                                visit our
+                                                    <p-tabpanel
+                                                        *ngFor="let platform of selectedSocialPlatforms; let i = index"
+                                                        [value]="i.toString()">
+                                                        <ng-container *ngIf="platform === 'Facebook'">
+                                                            <p class="post-caption text-black">
+                                                                {{ this.editorContentSocialMedia1 }}
+                                                            </p>
+                                                            @if (hyperUrl) {
+                                                            <p class="post-caption text-black">For more details, visit
+                                                                our
                                                                 website:
                                                                 <a [href]="this.hyperUrl" target="_blank"
                                                                     rel="noopener noreferrer" style="color: #0866ff;">
                                                                     {{this.hyperUrl}}
                                                                 </a>
                                                             </p>
-                                                        </div>
+                                                            }
+                                                            @if (imageUrl) {
+                                                            <img [src]="imageUrl" alt="Facebook Post"
+                                                                class="post-image" />
+                                                            }
+                                                        </ng-container>
+
+                                                        <ng-container *ngIf="platform === 'Instagram'">
+                                                            <div class="instagram-post">
+                                                                @if (imageUrl) {
+                                                                <img [src]="imageUrl" alt="Instagram Post"
+                                                                    class="post-image" />
+                                                                }
+                                                                <p class="post-caption text-black">{{
+                                                                    this.editorContentSocialMedia2 }}</p>
+                                                                <p class="post-caption text-black   ">For more details,
+                                                                    visit our
+                                                                    website:
+                                                                    <a [href]="this.hyperUrl" target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        style="color: #0866ff;">
+                                                                        {{this.hyperUrl}}
+                                                                    </a>
+                                                                </p>
+                                                            </div>
+                                                        </ng-container>
+
+                                                        <!-- Add more platforms as needed -->
+                                                        <ng-container
+                                                            *ngIf="platform !== 'Facebook' && platform !== 'Instagram'">
+                                                            <p class="post-caption text-black">
+                                                                Content for {{ platform }} platform
+                                                            </p>
+                                                        </ng-container>
                                                     </p-tabpanel>
                                                 </p-tabpanels>
                                             </div>
@@ -565,17 +579,17 @@
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Client Name</span>
-                                                        <span class="font-semibold">{{ formData?.clientName || '-'
+                                                        <span class="font-semibold">{{ brand || formData?.brand || '-'
                                                             }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Purpose</span>
-                                                        <span class="font-semibold">{{ formData?.purpose || '-'
+                                                        <span class="font-semibold">{{ formData?.purpose3 || '-'
                                                             }}</span>
                                                     </div>
-                                                    <div class="flex flex-col col-span-2">
-                                                        <span class="text-[#9b9b9b] text-sm">Outline</span>
-                                                        <span class="font-semibold">{{ formData?.outline || '-'
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Topic</span>
+                                                        <span class="font-semibold">{{ formData?.topic || '-'
                                                             }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
@@ -657,6 +671,15 @@
                                         <div class="flex justify-center items-center min-h-screen py-8">
                                             <div
                                                 class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden">
+                                                <!-- Blog Title -->
+                                                @if (blog_title) {
+                                                <div
+                                                    style="background: black; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                                    <h1 style="margin: 0; font-size: 28px; font-family: Arial, sans-serif; line-height: 1.2;"
+                                                        [innerHTML]="blog_title">
+                                                    </h1>
+                                                </div>
+                                                }
                                                 <!-- Image Banner -->
                                                 <div class="w-full">
                                                     @if (imageUrl) {
@@ -718,10 +741,10 @@
         </div>
     </p-tabs>
 
-    <!-- <div class="flex  items-center">
-        
-        </div> -->
-    <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 rounded-full float-right" label="Send For Approval"
-        (onClick)="navigateToForm()"></p-button>
+    <div class="flex justify-end mr-4 mb-8">
+        <p-button class="bg-[#8D4BFF] p-4 rounded-full" label="Send For Approval"
+            (onClick)="navigateToForm()"></p-button>
+    </div>
 </div>
+}
 <!-- } -->

@@ -32,12 +32,12 @@ export class ThemeToggleService {
     this.isDarkModeSubject.next(isDark);
 
     // if (isPlatformBrowser(this.platformId)) {
-    const htmlElement = document.documentElement;
+    // const htmlElement = document.documentElement;
 
     if (isDark) {
-      htmlElement.classList.add('dark');
+      // htmlElement.classList.add('dark');
       this.sourceBehaviourSubject.next('assets/videos/dark-particles.mp4');
-      localStorage.setItem('theme', 'dark');
+      // localStorage.setItem('theme', 'dark');
     } else {
       this.sourceBehaviourSubject.next(
         'assets/videos/vecteezy_abstract-motion-background-animation-with-a-beautiful-gently_26592036.mp4'

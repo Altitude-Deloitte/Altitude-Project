@@ -6,6 +6,7 @@ import { SelectModule } from 'primeng/select';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-meme-review',
@@ -16,6 +17,7 @@ import { RouterLink } from '@angular/router';
     HeaderComponent,
     CommonModule,
     RouterLink,
+    LoaderComponent
   ],
   templateUrl: './meme-review.component.html',
   styleUrl: './meme-review.component.css',

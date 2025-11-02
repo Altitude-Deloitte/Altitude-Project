@@ -71,8 +71,17 @@ export class SocialClientComponent {
     // Watch for chat response from AI chat
     effect(() => {
       const chatResponse = this.aiContentGenerationService.chatResponse();
-      if (chatResponse?.result?.generation) {
-        this.processChatResponse(chatResponse.result.generation);
+      console.log('Effect triggered in social-client - Chat Response:', chatResponse);
+
+      // Check for both structures: result.generation OR result.facebook/instagram/etc
+      if (chatResponse?.result) {
+        if (chatResponse.result.generation) {
+          console.log('Processing chat response with result.generation structure in social-client');
+          this.processChatResponse(chatResponse.result.generation);
+        } else if (chatResponse.result.facebook || chatResponse.result.instagram || chatResponse.result.twitter || chatResponse.result.linkedin) {
+          console.log('Processing chat response with nested platform structure in social-client');
+          this.processChatResponse(chatResponse.result);
+        }
       }
     });
   }
@@ -99,29 +108,77 @@ export class SocialClientComponent {
     this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
-        if (data.result.generation.Facebook) {
-          this.editorContentSocialMedia = data.result.generation.Facebook.text;
-          this.imageFBUrlSocialmedia =
-            data.result.generation.Facebook.image_url;
-        } if (data.result.generation.Instagram) {
-          this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
-          this.editorContentSocialMedia1 =
-            data.result.generation.Instagram.text;
+        console.log('Social-client Response Data:', data);
+
+        // CHAT-APP STRUCTURE: data.result.facebook.generation.facebook
+        if (data.result.facebook?.generation?.facebook) {
+          const fbData = data.result.facebook.generation.facebook;
+          console.log('Facebook data (chat-app structure) in social-client:', fbData);
+          this.editorContentSocialMedia = (fbData.content || fbData.text || '').replace(/"/g, '').trim();
+          this.imageFBUrlSocialmedia = fbData.image_url;
         }
+        // FORM STRUCTURE (lowercase): data.result.generation.facebook
+        else if (data.result.generation?.facebook) {
+          const fbData = data.result.generation.facebook;
+          console.log('Facebook data (form lowercase) in social-client:', fbData);
+          this.editorContentSocialMedia = (fbData.content || fbData.text || '').replace(/"/g, '').trim();
+          this.imageFBUrlSocialmedia = fbData.image_url;
+        }
+        // FORM STRUCTURE (uppercase): data.result.generation.Facebook
+        else if (data.result.generation?.Facebook) {
+          const fbData = data.result.generation.Facebook;
+          console.log('Facebook data (form uppercase) in social-client:', fbData);
+          this.editorContentSocialMedia = fbData.text;
+          this.imageFBUrlSocialmedia = fbData.image_url;
+        }
+
+        // CHAT-APP STRUCTURE: data.result.instagram.generation.instagram
+        if (data.result.instagram?.generation?.instagram) {
+          const instaData = data.result.instagram.generation.instagram;
+          console.log('Instagram data (chat-app structure) in social-client:', instaData);
+          this.editorContentSocialMedia1 = (instaData.content || instaData.text || '').replace(/"/g, '').trim();
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+        }
+        // FORM STRUCTURE (lowercase): data.result.generation.instagram
+        else if (data.result.generation?.instagram) {
+          const instaData = data.result.generation.instagram;
+          console.log('Instagram data (form lowercase) in social-client:', instaData);
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+          this.editorContentSocialMedia1 = (instaData.content || instaData.text || '').replace(/"/g, '').trim();
+        }
+        // FORM STRUCTURE (uppercase): data.result.generation.Instagram
+        else if (data.result.generation?.Instagram) {
+          const instaData = data.result.generation.Instagram;
+          console.log('Instagram data (form uppercase) in social-client:', instaData);
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+          this.editorContentSocialMedia1 = instaData.text;
+        }
+
+        console.log('Social-client content after subscription - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1);
       });
 
     this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
-        debugger;
-        if (data.result.generation.Facebook) {
+        // Handle new nested structure (lowercase keys)
+        if (data.result.generation.facebook) {
+          const fbData = data.result.generation.facebook;
+          this.editorContentSocialMedia = (fbData.content || fbData.text || '').replace(/"/g, '').trim();
+          this.imageFBUrlSocialmedia = fbData.image_url;
+        } else if (data.result.generation.Facebook) {
+          // Fallback to legacy uppercase structure
           this.editorContentSocialMedia = data.result.generation.Facebook.text;
-          this.imageFBUrlSocialmedia =
-            data.result.generation.Facebook.image_url;
+          this.imageFBUrlSocialmedia = data.result.generation.Facebook.image_url;
+        }
+
+        if (data.result.generation.instagram) {
+          const instaData = data.result.generation.instagram;
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+          this.editorContentSocialMedia1 = (instaData.content || instaData.text || '').replace(/"/g, '').trim();
         } else if (data.result.generation.Instagram) {
+          // Fallback to legacy uppercase structure
           this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
-          this.editorContentSocialMedia1 =
-            data.result.generation.Instagram.text;
+          this.editorContentSocialMedia1 = data.result.generation.Instagram.text;
         }
       });
     this.brand = this.formData?.brand.replace('.com', ' ');
@@ -179,20 +236,52 @@ export class SocialClientComponent {
   processChatResponse(generationData: any) {
     console.log('Processing chat response in social client:', generationData);
 
-    // Update component data based on chat response
-    if (generationData.Facebook) {
-      this.editorContentSocialMedia = generationData.Facebook.text;
-      this.imageFBUrlSocialmedia = generationData.Facebook.image_url;
-    }
+    // CHAT-APP STRUCTURE: facebook.generation.facebook nested structure
+    if (generationData.facebook?.generation?.facebook || generationData.instagram?.generation?.instagram) {
+      console.log('Detected chat-app nested structure in social-client');
 
-    if (generationData.Instagram) {
-      this.imageInstaUrlSocialmedia = generationData.Instagram.image_url;
-      this.editorContentSocialMedia1 = generationData.Instagram.text;
+      // Process Facebook data from chat-app
+      if (generationData.facebook?.generation?.facebook) {
+        const fbData = generationData.facebook.generation.facebook;
+        const fbContent = fbData.content || fbData.text;
+        this.editorContentSocialMedia = fbContent.replace(/"/g, '').trim();
+        this.imageFBUrlSocialmedia = fbData.image_url;
+      }
+
+      // Process Instagram data from chat-app
+      if (generationData.instagram?.generation?.instagram) {
+        const instaData = generationData.instagram.generation.instagram;
+        const instaContent = instaData.content || instaData.text;
+        this.editorContentSocialMedia1 = instaContent.replace(/"/g, '').trim();
+        this.imageInstaUrlSocialmedia = instaData.image_url;
+      }
+    }
+    // FORM STRUCTURE: Direct facebook/instagram objects
+    else if (generationData.facebook || generationData.instagram || generationData.Facebook || generationData.Instagram) {
+      console.log('Detected form direct structure in social-client');
+
+      // Process Facebook data (lowercase or uppercase)
+      const fbData = generationData.facebook || generationData.Facebook;
+      if (fbData && (fbData.content || fbData.text)) {
+        const fbContent = fbData.content || fbData.text;
+        this.editorContentSocialMedia = fbContent.replace(/"/g, '').trim();
+        this.imageFBUrlSocialmedia = fbData.image_url;
+      }
+
+      // Process Instagram data (lowercase or uppercase)
+      const instaData = generationData.instagram || generationData.Instagram;
+      if (instaData && (instaData.content || instaData.text)) {
+        const instaContent = instaData.content || instaData.text;
+        this.editorContentSocialMedia1 = instaContent.replace(/"/g, '').trim();
+        this.imageInstaUrlSocialmedia = instaData.image_url;
+      }
     }
 
     if (generationData.image_url) {
       this.imageUrl = generationData.image_url;
     }
+
+    console.log('Social-client content set - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1);
 
     // Clear chat response after processing
     setTimeout(() => {

@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
@@ -18,6 +19,7 @@ import { RadioButtonModule } from 'primeng/radiobutton';
   selector: 'app-combined-form',
   imports: [
     SelectModule,
+    MultiSelectModule,
     ButtonModule,
     CommonModule,
     ReactiveFormsModule,
@@ -54,8 +56,7 @@ export class CombinedFormComponent {
 
   showMore: string | undefined;
 
-  contentTypes = ['emailer'];
-  contentType2 = ['blog'];
+  // contentTypes and contentType2 arrays removed - now using FormData payloads directly
   //campaignData: any;
   imageSize = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
@@ -105,11 +106,14 @@ export class CombinedFormComponent {
   vocabularyArrays = ['Simple', 'Complex'];
   //blog
   formats = [
-    'SEO-Optimised Longform',
-    'SEO-Optimised Listicle',
-    'Case Study',
-    'Fact Sheet',
+    'Listicle',
+    'Post Event',
+    'Topical',
     'Guide',
+    'Blog',
+    'Thought Leadership',
+    'Initiative Awareness',
+    'Trends Blog',
   ];
   blogPurposeArray = [
     'Awareness (brand/ product)',
@@ -158,6 +162,7 @@ export class CombinedFormComponent {
       readers2: [''],
       readers3: [''],
       format: [''], //blog
+      outline: [''], //blog
       keywords: [''],
       target: [''],
       target3: [''],
@@ -179,12 +184,73 @@ export class CombinedFormComponent {
   }
 
   urlImage: any;
+  emailPayload: any;
+  socialMediaPayload: any;
+  blogPayload: any;
+
   onCreateProject(): void {
     var formValues = { ...this.socialwebsite.getRawValue() };
-    const { topic } = formValues;
-    const { imgDesc } = formValues;
+    const { topic, imgDesc } = formValues;
+
+    // ========== CREATE EMAIL PAYLOAD ==========
+    this.emailPayload = new FormData();
+    this.emailPayload.append('use_case', 'Email Campaign');
+    this.emailPayload.append('purpose', formValues?.purpose || '');
+    this.emailPayload.append('brand', formValues?.brand || '');
+    this.emailPayload.append('tone', formValues?.Type || '');
+    this.emailPayload.append('topic', formValues?.topic || '');
+    this.emailPayload.append('word_limit', formValues?.wordLimit || '');
+    this.emailPayload.append('target_reader', formValues?.readers || '');
+    this.emailPayload.append('image_details', formValues?.imageOpt || '');
+    if (formValues?.imgDesc) {
+      this.emailPayload.append('image_description', formValues?.imgDesc || '');
+    }
+    if (formValues?.additional && formValues?.additional.trim() !== '') {
+      this.emailPayload.append('additional_details', formValues?.additional);
+    }
+
+    // ========== CREATE SOCIAL MEDIA PAYLOAD ==========
+    this.socialMediaPayload = new FormData();
+    this.socialMediaPayload.append('use_case', 'Social Media Posting');
+    this.socialMediaPayload.append('purpose', formValues?.purpose2 || '');
+    this.socialMediaPayload.append('brand', formValues?.brand || '');
+
+    // Handle platform_campaign - convert array to comma-separated string if it's an array (from p-multiselect)
+    const platformCampaign = Array.isArray(formValues?.campaign2)
+      ? formValues.campaign2.join(',')
+      : (formValues?.campaign2 || '');
+    this.socialMediaPayload.append('platform_campaign', platformCampaign);
+
+    this.socialMediaPayload.append('topic', topic || '');
+    this.socialMediaPayload.append('word_limit', formValues?.wordLimit2 || '');
+    this.socialMediaPayload.append('image_details', formValues?.imageOpt || '');
+    if (formValues?.imgDesc) {
+      this.socialMediaPayload.append('image_description', formValues?.imgDesc || '');
+    }
+    if (formValues?.additional && formValues?.additional.trim() !== '') {
+      this.socialMediaPayload.append('additional_details', formValues?.additional);
+    }
+
+    // ========== CREATE BLOG PAYLOAD ==========
+    this.blogPayload = new FormData();
+    this.blogPayload.append('use_case', 'Blog Generation');
+    this.blogPayload.append('purpose', formValues?.purpose3 || '');
+    this.blogPayload.append('outline', formValues?.topic || '');
+    this.blogPayload.append('format', formValues?.format || '');
+    this.blogPayload.append('primary_keywords', formValues?.keywords || '');
+    this.blogPayload.append('word_limit', formValues?.wordLimit3 || '');
+    this.blogPayload.append('target_reader', formValues?.target3 || '');
+    this.blogPayload.append('tone', formValues?.Type3 || '');
+    this.blogPayload.append('image_details', formValues?.imageOpt || '');
+    this.blogPayload.append('brand', formValues?.brand || '');
+    if (formValues?.imgDesc) {
+      this.blogPayload.append('image_description', formValues?.imgDesc || '');
+    }
+    if (formValues?.additional && formValues?.additional.trim() !== '') {
+      this.blogPayload.append('additional_details', formValues?.additional);
+    }
+
     this.addImageFromURL();
-    // this.imageUrl=null;
     if (this.uploadedImages.length == 0 && !this.urlImage) {
       console.log('image option :', formValues.imageOpt);
       if (formValues.imageOpt === 'N/A') {
@@ -216,7 +282,6 @@ export class CombinedFormComponent {
     }
 
     //image offer and event
-
     var eventImage = `Create an "${formValues.brand}" event image on "${formValues.topic}"`;
     var offerImage = `Create an "${formValues.brand}" offer image on "${formValues.topic}"`;
     console.log('event prompt : ', eventImage);
@@ -224,7 +289,6 @@ export class CombinedFormComponent {
     this.aiContentGenerationService.eventImageGeneration(eventImage).subscribe({
       next: (data) => {
         console.log('event image : ', data);
-
         this.aiContentGenerationService.setEventImage(data[0].url);
       },
       error: (er) => {
@@ -234,7 +298,6 @@ export class CombinedFormComponent {
     this.aiContentGenerationService.offerImageGeneration(offerImage).subscribe({
       next: (data) => {
         console.log('offer image : ', data);
-
         this.aiContentGenerationService.setOfferImage(data[0].url);
       },
       error: (er) => {
@@ -242,88 +305,50 @@ export class CombinedFormComponent {
       },
     });
 
-    var offerImage = `Create an "${formValues.brand}" brand offer/quote heading for a "${formValues.topic}" with an attractive, short, and brand-aligned title in an <h1> tag and a subtitle in an <h2> tag. Ensure the output includes only the <h1> and <h2> tags with the content. Avoid adding extra HTML or markdown. The font style and color should align with Nike's branding.`;
-    this.aiContentGenerationService
-      .generateOtherContent(offerImage, 'emailer')
-      .subscribe({
-        next: (data) => {
-          console.log(`email heading prompt :`, offerImage);
-          this.aiContentGenerationService.setEmailHeadResponseData(data);
-
-          console.log(`email heading from API for :`, data);
-        },
-        error: (error) => {
-          console.error(`Error occurred for heading:`, error);
-        },
-      });
-
-    // dialogRef.afterClosed().subscribe((result) => {
-    // if (result) {
     if (this.socialwebsite.valid) {
       var formValues = { ...this.socialwebsite.getRawValue() };
       console.log('Form Values:', formValues);
 
-      //email & social
-      this.contentTypes.forEach((contentType) => {
-        console.log('media type : content type :', contentType);
-        const prompt = this.constructPrompt(formValues, contentType);
-        console.log(
-          'media type : Prompt :',
-          prompt,
-          '  content type :',
-          contentType
-        );
-        this.aiContentGeneration(prompt, contentType);
+      // ========== EMAIL CONTENT GENERATION ==========
+      // Single API call returns: email_header, image_url, email_subjects, and html content
+      this.aiContentGenerationService.generateContent(this.emailPayload).subscribe({
+        next: (data) => {
+          console.log('Email complete response:', data);
+          // Store the complete email response which includes header, subjects, and body
+          this.aiContentGenerationService.setEmailHeadResponseData(data);
+          // Also set it for backward compatibility if review screen checks getEmailResponsetData
+          this.aiContentGenerationService.setEmailResponseData(data);
+        },
+        error: (error) => {
+          console.error(`Error occurred for email content:`, error);
+        },
       });
 
-      //blog
-      this.contentType2.forEach((contentType2) => {
-        const prompt = this.constructPrompt2(formValues, contentType2);
-        this.aiContentGeneration2(prompt, contentType2);
-      });
-
-      var facebookPrompt = `Create a social media post for the platform "Facebook" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "Facebook". The purpose of the post is "${formValues.purpose}". The intended target audience is "Facebook". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
+      // ========== SOCIAL MEDIA CONTENT GENERATION ==========
+      // Single API call returns content for all selected platforms (Facebook, Instagram, etc.)
       this.aiContentGenerationService
-        .generateOtherContent(facebookPrompt, 'social_media')
+        .generateContent(this.socialMediaPayload)
         .subscribe({
           next: (data) => {
-            console.log(`social_media facebook prompt :`, facebookPrompt);
+            console.log(`Social media content response:`, data);
+            // Store the complete social media response which includes all platforms
             this.aiContentGenerationService.setSocialResponseData(data);
-            console.log(`social_media facebook from API for :`, data);
           },
           error: (error) => {
-            console.error(`Error occurred for :social_media`, error);
+            console.error(`Error occurred for social media:`, error);
           },
         });
 
-      var instaPrompt = `Create a social media post for the platform "Instagram" based on the topic "${formValues.topic}" and in the language "${formValues.lang}". The tone of the post should be based on the media post as "Instagram". The purpose of the post is "${formValues.purpose}". The intended target audience is "Instagram". The content should be detailed and informative, with a maximum length of "${this.facebookLimit}" characters. Ensure that all sentences are properly structured and the post flows well. Include relevant, trending hashtags and emojis if appropriate for the context. If a link "${formValues.Hashtags}" is provided, add it at the end of the post (otherwise, don't include any links). Only return the post content, no additional notes, word count, or instructions.`;
-      this.aiContentGenerationService
-        .generateOtherContent(instaPrompt, 'social_media')
-        .subscribe({
-          next: (data) => {
-            console.log(`social_media insta prompt :`, instaPrompt);
-            this.aiContentGenerationService.setSocialResponseData1(data);
-            console.log(`social_media insta from API for :`, data);
-          },
-          error: (error) => {
-            console.error(`Error occurred for :social_media`, error);
-          },
-        });
-
-      var subjectPrompt = `Generate 4 email subjects based on the topic "${formValues.topic}". The email subjects should be in "${formValues.lang}" (English) and use a "${formValues.Type}" tone. Consider the purpose "${formValues.purpose}" and the target readers "${formValues.readers}". Output only the 4 email subjects in a single string, separated by semicolons (";"). Do not include any additional text, explanations, or formatting—just the 4 email subjects in the required format.`;
-      this.aiContentGenerationService
-        .generateOtherContent(subjectPrompt, 'emailer')
-        .subscribe({
-          next: (data) => {
-            console.log(`email subject prompt :`, subjectPrompt);
-            this.aiContentGenerationService.setSubjectResponseData(data);
-
-            console.log(`email subject from API for :`, data);
-          },
-          error: (error) => {
-            console.error(`Error occurred for email subject:`, error);
-          },
-        });
+      // ========== BLOG CONTENT GENERATION ==========
+      this.aiContentGenerationService.generateContent(this.blogPayload).subscribe({
+        next: (data) => {
+          console.log('Blog content response:', data);
+          this.aiContentGenerationService.setBlogResponseData(data);
+        },
+        error: (error) => {
+          console.error(`Error occurred for blog:`, error);
+        },
+      });
 
       if (this.uploadedIamges) {
         this.aiContentGenerationService.setImage(this.uploadedIamges);
@@ -335,46 +360,19 @@ export class CombinedFormComponent {
         this.aiContentGenerationService.setImage(null);
       }
 
+      // Map campaign2 to campaign for social media platforms (used by review screen)
+      if (formValues.campaign2) {
+        formValues.campaign = formValues.campaign2;
+      }
+
       this.aiContentGenerationService.setData(formValues);
       this.navigateToReview();
     } else {
       console.log('Form is invalid');
     }
-    // } else {
-    //   console.log('Form submission cancelled');
-    // }
   }
 
-  constructPrompt(formValues: any, contentType: string): string {
-    const {
-      topic,
-      purpose,
-      purpose2,
-      readers,
-      Type,
-      Type3,
-      wordLimit,
-      wordLimit2,
-      wordLimit3,
-      mediaType,
-      campaign,
-      lang,
-      Hashtags,
-      format,
-      target3,
-      purpose3,
-      keywords,
-    } = formValues;
-    switch (contentType) {
-      case 'emailer':
-        return `Create a mail content based on topic "${topic}" and should be "${lang}" . the intended tone of the mail is "${Type}". Some more details to be consider for generating email body is  "${purpose}".The target reader is "${readers}" but, don't include in Salutation, the mail body content should be  "${wordLimit}" words .with all sentences closed properly Structure the email for Angular application. So, email should be created with html tags so it's easy to display except <html> and <code> tag or * or unwanted symbols not on this body. On this email parts which are , first section of Salutation as inside <p> tag then <br/> or next line two time then, second section of Email Body as inside <p> tags and new lines based on the body content then <br/> tag, third section of Closing Remarks in <p>  tag and  no space / or new line in between closing remarks . whole mail content should start from Salutation and end with Closing Remarks don't show other context other then the email
-The html tags are separate and it should not be part of word count`;
-
-      default:
-        return '';
-    }
-  }
-
+  // Old prompt methods no longer needed - using FormData payloads instead
   constructPrompt2(formValues: any, contentType: string): string {
     const {
       topic,
@@ -486,41 +484,11 @@ Output the entire blog in HTML format, followed by:
     }
   }
 
-  aiContentGeneration2(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateOtherContent(prompt, type).subscribe({
-      next: (data) => {
-        if (type == 'blog') {
-          this.aiContentGenerationService.setBlogResponseData(data);
-        }
-        console.log(`Response from API for ${type}:`, data);
-      },
-      error: (error) => {
-        console.error(`Error occurred for ${type}:`, error);
-      },
-    });
-  }
+  // Old methods removed - now calling generateContent directly with FormData payloads
 
   generateTaskId(): string {
     const timestamp = Date.now();
     return `DA-2203-${timestamp}`;
-  }
-
-  aiContentGeneration(prompt: string, type: string): void {
-    this.aiContentGenerationService.generateOtherContent(prompt, type).subscribe({
-      next: (data) => {
-        console.log('ai content call : ', type);
-        if (type === 'emailer') {
-          this.aiContentGenerationService.setEmailResponseData(data);
-          console.log('email content : ', data);
-        } else if (type === 'social_media') {
-          this.aiContentGenerationService.setSocialResponseData(data);
-          console.log('socail media content : ', data);
-        }
-      },
-      error: (error) => {
-        console.error(`Error occurred for ${type}:`, error);
-      },
-    });
   }
 
   resetForm(): void {

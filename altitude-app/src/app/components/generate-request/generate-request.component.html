@@ -1,11 +1,12 @@
 <app-header>
 
 </app-header>
+@if (selection) {
 <div class="min-h-screen dark:bg-[#09040E] mt-5">
     <div class="max-w-[88%] mx-auto my-0">
         <a routerLink="/home" class="text-4xl w-full flex items-center">
             <i class="pi pi-angle-left mt-1 mr-2 text-2xl"></i>
-            Create <span class="ml-2 email-glow">{{this.selection.name}}</span>
+            Create <span class="ml-2 email-glow">{{selection.name}}</span>
         </a>
     </div>
     <div class="max-w-[90%] mx-auto mt-10">
@@ -64,6 +65,7 @@
                             <div class="flex flex-col my-4">
 
                                 <div class="border border-[#363636] rounded-lg w-full p-4">
+                                    @if (this.selection) {
                                     @switch (this.selection.code) {
                                     @case ('email') {
                                     <app-email-form></app-email-form>
@@ -88,6 +90,7 @@
                                     }
                                     @case ('combined') {
                                     <app-combined-form></app-combined-form> }
+                                    }
                                     }
                                 </div>
 
@@ -165,3 +168,12 @@
         </div>
     </div>
 </div>
+} @else {
+<div class="min-h-screen dark:bg-[#09040E] mt-5 flex items-center justify-center">
+    <div class="text-center">
+        <p class="text-2xl text-white">Loading campaign details...</p>
+        <p class="text-sm text-gray-400 mt-2">Please wait or <a routerLink="/home"
+                class="text-[#B66DFF] underline">return to home</a></p>
+    </div>
+</div>
+}

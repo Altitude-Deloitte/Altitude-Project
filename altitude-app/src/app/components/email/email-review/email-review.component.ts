@@ -25,6 +25,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 import { DrawerModule } from 'primeng/drawer';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
 @Component({
   selector: 'app-email-review',
   imports: [
@@ -42,7 +45,10 @@ import { DrawerModule } from 'primeng/drawer';
     DialogModule,
     ProgressSpinnerModule,
     DrawerModule,
+    LoaderComponent,
+    ToastModule,
   ],
+  providers: [MessageService],
   templateUrl: './email-review.component.html',
   styleUrl: './email-review.component.css',
 })
@@ -177,11 +183,20 @@ export class EmailReviewComponent {
   socketMessage: any = [];
   currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
+
+  // Regeneration fields
+  contentFeedback: string = '';
+  imageFeedback: string = '';
+  isRegeneratingContent: boolean = false;
+  isRegeneratingImage: boolean = false;
+  emailPayload: FormData | null = null;
+
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService, // private dialog: MatDialog,
     public socketConnection: SocketConnectionService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private messageService: MessageService
   ) {
     // Watch for chat response from AI chat
     effect(() => {
@@ -195,11 +210,22 @@ export class EmailReviewComponent {
   ngOnInit() {
     this.socketConnection.dataSignal.set({});
     this.imageUrl = null;
-    this.loading = true;
     this.editorContentEmail = [];
+
+    // Subscribe to loading state from service
+    this.aiContentGenerationService.getEmailReviewLoading().subscribe((isLoading) => {
+      this.loading = isLoading;
+    });
+
+    // Set initial loading state to true
+    this.loading = true;
+
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
       console.log("form data", this.formData);
+
+      // Initialize email payload from form data
+      this.initializeEmailPayload();
     });
 
     // console.log(this.brand);
@@ -284,6 +310,8 @@ export class EmailReviewComponent {
             this.totalWordCount = countWords(this.editorContentEmail);
 
             this.loading = false;
+            // Update loading state in service
+            this.aiContentGenerationService.setEmailReviewLoading(false);
             this.isEMailPromptDisabled = false;
             this.commonPromptIsLoading = false;
             this.translateIsLoading = false;
@@ -593,6 +621,8 @@ The html tags are separate and it should not be part of word count.`;
 
     // Set loading states
     this.loading = false;
+    // Update loading state in service
+    this.aiContentGenerationService.setEmailReviewLoading(false);
     this.contentDisabled = false;
     this.isLoading = false;
     this.isEMailPromptDisabled = false;
@@ -710,6 +740,212 @@ The html tags are separate and it should not be part of word count.`;
       case 'PENDING':
       default:
         return '#d1d5db'; // Light gray
+    }
+  }
+
+  // Initialize email payload from form data or collected data from chat-app
+  initializeEmailPayload(): void {
+    if (!this.formData) return;
+
+    this.emailPayload = new FormData();
+
+    // Use collected data structure (from chat-app) if available, otherwise use formData (from email-form)
+    const useCase = this.formData?.use_case || 'Email Campaign';
+    const purpose = this.formData?.purpose || '';
+    const brand = this.formData?.brand || '';
+    const tone = this.formData?.tone || this.formData?.Type || '';
+    const topic = this.formData?.topic || '';
+    const wordLimit = this.formData?.word_limit || this.formData?.wordLimit || '';
+    const targetReader = this.formData?.target_reader || this.formData?.readers || '';
+    const imageDetails = this.formData?.image_details || this.formData?.imageOpt || '';
+    const imageDescription = this.formData?.image_description || this.formData?.imgDesc || '';
+
+    this.emailPayload.append('use_case', useCase);
+    this.emailPayload.append('purpose', purpose);
+    this.emailPayload.append('brand', brand);
+    this.emailPayload.append('tone', tone);
+    this.emailPayload.append('topic', topic);
+    this.emailPayload.append('word_limit', wordLimit);
+    this.emailPayload.append('target_reader', targetReader);
+    this.emailPayload.append('image_details', imageDetails);
+
+    if (imageDescription && imageDescription.trim() !== '') {
+      this.emailPayload.append('image_description', imageDescription);
+    }
+    if (this.formData?.additional && this.formData?.additional.trim() !== '') {
+      this.emailPayload.append('additional_details', this.formData?.additional);
+    }
+  }
+
+  // Validate content feedback input
+  validateContentFeedback(feedback: string): boolean {
+    const lowerFeedback = feedback.toLowerCase().trim();
+
+    // Check if feedback mentions word count/limit
+    const hasWordKeyword = lowerFeedback.includes('word count') || 
+                          lowerFeedback.includes('word limit') || 
+                          lowerFeedback.includes('words');
+
+    // If word count/limit is mentioned, extract the number and validate it's >= 50
+    if (hasWordKeyword) {
+      const numbers = feedback.match(/\b\d+\b/g);
+      if (numbers && numbers.length > 0) {
+        const wordLimit = parseInt(numbers[0], 10);
+        if (wordLimit < 50) {
+          return false; // Invalid: word limit less than 50
+        }
+      }
+    }
+
+    return true; // Valid feedback
+  }
+
+
+  // Regenerate content based on feedback
+  regenerateContent(): void {
+    if (!this.contentFeedback || this.contentFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter feedback to regenerate content',
+        life: 3000
+      });
+      return;
+    }
+
+    // Validate word limit is at least 50
+    if (!this.validateContentFeedback(this.contentFeedback)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Word Limit',
+        detail: 'Word limit should be more than 50 words.',
+        life: 5000,
+        icon: 'pi pi-exclamation-triangle'
+      });
+      return;
+    }
+
+    if (!this.emailPayload) {
+      this.initializeEmailPayload();
+    }
+
+    // Add feedback and regenerate flag to payload
+    this.emailPayload?.append('feedback', this.contentFeedback);
+    this.emailPayload?.append('regenerate', 'true');
+
+    this.isRegeneratingContent = true;
+    // Don't set loading = true for regeneration (keep loader hidden)
+
+    this.aiContentGenerationService.generateContent(this.emailPayload!).subscribe({
+      next: (data) => {
+        console.log('Content regenerated:', data);
+        this.aiContentGenerationService.setEmailResponseData(data);
+
+        // Process the regenerated content
+        if (data?.result?.generation) {
+          this.processChatResponse(data.result.generation);
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Content regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        // Clear feedback input
+        this.contentFeedback = '';
+
+        // Reinitialize payload for next regeneration
+        this.initializeEmailPayload();
+      },
+      error: (error) => {
+        console.error('Error regenerating content:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate content. Please try again.',
+          life: 3000
+        });
+        this.isRegeneratingContent = false;
+        // Don't set loading = false (it wasn't set to true)
+      },
+      complete: () => {
+        this.isRegeneratingContent = false;
+        // Don't set loading = false (it wasn't set to true)
+      }
+    });
+  }
+
+  // Regenerate image based on feedback
+  regenerateImage(): void {
+    if (!this.imageFeedback || this.imageFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter image feedback to regenerate',
+        life: 3000
+      });
+      return;
+    }
+
+    // Reinitialize payload to ensure all form data is fresh
+    this.initializeEmailPayload();
+
+    // Add image feedback and regenerate flag to payload
+    this.emailPayload?.append('image_feedback', this.imageFeedback);
+    this.emailPayload?.append('regenerate', 'true');
+    console.log('regenerate image payload', this.emailPayload);
+    this.isRegeneratingImage = true;
+    // Don't set loading = true for regeneration (keep loader hidden)
+
+    this.aiContentGenerationService.generateContent(this.emailPayload!).subscribe({
+      next: (data) => {
+        console.log('Image regenerated:', data);
+
+        // Process the regenerated response using the same handler as content
+        if (data?.result?.generation) {
+          this.processChatResponse(data.result.generation);
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Image regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        // Clear feedback input
+        this.imageFeedback = '';
+
+        // Reinitialize payload for next regeneration
+        this.initializeEmailPayload();
+      },
+      error: (error) => {
+        console.error('Error regenerating image:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate image. Please try again.',
+          life: 3000
+        });
+        this.isRegeneratingImage = false;
+        // Don't set loading = false (it wasn't set to true)
+      },
+      complete: () => {
+        this.isRegeneratingImage = false;
+        // Don't set loading = false (it wasn't set to true)
+      }
+    });
+  }
+
+  appendToContentFeedback(text: string): void {
+    if (this.contentFeedback) {
+      this.contentFeedback += ' ' + text;
+    } else {
+      this.contentFeedback = text;
     }
   }
 }

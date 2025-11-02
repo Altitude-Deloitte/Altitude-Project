@@ -6,7 +6,9 @@ import {
   signal,
   Signal,
   viewChild,
+  PLATFORM_ID,
 } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
 import { HeaderComponent } from '../../shared/header/header.component';
 import { StepperModule } from 'primeng/stepper';
 import { RadioButtonModule } from 'primeng/radiobutton';
@@ -64,7 +66,9 @@ import { SocketConnectionService } from '../../services/socket-connection.servic
   styleUrl: './generate-request.component.css',
 })
 export class GenerateRequestComponent implements OnInit {
-  selection: any;
+  private platformId = inject(PLATFORM_ID);
+  private socketConnection = inject(SocketConnectionService);
+  selection: any = null; // Initialize with null to prevent undefined errors
   radiobtn = [
     {
       label: 'Input Details Manually',
@@ -85,23 +89,40 @@ export class GenerateRequestComponent implements OnInit {
       description: 'Use voice based method to input your idea.',
     },
   ];
-  private socketConnection = inject(SocketConnectionService);
 
   details: any = 'details';
   store = inject(SelectionStore);
 
   currentDate: any = new Date();
-  dueDate: any = this.currentDate.toISOString().split('T')[0];
+  dueDate: any = '';
   taskID: any = ''; // Initialize with an empty string
-  generateTaskId(): string {
-    const timestamp = Date.now();
-    this.taskID = `EM-2203-${timestamp}`;
-    return `EM-2203-${timestamp}`;
-  }
-  ngOnInit(): void {
-    this.generateTaskId();
-    this.selection = this.store.campaignType();
 
-    console.log('store: ', this.store.campaignType());
+  generateTaskId(): string {
+    if (isPlatformBrowser(this.platformId)) {
+      const timestamp = Date.now();
+      this.taskID = `EM-2203-${timestamp}`;
+      return `EM-2203-${timestamp}`;
+    }
+    // Default value for SSR
+    this.taskID = `EM-2203-PENDING`;
+    return `EM-2203-PENDING`;
+  }
+
+  ngOnInit(): void {
+    // Only execute browser-specific code in the browser
+    if (isPlatformBrowser(this.platformId)) {
+      this.generateTaskId();
+      this.dueDate = this.currentDate.toISOString().split('T')[0];
+      this.selection = this.store.campaignType();
+      console.log('store: ', this.store.campaignType());
+
+      // Ensure socket connection is established when entering this page
+      // this.socketConnection.ensureConnection();
+    } else {
+      // Set default values for SSR
+      this.taskID = 'EM-2203-PENDING';
+      this.dueDate = '----/--/--';
+      this.selection = null;
+    }
   }
 }

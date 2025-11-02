@@ -1,31 +1,8 @@
 <app-header></app-header>
 @if (loading) {
 <!-- Main container that doesn't cover the header -->
-<div class="relative min-h-[70vh] w-full overflow-hidden" style="height: calc(100vh - var(--header-height, 80px));">
-    <!-- Background Video -->
-    <video src="assets/videos/dark-particles.mp4" autoplay muted loop playsinline
-        class="absolute inset-0 w-full h-full object-cover z-0"></video>
-
-    <!-- Centered Content with Heading and Loader -->
-    <div class="relative z-10 flex flex-col items-center justify-center h-full">
-        <!-- Heading Section -->
-        <div class="mb-4 text-center">
-            <h1 class="text-center text-[3.6rem]">Creating <span class="email-glow italic">Magic!</span></h1>
-        </div>
-
-        <!-- Container for both loader elements -->
-        <div class="relative w-full flex justify-center">
-            <!-- LoaderAnimation.svg (background - full width) -->
-            <img src="assets/images/LoaderAnimation.svg" alt="Loader Animation"
-                class="w-full h-auto object-contain max-w-none" draggable="false" />
-
-            <!-- LogoLoader.svg (positioned on top center) -->
-            <img src="assets/images/LogoLoader.svg" alt="Logo Loader"
-                class="absolute top-1/2 left-1/2 w-[102px] h-[102px] -translate-x-1/2 -translate-y-1/2 z-10"
-                draggable="false" />
-        </div>
-    </div>
-</div> }
+<app-loader></app-loader>
+}
 
 @else {
 <div class="">
@@ -165,9 +142,8 @@
         </div>
 
     </div>
-    <!-- <div class="flex  items-center">
-        
-        </div> -->
-    <p-button class="bg-[#8D4BFF] mr-[5%] mb-4 p-4 rounded-full float-right" label="Send For Approval"></p-button>
+    <div class="flex justify-end mr-4 mb-8">
+        <p-button class="bg-[#8D4BFF] p-4 rounded-full" label="Send For Approval"></p-button>
+    </div>
 </div>
 }

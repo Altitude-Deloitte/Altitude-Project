@@ -41,6 +41,10 @@ app.get(
 app.get('**', (req, res, next) => {
   const { protocol, originalUrl, baseUrl, headers } = req;
 
+  // Set a longer timeout for SSR (30 seconds)
+  req.setTimeout(30000);
+  res.setTimeout(30000);
+
   commonEngine
     .render({
       bootstrap,

@@ -1,95 +1,91 @@
-<div class="relative min-h-[70vh] w-full overflow-hidden" style="height: calc(100vh - var(--header-height, 80px));">
+<div class="loader-wrapper">
+    <!-- Animated border that circles around -->
+    <div class="spinning-border"></div>
+
     <!-- Background Video with Black Overlay -->
-    <div class="absolute inset-0 z-0">
-        <video src="assets/videos/dark-particles.mp4" autoplay muted loop playsinline
-            class="absolute inset-0 w-full h-full object-cover"></video>
+    <div class="video-background">
+        <video src="assets/videos/dark-particles.mp4" autoplay muted loop playsinline class="video-element"></video>
         <!-- Black translucent overlay -->
-        <div class="absolute inset-0 bg-black opacity-60"></div>
+        <div class="video-overlay"></div>
     </div>
 
-    <!-- Centered Content with Heading, Workflow, and Loader -->
-    <div class="relative z-10 flex flex-col items-center justify-start h-full pt-10">
-        <!-- Heading Section -->
-        <div class="mb-8 text-center">
-            <h1 class="text-center text-[3.6rem]">Creating <span class="email-glow italic">Magic!</span></h1>
-        </div>
+    <!-- Scrollable Content Container -->
+    <div class="content-wrapper">
+        <!-- Centered Content with Heading, Workflow, and Loader -->
+        <div class="content-inner">
+            <!-- Heading Section -->
+            <div class="mb-8 text-center">
+                <h1 class="text-center text-[3.6rem]">Creating <span class="email-glow italic">Magic!</span></h1>
+            </div>
 
-        <!-- Agentic Workflow Section -->
-        <div class="workflow-container mb-8 w-full max-w-[600px] px-4">
-            <svg class="workflow-svg" width="100%" height="600" viewBox="0 0 550 600">
-                <defs>
-                    <!-- Arrow markers -->
-                    <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
-                        markerUnits="strokeWidth">
-                        <path d="M0,0 L0,6 L6,3 z" fill="#22c55e" />
-                    </marker>
-                    <marker id="arrowYellow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
-                        markerUnits="strokeWidth">
-                        <path d="M0,0 L0,6 L6,3 z" fill="#eab308" />
-                    </marker>
-                    <marker id="arrowGray" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
-                        markerUnits="strokeWidth">
-                        <path d="M0,0 L0,6 L6,3 z" fill="#6b7280" />
-                    </marker>
-                </defs>
+            <!-- Agentic Workflow Section -->
+            <div class="workflow-container mb-8 w-full max-w-[500px] px-4">
+                <svg class="workflow-svg" width="100%" [attr.height]="getWorkflowHeight()"
+                    [attr.viewBox]="'0 0 450 ' + getWorkflowHeight()">
+                    <defs>
+                        <!-- Arrow markers -->
+                        <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                            markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L6,3 z" fill="#22c55e" />
+                        </marker>
+                        <marker id="arrowYellow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                            markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L6,3 z" fill="#eab308" />
+                        </marker>
+                        <marker id="arrowGray" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                            markerUnits="strokeWidth">
+                            <path d="M0,0 L0,6 L6,3 z" fill="#6b7280" />
+                        </marker>
+                    </defs>
 
-                <!-- Workflow nodes and connections -->
-                <ng-container *ngFor="let agent of getWorkflowAgents(); let i = index">
-                    <!-- Connection line from previous node -->
-                    <ng-container *ngIf="i > 0">
-                        <line [attr.x1]="275" [attr.y1]="70 + (i - 1) * 120 + 80" [attr.x2]="275"
-                            [attr.y2]="70 + i * 120" [attr.stroke]="getLineColor(agent.status)" [attr.stroke-width]="2"
-                            [attr.stroke-dasharray]="agent.status === 'IN_PROGRESS' || agent.status === 'STARTED' ? '8,4' : '0'"
-                            [attr.marker-end]="getMarkerUrl(agent.status)"
-                            [class.animated-dashes]="agent.status === 'IN_PROGRESS' || agent.status === 'STARTED'" />
+                    <!-- Workflow nodes and connections -->
+                    <ng-container *ngFor="let agent of getWorkflowAgents(); let i = index">
+                        <!-- Connection line from previous node -->
+                        <ng-container *ngIf="i > 0">
+                            <line [attr.x1]="225" [attr.y1]="60 + (i - 1) * 110 + 60" [attr.x2]="225"
+                                [attr.y2]="60 + i * 110"
+                                [attr.stroke]="getLineColor(agent.status, agent.previousStatus || 'PENDING')"
+                                [attr.stroke-width]="2"
+                                [attr.stroke-dasharray]="shouldShowDashedLine(agent.status, agent.previousStatus || 'PENDING') ? '8,4' : '0'"
+                                [attr.marker-end]="getMarkerUrl(agent.status, agent.previousStatus || 'PENDING')"
+                                [class.animated-dashes]="shouldShowDashedLine(agent.status, agent.previousStatus || 'PENDING')" />
+                        </ng-container>
+
+                        <!-- Agent node -->
+                        <g [attr.transform]="'translate(75, ' + (60 + i * 110) + ')'">
+                            <!-- Main rectangle with conditional border -->
+                            <rect x="0" y="0" width="300" height="60" rx="10" [attr.fill]="getNodeColor(agent.status)"
+                                [attr.stroke]="agent.status === 'COMPLETED' ? '#b66dff' : '#4a5568'"
+                                [attr.stroke-width]="agent.status === 'COMPLETED' ? '2' : '1'"
+                                [attr.class]="getBorderClass(agent.status)" />
+
+                            <!-- Border animation for IN_PROGRESS (rotating border around all 4 sides) -->
+                            <rect *ngIf="showBorderAnimation(agent.status)" x="0" y="0" width="300" height="60" rx="10"
+                                fill="none" stroke="#9a62e1" stroke-width="3" class="border-animation" />
+
+                            <!-- Status dot (only for COMPLETED) -->
+                            <circle *ngIf="showStatusDot(agent.status)" [attr.cx]="15" [attr.cy]="30" r="5"
+                                [attr.fill]="getStatusIconColor(agent.status)" />
+
+                            <!-- Agent name -->
+                            <text x="30" y="22" fill="#fff" font-size="14" font-weight="600">
+                                {{ agent.name | titlecase }}
+                            </text>
+
+                            <!-- Dynamic message from socket -->
+                            <text x="30" y="37" [attr.fill]="getStatusTextColor(agent.status)" font-size="11"
+                                font-style="italic">
+                                {{ getAgentMessage(agent) }}
+                            </text>
+
+                            <!-- Status badge and time -->
+                            <text x="30" y="50" fill="#9ca3af" font-size="9">
+                                {{ agent.status }} • {{ agent.updatedAt }}
+                            </text>
+                        </g>
                     </ng-container>
-
-                    <!-- Agent node -->
-                    <g [attr.transform]="'translate(100, ' + (70 + i * 120) + ')'">
-                        <!-- Main rectangle with conditional border -->
-                        <rect x="0" y="0" width="350" height="80" rx="10" [attr.fill]="getNodeColor(agent.status)"
-                            [attr.stroke]="agent.status === 'COMPLETED' ? '#b66dff' : '#4a5568'"
-                            [attr.stroke-width]="agent.status === 'COMPLETED' ? '2' : '1'"
-                            [attr.class]="getBorderClass(agent.status)" />
-
-                        <!-- Border animation for IN_PROGRESS (rotating border) -->
-                        <rect *ngIf="showBorderAnimation(agent.status)" x="0" y="0" width="350" height="80" rx="10"
-                            fill="none" stroke="#b66dff" stroke-width="2" class="border-animation"
-                            stroke-dasharray="100 800" stroke-dashoffset="0" />
-
-                        <!-- Status dot (only for COMPLETED) -->
-                        <circle *ngIf="showStatusDot(agent.status)" [attr.cx]="20" [attr.cy]="40" r="6"
-                            [attr.fill]="getStatusIconColor(agent.status)" />
-
-                        <!-- Agent name -->
-                        <text x="40" y="35" fill="#fff" font-size="16" font-weight="600">
-                            {{ agent.name | titlecase }}
-                        </text>
-
-                        <!-- Status text -->
-                        <text x="40" y="55" [attr.fill]="getStatusTextColor(agent.status)" font-size="12">
-                            Status: {{ agent.status }}
-                        </text>
-
-                        <!-- Updated time -->
-                        <text x="280" y="55" fill="#9ca3af" font-size="11">
-                            {{ agent.updatedAt }}
-                        </text>
-                    </g>
-                </ng-container>
-            </svg>
-        </div>
-
-        <!-- Loader Animation Section (Bottom) -->
-        <div class="relative w-full flex justify-center mt-auto mb-10">
-            <!-- LoaderAnimation.svg (background - full width) -->
-            <img src="assets/images/LoaderAnimation.svg" alt="Loader Animation"
-                class="w-full h-auto object-contain max-w-none" draggable="false" />
-
-            <!-- LogoLoader.svg (positioned on top center) -->
-            <img src="assets/images/LogoLoader.svg" alt="Logo Loader"
-                class="absolute top-1/2 left-1/2 w-[102px] h-[102px] -translate-x-1/2 -translate-y-1/2 z-10"
-                draggable="false" />
+                </svg>
+            </div>
         </div>
     </div>
 </div>

@@ -141,7 +141,7 @@ export class ChatAppComponent implements OnDestroy {
       console.log('Current collected data:', this.chatStore.collectedData());
     }
     // Check if content is generated successfully
-    else if (response.result?.generation) {
+    else if (response.result?.generation || response.result?.facebook || response.result?.instagram) {
       this.contentService.setData(response.collected);
       // Set chat response in ContentGenerationService for review screens
       this.contentService.setChatResponse(response);
@@ -190,13 +190,9 @@ export class ChatAppComponent implements OnDestroy {
     const routeMap: { [key: string]: string } = {
       'email campaign': '/email-review',
       'blog generation': '/blog-review',
-      'social media': '/social-review',
-      'social': '/social-review',
+      'social media posting': '/social-review',
       'image campaign': '/image-review',
-      'image': '/image-review',
       'video campaign': '/video-review',
-      'video': '/video-review',
-      'meme campaign': '/meme-review',
       'meme': '/meme-review'
     };
 
@@ -208,11 +204,14 @@ export class ChatAppComponent implements OnDestroy {
         this.contentService.clearBlogContent();
       } else if (route === '/email-review') {
         this.contentService.clearEmailContent();
+        // Set loading state to true for email review
+        this.contentService.setEmailReviewLoading(true);
       }
 
       this.router.navigate([route]);
     } else {
       // Default to email review if no specific route found
+      this.contentService.setEmailReviewLoading(true);
       this.router.navigate(['/email-review']);
     }
   }
