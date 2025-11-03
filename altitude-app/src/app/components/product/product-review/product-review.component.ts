@@ -1,5 +1,6 @@
-import { Component, Input, effect } from '@angular/core';
+import { Component, Input, effect, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -32,7 +33,10 @@ import { DrawerModule } from 'primeng/drawer';
   templateUrl: './product-review.component.html',
   styleUrl: './product-review.component.css',
 })
-export class ProductReviewComponent {
+export class ProductReviewComponent implements OnDestroy {
+  // Subscriptions
+  private productContentSubscription?: Subscription;
+
   @Input() data: { imageUrl: string; attributes: string }[] = [];
 
   editorContentSocialMedia: any;
@@ -104,7 +108,7 @@ export class ProductReviewComponent {
 
       this.chnge.detectChanges();
     });*/
-    this.aiContentGenerationService
+    this.productContentSubscription = this.aiContentGenerationService
       .getProductResponsetData()
       .subscribe((responses) => {
         this.productResponses = responses;
@@ -154,9 +158,9 @@ export class ProductReviewComponent {
     const lowerFeedback = feedback.toLowerCase().trim();
 
     // Check if feedback mentions word count/limit
-    const hasWordKeyword = lowerFeedback.includes('word count') || 
-                          lowerFeedback.includes('word limit') || 
-                          lowerFeedback.includes('words');
+    const hasWordKeyword = lowerFeedback.includes('word count') ||
+      lowerFeedback.includes('word limit') ||
+      lowerFeedback.includes('words');
 
     // If word count/limit is mentioned, extract the number and validate it's >= 50
     if (hasWordKeyword) {
@@ -410,6 +414,11 @@ export class ProductReviewComponent {
     } else {
       this.contentFeedback = text;
     }
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from observables to prevent memory leaks
+    this.productContentSubscription?.unsubscribe();
   }
 }
 

@@ -1,5 +1,6 @@
-import { Component, Input, effect } from '@angular/core';
+import { Component, Input, effect, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { TabsModule } from 'primeng/tabs';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -46,7 +47,11 @@ import { DrawerModule } from 'primeng/drawer';
   templateUrl: './social-review.component.html',
   styleUrl: './social-review.component.css',
 })
-export class SocialReviewComponent {
+export class SocialReviewComponent implements OnDestroy {
+  // Subscriptions
+  private socialContentSubscription?: Subscription;
+  private socialContent1Subscription?: Subscription;
+
   editorContentSocialMedia: any;
   characterCount: number = 0;
   imageUrl: any;
@@ -128,7 +133,12 @@ export class SocialReviewComponent {
   ngOnInit(): void {
     console.log('ngOnInit - Initial loading state:', this.loading);
 
-    this.socketConnection.dataSignal.set({});
+    // Clear previous social data to prevent state retention
+    this.aiContentGenerationService.clearSocialData();
+
+    // Clear socket data before starting new generation
+    this.socketConnection.clearAgentData();
+
     this.imageUrl = null;
     this.imageFBUrlSocialmedia = null;
     this.imageInstaUrlSocialmedia = null;
@@ -165,7 +175,7 @@ export class SocialReviewComponent {
     this.contentXSocialMedia = null;
     this.imageXUrlSocialmedia = null;
     this.contentLinkdInSocialMedia = null;
-    this.aiContentGenerationService
+    this.socialContentSubscription = this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
         console.log('Social Response Data:', data);
@@ -310,7 +320,7 @@ export class SocialReviewComponent {
         console.log('Loading state after getSocialResponsetData:', this.loading);
         console.log('Content extracted - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1);
       });
-    this.aiContentGenerationService
+    this.socialContent1Subscription = this.aiContentGenerationService
       .getSocialResponsetData1()
       .subscribe((data) => {
         if (data.result.generation.Facebook) {
@@ -714,9 +724,9 @@ export class SocialReviewComponent {
     const lowerFeedback = feedback.toLowerCase().trim();
 
     // Check if feedback mentions word count/limit
-    const hasWordKeyword = lowerFeedback.includes('word count') || 
-                          lowerFeedback.includes('word limit') || 
-                          lowerFeedback.includes('words');
+    const hasWordKeyword = lowerFeedback.includes('word count') ||
+      lowerFeedback.includes('word limit') ||
+      lowerFeedback.includes('words');
 
     // If word count/limit is mentioned, extract the number and validate it's >= 50
     if (hasWordKeyword) {
@@ -976,5 +986,11 @@ export class SocialReviewComponent {
     } else {
       this.contentFeedback = text;
     }
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from observables to prevent memory leaks
+    this.socialContentSubscription?.unsubscribe();
+    this.socialContent1Subscription?.unsubscribe();
   }
 }

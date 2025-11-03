@@ -29,29 +29,29 @@ export class SocketConnectionService {
         this.connection = true;
       });
 
-      this.socket.on('connect_error', (error: any) => {
-        console.error('❌ Socket connection error:', error.message);
-        this.connection = false;
-      });
+      // this.socket.on('connect_error', (error: any) => {
+      //   console.error('❌ Socket connection error:', error.message);
+      //   this.connection = false;
+      // });
 
-      this.socket.on('connect_timeout', () => {
-        console.warn('⏱️ Socket connection timeout');
-        this.connection = false;
-      });
+      // this.socket.on('connect_timeout', () => {
+      //   console.warn('⏱️ Socket connection timeout');
+      //   this.connection = false;
+      // });
 
       // this.socket.on('disconnect', (reason: any) => {
       //   console.warn('🔌 Socket disconnected:', reason);
       //   this.connection = false;
       // });
 
-      this.socket.on('reconnect_attempt', (attemptNumber: number) => {
-        console.log(`🔄 Attempting to reconnect... (Attempt ${attemptNumber})`);
-      });
+      // this.socket.on('reconnect_attempt', (attemptNumber: number) => {
+      //   console.log(`🔄 Attempting to reconnect... (Attempt ${attemptNumber})`);
+      // });
 
-      this.socket.on('reconnect_failed', () => {
-        console.error('❌ Socket reconnection failed after maximum attempts');
-        this.connection = false;
-      });
+      // this.socket.on('reconnect_failed', () => {
+      //   console.error('❌ Socket reconnection failed after maximum attempts');
+      //   this.connection = false;
+      // });
 
       this.socket.on('status', (message: { name: string; status: string; message?: string; description?: string }) => {
         this.messageQueue.push(message);

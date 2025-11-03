@@ -35,23 +35,9 @@ export class LoaderComponent {
     // Get all agent names from socket data dynamically
     const agentNames = Object.keys(socketData);
 
-    // If no agents received yet, show default workflow
+    // If no agents received yet, return empty array (skeleton will be shown)
     if (agentNames.length === 0) {
-      const defaultAgents = [
-        'Extraction Agent',
-        'prompt generation agent',
-        'content generation agent',
-        'reviewer agent'
-      ];
-
-      return defaultAgents.map((name, index) => ({
-        name,
-        status: 'PENDING',
-        updatedAt: '--:--:--',
-        previousStatus: 'PENDING',
-        message: undefined,
-        description: undefined
-      }));
+      return [];
     }
 
     // Sort agents by their order field (the order they were first received)

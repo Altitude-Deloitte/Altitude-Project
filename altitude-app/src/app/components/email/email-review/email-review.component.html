@@ -156,41 +156,50 @@
                                 <div class="flex justify-between items-start">
 
 
-                                    <div class="flex flex-col gap-3">
-                                        <h4 class="text-[#9b9b9b]">Client Name</h4>
-                                        <p>{{this.brand | titlecase}}</p>
-                                        <h4 class="text-[#9b9b9b]">Purpose</h4>
-                                        <p>{{this.formData?.purpose | titlecase}}</p>
-                                        <h4 class="text-[#9b9b9b]">Due Date</h4>
-                                        <p>{{this.formData?.dueDate | titlecase}}</p>
-                                        <h4 class="text-[#9b9b9b]">Word Limit</h4>
-                                        <p>{{this.formData?.wordLimit || this.formData?.word_limit}}</p>
-                                        <h4 class="text-[#9b9b9b]">Additional Details</h4>
-                                        <p>{{this.formData?.Additional || '' | titlecase}}</p>
-                                        <h4 class="text-[#9b9b9b]">Image Description</h4>
-                                        <p>{{this.formData?.image || '' | titlecase}}</p>
-
+                                    <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                                            <span class="font-semibold">{{this.formData?.brand || this.brand ||
+                                                '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                                            <span class="font-semibold">{{this.formData?.purpose || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Topic</span>
+                                            <span class="font-semibold">{{this.formData?.topic || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                            <span class="font-semibold">{{this.formData?.dueDate || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                            <span class="font-semibold">{{this.formData?.Type || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                                            <span class="font-semibold">{{this.formData?.wordLimit ||
+                                                this.formData?.word_limit || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                            <span class="font-semibold">{{this.formData?.readers || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="text-[#9b9b9b] text-sm">Image Option</span>
+                                            <span class="font-semibold">{{this.formData?.imageOpt || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col col-span-2">
+                                            <span class="text-[#9b9b9b] text-sm">Image Description</span>
+                                            <span class="font-semibold">{{this.formData?.imgDesc || '-'}}</span>
+                                        </div>
+                                        <div class="flex flex-col col-span-2">
+                                            <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                            <span class="font-semibold">{{this.formData?.additional || '-'}}</span>
+                                        </div>
                                     </div>
-                                    <div class="flex flex-col gap-3">
-                                        <h4 class="text-[#9b9b9b]">Topic</h4>
-                                        <p>{{this.formData?.topic || '' | titlecase}}</p>
-                                        <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
-                                        <p>{{this.formData?.campaign || this.formData?.platform_campaign[0]
-                                            | titlecase}}</p>
-                                    </div>
-                                    @if (this.selection === 'image' || this.selection === 'video') {
-                                    <div class="flex flex-col gap-3">
-                                        <h4 class="text-[#9b9b9b]">Topic</h4>
-                                        <p>{{this.formData?.topic || '' | titlecase}}</p>
-                                        <h4 class="text-[#9b9b9b]">Due Date</h4>
-                                        <p>{{this.formData?.dueDate | titlecase}}</p>
-                                    </div>
-                                    <div class="flex flex-col gap-3">
-                                        <h4 class="text-[#9b9b9b]">Status</h4>
-                                        <a class="p-3 bg-[#E26F20]">In-Progress</a>
-
-                                    </div>
-                                    }
 
 
 

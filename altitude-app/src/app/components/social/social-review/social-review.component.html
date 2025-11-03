@@ -1,7 +1,7 @@
 <app-header></app-header>
 
-<!-- Toast Component for Notifications -->
-<p-toast position="top-right"></p-toast>
+<!-- Toast for notifications -->
+<p-toast position="top-right" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"></p-toast>
 
 @if (loading) {
 <app-loader></app-loader>
@@ -125,25 +125,51 @@
               </p-accordion-header>
               <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                 <div class="flex justify-between items-start">
-                  <div class="flex flex-col gap-3">
-                    <h4 class="text-[#9b9b9b]">Client Name</h4>
-                    <p>{{ brand }}</p>
-                    <h4 class="text-[#9b9b9b]">Purpose</h4>
-                    <p>{{ formData?.purpose }}</p>
-                    <h4 class="text-[#9b9b9b]">Due Date</h4>
-                    <p>{{ formData?.dueDate }}</p>
-                    <h4 class="text-[#9b9b9b]">Word Limit</h4>
-                    <p>{{ formData?.wordLimit || "" }}</p>
-                    <h4 class="text-[#9b9b9b]">Additional Details</h4>
-                    <p>{{ formData?.Additional || "" }}</p>
-                    <h4 class="text-[#9b9b9b]">Image Description</h4>
-                    <p>{{ formData?.image || "" }}</p>
-                  </div>
-                  <div class="flex flex-col gap-3">
-                    <h4 class="text-[#9b9b9b]">Topic</h4>
-                    <p>{{ formData?.topic || "" }}</p>
-                    <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
-                    <p>{{ formData?.campaign || "" }}</p>
+                  <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                      <span class="font-semibold">{{ formData?.brand || brand || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                      <span class="font-semibold">{{ formData?.purpose || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Topic</span>
+                      <span class="font-semibold">{{ formData?.topic || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                      <span class="font-semibold">{{ formData?.dueDate || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Tone</span>
+                      <span class="font-semibold">{{ formData?.Type || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                      <span class="font-semibold">{{ formData?.wordLimit || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                      <span class="font-semibold">{{ formData?.readers || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Platform</span>
+                      <span class="font-semibold">{{ formData?.campaign || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-[#9b9b9b] text-sm">Image Option</span>
+                      <span class="font-semibold">{{ formData?.imageOpt || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-2">
+                      <span class="text-[#9b9b9b] text-sm">Image Description</span>
+                      <span class="font-semibold">{{ formData?.imgDesc || '-' }}</span>
+                    </div>
+                    <div class="flex flex-col col-span-2">
+                      <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                      <span class="font-semibold">{{ formData?.additional || '-' }}</span>
+                    </div>
                   </div>
                 </div>
               </p-accordion-content>
@@ -296,7 +322,7 @@
                       style="height: 48px" />
                     <button (click)="regenerateContent()" [disabled]="isRegeneratingContent"
                       class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#8D4BFF] hover:bg-[#B66DFF] transition disabled:opacity-50 disabled:cursor-not-allowed">
-                      <i *ngIf="!isRegeneratingContent" class="pi pi-arrow-up text-2xl text-white"></i>
+                      <i *ngIf="!isRegeneratingContent" class="pi pi-send text-2xl text-white"></i>
                       <p-progressSpinner *ngIf="isRegeneratingContent" styleClass="w-6 h-6" strokeWidth="4"
                         fill="transparent" animationDuration=".8s"></p-progressSpinner>
                     </button>
@@ -316,7 +342,7 @@
                       style="height: 48px" />
                     <button (click)="regenerateImage()" [disabled]="isRegeneratingImage"
                       class="w-12 h-12 flex items-center justify-center rounded-lg bg-[#8D4BFF] hover:bg-[#B66DFF] transition disabled:opacity-50 disabled:cursor-not-allowed">
-                      <i *ngIf="!isRegeneratingImage" class="pi pi-arrow-up text-2xl text-white"></i>
+                      <i *ngIf="!isRegeneratingImage" class="pi pi-send text-2xl text-white"></i>
                       <p-progressSpinner *ngIf="isRegeneratingImage" styleClass="w-6 h-6" strokeWidth="4"
                         fill="transparent" animationDuration=".8s"></p-progressSpinner>
                     </button>

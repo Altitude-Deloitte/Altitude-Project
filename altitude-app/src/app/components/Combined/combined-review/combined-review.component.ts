@@ -8,6 +8,7 @@ import {
   OnDestroy,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { TabsModule } from 'primeng/tabs';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -23,6 +24,10 @@ import { DialogModule } from 'primeng/dialog';
 import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
+import { ToastModule } from 'primeng/toast';
+import { MessageService } from 'primeng/api';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 
 @Component({
   selector: 'app-combined-review',
@@ -45,11 +50,18 @@ import { DialogSuccessComponent } from '../../dialog-success/dialog-success.comp
     MenuModule,
     DialogModule,
     LoaderComponent,
+    ToastModule,
+    ProgressSpinnerModule,
   ],
+  providers: [MessageService],
   templateUrl: './combined-review.component.html',
   styleUrl: './combined-review.component.css',
 })
 export class CombinedReviewComponent implements OnDestroy {
+  // Subscriptions
+  private socialContentSubscription?: Subscription;
+  private blogContentSubscription?: Subscription;
+
   subjctsEmail: string[] = [];
   selectedSubject: string = '';
   imageContainerHeight = '440px';
@@ -153,11 +165,33 @@ export class CombinedReviewComponent implements OnDestroy {
   emailHeader: any;
   blogstructure: any;
   editorContentSocialMedia2: any;
+
+  // Regeneration fields for Email tab
+  emailContentFeedback: string = '';
+  isRegeneratingEmailContent: boolean = false;
+  emailPayload: FormData | null = null;
+
+  // Regeneration fields for Social Media tab
+  socialContentFeedback: string = '';
+  isRegeneratingSocialContent: boolean = false;
+  socialPayload: FormData | null = null;
+
+  // Regeneration fields for Blog tab
+  blogContentFeedback: string = '';
+  isRegeneratingBlogContent: boolean = false;
+  blogPayload: FormData | null = null;
+
+  // Image Regeneration fields (shared across tabs)
+  imageFeedback: string = '';
+  isRegeneratingImage: boolean = false;
+
   constructor(
     private route: Router,
     private dialog: MatDialog,
     private aiContentGenerationService: ContentGenerationService,
-    private chnge: ChangeDetectorRef
+    private chnge: ChangeDetectorRef,
+    public socketConnection: SocketConnectionService,
+    private messageService: MessageService
   ) { }
 
   private checkAllDataLoaded(): void {
@@ -172,6 +206,9 @@ export class CombinedReviewComponent implements OnDestroy {
 
   formData: any;
   ngOnInit(): void {
+    // Clear socket data before starting (for combined, only clear once)
+    this.socketConnection.clearAgentData();
+
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
@@ -186,6 +223,11 @@ export class CombinedReviewComponent implements OnDestroy {
           : data.campaign2.split(',').map((p: string) => p.trim());
         console.log('Selected social platforms:', this.selectedSocialPlatforms);
       }
+
+      // Initialize payloads for regeneration
+      this.initializeEmailPayload();
+      this.initializeSocialPayload();
+      this.initializeBlogPayload();
     });
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {
@@ -352,7 +394,7 @@ export class CombinedReviewComponent implements OnDestroy {
     this.blogstructure = this.blogGuideLines();
     //social media
     this.contentDisabled = true;
-    this.aiContentGenerationService
+    this.socialContentSubscription = this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
         console.log('Social media complete response:', data);
@@ -458,7 +500,7 @@ export class CombinedReviewComponent implements OnDestroy {
       });
 
     //blog
-    this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
+    this.blogContentSubscription = this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
       console.log('blog response:', data);
 
       // Check for new API format - expecting data.result.generation.html
@@ -1074,7 +1116,446 @@ Output the entire blog in HTML format, followed by:
     }
   }
 
+  // Email Payload Initialization
+  initializeEmailPayload(): void {
+    if (!this.formData) return;
+
+    this.emailPayload = new FormData();
+    const useCase = this.formData?.use_case || 'Email Campaign';
+    this.emailPayload.append('use_case', useCase);
+    this.emailPayload.append('purpose', this.formData?.purpose || '');
+    this.emailPayload.append('brand', this.formData?.brand || '');
+    this.emailPayload.append('tone', this.formData?.Type || '');
+    this.emailPayload.append('topic', this.formData?.topic || '');
+    this.emailPayload.append('word_limit', this.formData?.wordLimit || '');
+    this.emailPayload.append('target_reader', this.formData?.readers || '');
+    this.emailPayload.append('image_details', this.formData?.imageOpt || '');
+
+    if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
+      this.emailPayload.append('image_description', this.formData?.imgDesc);
+    }
+
+    console.log('Email Payload initialized with word_limit:', this.formData?.wordLimit);
+  }
+
+  // Social Media Payload Initialization
+  initializeSocialPayload(): void {
+    if (!this.formData) return;
+
+    this.socialPayload = new FormData();
+    const useCase = this.formData?.use_case || 'Social Media Content';
+    this.socialPayload.append('use_case', useCase);
+    this.socialPayload.append('brand', this.formData?.brand || '');
+    this.socialPayload.append('platform', this.formData?.campaign2 || '');
+    this.socialPayload.append('topic', this.formData?.topic || '');
+    this.socialPayload.append('purpose', this.formData?.purpose2 || '');
+    this.socialPayload.append('tone', this.formData?.Type || '');
+    this.socialPayload.append('word_limit', this.formData?.wordLimit2 || '');
+    this.socialPayload.append('target_reader', this.formData?.readers2 || '');
+    this.socialPayload.append('image_details', this.formData?.imageOpt || '');
+
+    if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
+      this.socialPayload.append('image_description', this.formData?.imgDesc);
+    }
+  }
+
+  // Blog Payload Initialization
+  initializeBlogPayload(): void {
+    if (!this.formData) return;
+
+    this.blogPayload = new FormData();
+    const useCase = this.formData?.use_case || 'Website Blog';
+    this.blogPayload.append('use_case', useCase);
+    this.blogPayload.append('brand', this.formData?.brand || '');
+    this.blogPayload.append('format', this.formData?.format || '');
+    this.blogPayload.append('topic', this.formData?.topic || '');
+    this.blogPayload.append('purpose', this.formData?.purpose3 || '');
+    this.blogPayload.append('tone', this.formData?.Type3 || '');
+    this.blogPayload.append('word_limit', this.formData?.wordLimit3 || '');
+    this.blogPayload.append('target_reader', this.formData?.readers3 || '');
+    this.blogPayload.append('keywords', this.formData?.keywords || '');
+    this.blogPayload.append('outline', this.formData?.outline || '');
+    this.blogPayload.append('image_details', this.formData?.imageOpt || '');
+
+    if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
+      this.blogPayload.append('image_description', this.formData?.imgDesc);
+    }
+  }
+
+  // Validate content feedback (word limit check)
+  validateContentFeedback(feedback: string): boolean {
+    const wordLimitMatch = feedback.match(/\b\d+\b/g);
+    if (wordLimitMatch) {
+      const extractedWordLimit = parseInt(wordLimitMatch[0], 10);
+      if (extractedWordLimit < 50) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Regenerate Email Content
+  regenerateEmailContent(): void {
+    if (!this.emailContentFeedback || this.emailContentFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter feedback to regenerate email content',
+        life: 3000
+      });
+      return;
+    }
+
+    if (!this.validateContentFeedback(this.emailContentFeedback)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Word Limit',
+        detail: 'Word limit should be more than 50 words.',
+        life: 5000
+      });
+      return;
+    }
+
+    if (!this.emailPayload) {
+      this.initializeEmailPayload();
+    }
+
+    this.emailPayload?.append('feedback', this.emailContentFeedback);
+    this.emailPayload?.append('regenerate', 'true');
+
+    // Debug: Log payload values
+    console.log('Email Regeneration - word_limit in payload:', this.emailPayload?.get('word_limit'));
+    console.log('Email Regeneration - formData.wordLimit:', this.formData?.wordLimit);
+
+    this.isRegeneratingEmailContent = true;
+
+
+    this.aiContentGenerationService.generateContent(this.emailPayload!).subscribe({
+      next: (data) => {
+        console.log('Email content regenerated:', data);
+        this.aiContentGenerationService.setEmailResponseData(data);
+
+        if (data?.result?.generation) {
+          // Update email header
+          if (data.result.generation.email_header) {
+            this.emailHeader = data.result.generation.email_header;
+          }
+
+          // Update email content (handle both html and email_body)
+          if (data.result.generation.html) {
+            let emailContent = typeof data.result.generation.html === 'string'
+              ? data.result.generation.html
+              : JSON.parse(data.result.generation.html);
+            emailContent = emailContent.replace(/"/g, '').trim();
+            this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+          } else if (data.result.generation.email_body) {
+            this.editorContentEmail = data.result.generation.email_body;
+          }
+
+          // Update image URL if provided
+          if (data.result.generation.image_url) {
+            this.imageUrl = data.result.generation.image_url;
+          }
+
+          // Update email subjects if provided
+          if (data.result.generation.email_subjects) {
+            this.subjctsEmail = data.result.generation.email_subjects;
+          }
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Email content regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        this.emailContentFeedback = '';
+        this.initializeEmailPayload();
+        this.isRegeneratingEmailContent = false;
+
+        this.chnge.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error regenerating email content:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate email content',
+          life: 3000
+        });
+        this.isRegeneratingEmailContent = false;
+        this.loading = false;
+      }
+    });
+  }
+
+  // Regenerate Social Media Content
+  regenerateSocialContent(): void {
+    if (!this.socialContentFeedback || this.socialContentFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter feedback to regenerate social media content',
+        life: 3000
+      });
+      return;
+    }
+
+    if (!this.validateContentFeedback(this.socialContentFeedback)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Word Limit',
+        detail: 'Word limit should be more than 50 words.',
+        life: 5000
+      });
+      return;
+    }
+
+    if (!this.socialPayload) {
+      this.initializeSocialPayload();
+    }
+
+    this.socialPayload?.append('feedback', this.socialContentFeedback);
+    this.socialPayload?.append('regenerate', 'true');
+
+    this.isRegeneratingSocialContent = true;
+    // this.loading = true;
+
+    this.aiContentGenerationService.generateContent(this.socialPayload!).subscribe({
+      next: (data) => {
+        console.log('Social content regenerated:', data);
+        this.aiContentGenerationService.setSocialResponseData(data);
+
+        if (data?.result?.generation) {
+          // Update posts array with regenerated content
+          this.posts = [];
+
+          // Process each platform's content
+          this.selectedSocialPlatforms.forEach((platform: string) => {
+            const platformKey = platform.toLowerCase();
+            const platformData = data.result.generation[platformKey];
+
+            if (platformData) {
+              this.posts.push({
+                platform: platform,
+                content: platformData.content || platformData.text || platformData.caption || '',
+                hashtags: platformData.hashtags || '',
+                url: platformData.url || ''
+              });
+            }
+          });
+
+          // Update image URL if provided
+          if (data.result.generation.image_url) {
+            this.imageUrl = data.result.generation.image_url;
+          }
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Social media content regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        this.socialContentFeedback = '';
+        this.initializeSocialPayload();
+        this.isRegeneratingSocialContent = false;
+        // this.loading = false;
+        this.chnge.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error regenerating social content:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate social media content',
+          life: 3000
+        });
+        this.isRegeneratingSocialContent = false;
+        this.loading = false;
+      }
+    });
+  }
+
+  // Regenerate Blog Content
+  regenerateBlogContent(): void {
+    if (!this.blogContentFeedback || this.blogContentFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter feedback to regenerate blog content',
+        life: 3000
+      });
+      return;
+    }
+
+    if (!this.validateContentFeedback(this.blogContentFeedback)) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Invalid Word Limit',
+        detail: 'Word limit should be more than 50 words.',
+        life: 5000
+      });
+      return;
+    }
+
+    if (!this.blogPayload) {
+      this.initializeBlogPayload();
+    }
+
+    this.blogPayload?.append('feedback', this.blogContentFeedback);
+    this.blogPayload?.append('regenerate', 'true');
+
+    this.isRegeneratingBlogContent = true;
+    // this.loading = true;
+
+    this.aiContentGenerationService.generateContent(this.blogPayload!).subscribe({
+      next: (data) => {
+        console.log('Blog content regenerated:', data);
+        this.aiContentGenerationService.setBlogResponseData(data);
+
+        if (data?.result?.generation) {
+          this.editorContentBlog = data.result.generation.html || data.result.generation.blog;
+          this.blog_title = data.result.generation.blog_title;
+
+          // Update image URL if provided
+          if (data.result.generation.image_url) {
+            this.imageUrl = data.result.generation.image_url;
+          }
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Blog content regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        this.blogContentFeedback = '';
+        this.initializeBlogPayload();
+        this.isRegeneratingBlogContent = false;
+        // this.loading = false;
+        this.chnge.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error regenerating blog content:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate blog content',
+          life: 3000
+        });
+        this.isRegeneratingBlogContent = false;
+        this.loading = false;
+      }
+    });
+  }
+
+  // Regenerate Image (works for all tabs)
+  regenerateImage(): void {
+    if (!this.imageFeedback || this.imageFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter feedback to regenerate image',
+        life: 3000
+      });
+      return;
+    }
+
+    // Create payload with proper field names from form
+    const payload = new FormData();
+    payload.append('use_case', this.formData?.use_case || 'Email Campaign');
+    payload.append('brand', this.formData?.brand || '');
+    payload.append('topic', this.formData?.topic || '');
+    payload.append('tone', this.formData?.Type || '');
+    payload.append('target_reader', this.formData?.readers || '');
+    payload.append('image_details', this.formData?.imageOpt || '');
+
+    if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
+      payload.append('image_description', this.formData?.imgDesc);
+    }
+
+    payload.append('image_feedback', this.imageFeedback);
+    payload.append('regenerate_image', 'true');
+
+    this.isRegeneratingImage = true;
+    // this.loading = true;
+
+    this.aiContentGenerationService.generateContent(payload).subscribe({
+      next: (data) => {
+        console.log('Image regenerated:', data);
+
+        // Update image URL based on response
+        if (data?.result?.generation?.image_url) {
+          this.imageUrl = data.result.generation.image_url;
+          this.aiContentGenerationService.setImage(this.imageUrl);
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Image regenerated successfully',
+          life: 3000,
+          styleClass: 'custom-toast-success'
+        });
+
+        this.imageFeedback = '';
+        this.isRegeneratingImage = false;
+        // this.loading = false;
+        this.chnge.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error regenerating image:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate image',
+          life: 3000
+        });
+        this.isRegeneratingImage = false;
+        this.loading = false;
+      }
+    });
+  }
+
+  // Append text to email content feedback
+  appendToEmailFeedback(text: string): void {
+    if (this.emailContentFeedback) {
+      this.emailContentFeedback += ' ' + text;
+    } else {
+      this.emailContentFeedback = text;
+    }
+  }
+
+  // Append text to social content feedback
+  appendToSocialFeedback(text: string): void {
+    if (this.socialContentFeedback) {
+      this.socialContentFeedback += ' ' + text;
+    } else {
+      this.socialContentFeedback = text;
+    }
+  }
+
+  // Append text to blog content feedback
+  appendToBlogFeedback(text: string): void {
+    if (this.blogContentFeedback) {
+      this.blogContentFeedback += ' ' + text;
+    } else {
+      this.blogContentFeedback = text;
+    }
+  }
+
   ngOnDestroy(): void {
+    // Unsubscribe from observables to prevent memory leaks
+    this.socialContentSubscription?.unsubscribe();
+    this.blogContentSubscription?.unsubscribe();
+
     // Clear all data when leaving the review screen to prevent retention
     this.aiContentGenerationService.setData(null);
     this.aiContentGenerationService.setEmailResponseData(null);

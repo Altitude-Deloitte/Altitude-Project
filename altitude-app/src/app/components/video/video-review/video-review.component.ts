@@ -77,24 +77,26 @@ export class VideoReviewComponent {
   }
 
   ngOnInit(): void {
+    // Clear socket data before starting to prevent old messages from showing
+    this.socketConnection.clearAgentData();
+
     this.contentDisabled = true;
-    this.loading = true;
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
       this.initializeVideoPayload();
     });
 
-    this.aiContentGenerationService.getImage().subscribe((data) => {
-      setTimeout(() => {
-        if (data) {
-          this.imageUrl = data;
-          this.isVideoFormat = this.isMp4(data);
-        }
-        this.contentDisabled = false;
-        this.loading = false;
-      }, 3000);
-    });
+    // this.aiContentGenerationService.getImage().subscribe((data) => {
+    //   setTimeout(() => {
+    //     if (data) {
+    //       this.imageUrl = data;
+    //       this.isVideoFormat = this.isMp4(data);
+    //     }
+    //     this.contentDisabled = false;
+    //     this.loading = false;
+    //   }, 3000);
+    // });
 
     this.isImageRegenrateDisabled = false;
   }
@@ -166,7 +168,8 @@ export class VideoReviewComponent {
           severity: 'success',
           summary: 'Success',
           detail: 'Video regenerated successfully',
-          life: 3000
+          life: 3000,
+          styleClass: 'custom-toast-success'
         });
 
         this.imageFeedback = '';
@@ -338,7 +341,8 @@ export class VideoReviewComponent {
           severity: 'success',
           summary: 'Success',
           detail: 'Video generated successfully',
-          life: 3000
+          life: 3000,
+          styleClass: 'custom-toast-success'
         });
 
         this.videoPrompt = '';

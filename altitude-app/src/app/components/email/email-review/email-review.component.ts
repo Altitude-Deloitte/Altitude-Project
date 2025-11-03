@@ -5,7 +5,9 @@ import {
   input,
   ViewChild,
   effect,
+  OnDestroy,
 } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
@@ -52,7 +54,11 @@ import { MessageService } from 'primeng/api';
   templateUrl: './email-review.component.html',
   styleUrl: './email-review.component.css',
 })
-export class EmailReviewComponent {
+export class EmailReviewComponent implements OnDestroy {
+  // Subscriptions
+  private emailContentSubscription?: Subscription;
+  private socialContentSubscription?: Subscription;
+
   typographyOptions = [
     { label: 'Inter', value: 'Inter' },
     { label: 'Roboto', value: 'Roboto' },
@@ -208,7 +214,12 @@ export class EmailReviewComponent {
   }
 
   ngOnInit() {
-    this.socketConnection.dataSignal.set({});
+    // Clear previous email data to prevent state retention
+    this.aiContentGenerationService.clearEmailData();
+
+    // Clear socket data before starting new generation
+    this.socketConnection.clearAgentData();
+
     this.imageUrl = null;
     this.editorContentEmail = [];
 
@@ -321,7 +332,7 @@ export class EmailReviewComponent {
         }, 8000);
       });
 
-    this.aiContentGenerationService
+    this.emailContentSubscription = this.aiContentGenerationService
       .getEmailResponsetData()
       .subscribe((data) => {
         this.aiContentGenerationService
@@ -343,7 +354,7 @@ export class EmailReviewComponent {
           });
       });
 
-    this.aiContentGenerationService
+    this.socialContentSubscription = this.aiContentGenerationService
       .getSocialResponsetData()
       .subscribe((data) => {
         this.isSocialMediaPromptDisabled = false;
@@ -782,9 +793,9 @@ The html tags are separate and it should not be part of word count.`;
     const lowerFeedback = feedback.toLowerCase().trim();
 
     // Check if feedback mentions word count/limit
-    const hasWordKeyword = lowerFeedback.includes('word count') || 
-                          lowerFeedback.includes('word limit') || 
-                          lowerFeedback.includes('words');
+    const hasWordKeyword = lowerFeedback.includes('word count') ||
+      lowerFeedback.includes('word limit') ||
+      lowerFeedback.includes('words');
 
     // If word count/limit is mentioned, extract the number and validate it's >= 50
     if (hasWordKeyword) {
@@ -947,5 +958,11 @@ The html tags are separate and it should not be part of word count.`;
     } else {
       this.contentFeedback = text;
     }
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from observables to prevent memory leaks
+    this.emailContentSubscription?.unsubscribe();
+    this.socialContentSubscription?.unsubscribe();
   }
 }

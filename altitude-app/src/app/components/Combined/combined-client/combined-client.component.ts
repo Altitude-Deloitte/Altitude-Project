@@ -29,7 +29,6 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
     SelectModule,
     ReactiveFormsModule,
     CommonModule,
-    CommonModule,
     SelectModule,
     InputTextModule,
     ButtonModule,
@@ -38,7 +37,6 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
     EditorModule,
     SelectModule,
     HeaderComponent,
-    RouterLink,
     MenuModule,
     DialogModule,
     OverlayPanelModule,
@@ -1161,6 +1159,24 @@ The html tags are separate and it should not be part of word count`;
         return '';
     }
   }
+
+  navigateToReview(): void {
+    // Ensure formData is set before navigating
+    if (this.formData) {
+      this.aiContentGenerationService.setData(this.formData);
+      console.log('Setting form data before navigation:', this.formData);
+    }
+
+    this.route
+      .navigate(['/combined-review'])
+      .then(() => {
+        console.log('Navigation to review page completed');
+      })
+      .catch((error) => {
+        console.error('Navigation error:', error);
+      });
+  }
+
   navigateToSuccess(): void {
     this.route
       .navigate(['/success-page'])

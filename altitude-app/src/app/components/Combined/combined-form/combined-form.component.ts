@@ -192,6 +192,8 @@ export class CombinedFormComponent {
     var formValues = { ...this.socialwebsite.getRawValue() };
     const { topic, imgDesc } = formValues;
 
+    console.log('Combined Form - Email wordLimit value:', formValues?.wordLimit);
+
     // ========== CREATE EMAIL PAYLOAD ==========
     this.emailPayload = new FormData();
     this.emailPayload.append('use_case', 'Email Campaign');

@@ -190,6 +190,56 @@ export class ContentGenerationService {
     return this.emailReviewLoading$;
   }
 
+  // Clear all response data to prevent state retention
+  clearAllResponseData(): void {
+    this.emailDataSubject.next(null);
+    this.emailHeadDataSubject.next(null);
+    this.socialDataSubject.next(null);
+    this.socialDataSubject1.next(null);
+    this.blockDataSubject.next(null);
+    this.imageSubject.next(null);
+    this.imageOfferSubject.next(null);
+    this.imageEventSubject.next(null);
+    this.productDesc.next(null);
+    this.subDataSubject.next(null);
+    this.audianceDataSubject.next(null);
+    this.audianceDataSubject1.next(null);
+    this.audianceDataSubject2.next(null);
+    this.emailSub.next(null);
+    this.socialResponseData11.next(null);
+    this.socialResponseData22.next(null);
+    this.plagrism.next(null);
+    this.publisurl.next(null);
+  }
+
+  // Clear email-specific data
+  clearEmailData(): void {
+    this.emailDataSubject.next(null);
+    this.emailHeadDataSubject.next(null);
+    this.emailSub.next(null);
+    this.imageSubject.next(null);
+    this.imageOfferSubject.next(null);
+    this.imageEventSubject.next(null);
+  }
+
+  // Clear social-specific data
+  clearSocialData(): void {
+    this.socialDataSubject.next(null);
+    this.socialDataSubject1.next(null);
+    this.socialResponseData11.next(null);
+    this.socialResponseData22.next(null);
+  }
+
+  // Clear blog-specific data
+  clearBlogData(): void {
+    this.blockDataSubject.next(null);
+  }
+
+  // Clear product-specific data
+  clearProductData(): void {
+    this.productDesc.next(null);
+  }
+
   setTemplateId(value: string): void {
     this.templateId.set(value);
   }

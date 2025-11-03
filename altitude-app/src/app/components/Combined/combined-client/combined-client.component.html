@@ -6,7 +6,7 @@
             <div class="flex justify-between items-center flex-wrap">
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center text-[#9B9B9B] gap-2">
-                        <a routerLink="/combined-review">
+                        <a (click)="navigateToReview()" class="cursor-pointer">
                             <i class="pi pi-angle-left"></i>
                             Back to Client Dashboard</a>
                     </div>
@@ -321,7 +321,7 @@
                                                 class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
                                                 Brand Guidelines & Assets
                                             </p-accordion-header>
-                                            <p-accordion-content class="p-4 border-1 border-[#363636]">
+                                            <p-accordion-content class="p-4 border-1 border-[#363636] bg-[#121212]">
                                                 <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
                                                 <div class="flex justify-center gap-4 items-center">
                                                     <div
@@ -356,7 +356,8 @@
                                                 Task Details
                                             </p-accordion-header>
 
-                                            <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                            <p-accordion-content
+                                                class="p-4 border-1 border-[#363636] bg-[#121212] rounded-b-xl">
                                                 <div class="flex justify-between items-start">
 
 

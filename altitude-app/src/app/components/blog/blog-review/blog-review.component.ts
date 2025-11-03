@@ -1,5 +1,6 @@
-import { ChangeDetectorRef, Component, effect } from '@angular/core';
+import { ChangeDetectorRef, Component, effect, OnDestroy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { CommonModule, KeyValue } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
@@ -35,7 +36,10 @@ import { DrawerModule } from 'primeng/drawer';
   templateUrl: './blog-review.component.html',
   styleUrl: './blog-review.component.css',
 })
-export class BlogReviewComponent {
+export class BlogReviewComponent implements OnDestroy {
+  // Subscriptions
+  private blogContentSubscription?: Subscription;
+
   dashArrayDesk: number = 314; // Total circumference of the circle (2 * PI * radius)
   dashOffsetDesk: number = 314;
 
@@ -111,7 +115,12 @@ export class BlogReviewComponent {
   private dataLoaded = false; // Track if data is already loaded from shared content
 
   ngOnInit(): void {
-    this.socketConnection.dataSignal.set({});
+    // Clear previous blog data to prevent state retention
+    this.aiContentGenerationService.clearBlogData();
+
+    // Clear socket data before starting new generation
+    this.socketConnection.clearAgentData();
+
     this.loading = true;
     this.dataLoaded = false; // Reset flag
 
@@ -130,6 +139,9 @@ export class BlogReviewComponent {
     this.aiContentGenerationService.getBlogContent().subscribe((blogData) => {
       if (blogData && blogData.blogContent) {
         console.log('Using existing shared blog content:', blogData);
+
+        // Clear the blog response data to prevent old data from showing
+        this.aiContentGenerationService.clearBlogData();
 
         // Restore from shared data
         this.imageUrl = blogData.imageUrl;
@@ -164,7 +176,7 @@ export class BlogReviewComponent {
         this.audianceData = data?.content;
         this.chnge.detectChanges();
       });
-    this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
+    this.blogContentSubscription = this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
       // Only process if data exists AND data hasn't been loaded from shared content
       if (data?.result?.generation && !this.dataLoaded) {
         setTimeout(() => {
@@ -505,9 +517,9 @@ export class BlogReviewComponent {
     const lowerFeedback = feedback.toLowerCase().trim();
 
     // Check if feedback mentions word count/limit
-    const hasWordKeyword = lowerFeedback.includes('word count') || 
-                          lowerFeedback.includes('word limit') || 
-                          lowerFeedback.includes('words');
+    const hasWordKeyword = lowerFeedback.includes('word count') ||
+      lowerFeedback.includes('word limit') ||
+      lowerFeedback.includes('words');
 
     // If word count/limit is mentioned, extract the number and validate it's >= 50
     if (hasWordKeyword) {
@@ -770,5 +782,10 @@ export class BlogReviewComponent {
     } else {
       this.contentFeedback = text;
     }
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from observables to prevent memory leaks
+    this.blogContentSubscription?.unsubscribe();
   }
 }
