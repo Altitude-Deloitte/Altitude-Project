@@ -461,7 +461,10 @@ export class ContentGenerationService {
     return this.http.post<any>(this.apiUrl, formFieldData);
   }
   generateVoeVideo(formData: FormData) {
-    return this.http.post(this.videoUrl, formData);
+    // Don't set Content-Type header - let the browser set it with the correct boundary
+    return this.http.post(this.videoUrl, formData, {
+      headers: {}
+    });
   }
 
   // Method to fetch campaign data

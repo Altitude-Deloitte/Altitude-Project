@@ -140,15 +140,12 @@ export class VideoReviewComponent {
       return;
     }
 
-    // Combine original prompt with feedback for regeneration
-    const originalPrompt = this.formData?.prompt || '';
-    const regenerationBrief = `${originalPrompt}\n\nAdditional feedback: ${this.imageFeedback}`;
-
-    console.log('Regenerating video with brief:', regenerationBrief);
+    // Use only the feedback as the brief (no combining with original prompt)
+    console.log('Regenerating video with brief:', this.imageFeedback);
 
     // Create FormData for multipart form data
     const videoFormData = new FormData();
-    videoFormData.append('brief', regenerationBrief);
+    videoFormData.append('brief', this.imageFeedback);
 
     this.isRegeneratingImage = true;
     // Don't set loading = true for regeneration (keep main loader hidden)

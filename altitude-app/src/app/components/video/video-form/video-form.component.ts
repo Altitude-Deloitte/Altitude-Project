@@ -21,6 +21,8 @@ import { ButtonModule } from 'primeng/button';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router } from '@angular/router';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-video-form',
@@ -31,6 +33,8 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     ButtonModule,
     ReactiveFormsModule,
     SelectModule,
+    DrawerModule,
+    InputTextModule,
   ],
   templateUrl: './video-form.component.html',
   styleUrl: './video-form.component.css',
@@ -67,6 +71,15 @@ export class VideoFormComponent {
   currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
 
+  // Properties for upload drawer and image handling
+  showUploadDrawer: boolean = false;
+  showImageUrlInput: boolean = false;
+  videoGenerationModel: string = 'frames-to-video';
+  referenceImageUrl: string = '';
+  referenceImageFile: File | null = null;
+  imagePreviewUrl: string = '';
+  uploadedImagePreview: string = '';
+
   constructor(
     private fb: FormBuilder,
 
@@ -97,6 +110,29 @@ export class VideoFormComponent {
       // Create FormData for multipart form data
       const videoFormData = new FormData();
       videoFormData.append('brief', prompt);
+      console.log('Brief added to FormData:', prompt);
+
+      // Append optional reference_image if file is uploaded
+      if (this.referenceImageFile) {
+        videoFormData.append('reference_image', this.referenceImageFile, this.referenceImageFile.name);
+        console.log('Reference image file added to payload:', this.referenceImageFile.name, 'Size:', this.referenceImageFile.size, 'Type:', this.referenceImageFile.type);
+      }
+
+      // Append optional reference_image_url if URL is provided
+      if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+        videoFormData.append('reference_image_url', this.referenceImageUrl);
+        console.log('Reference image URL added to payload:', this.referenceImageUrl);
+      }
+
+      // Log FormData contents for debugging
+      console.log('FormData entries:');
+      videoFormData.forEach((value, key) => {
+        if (value instanceof File) {
+          console.log(`${key}:`, value.name, value.size, value.type);
+        } else {
+          console.log(`${key}:`, value);
+        }
+      });
 
       this.aiContentGenerationService
         .generateVoeVideo(videoFormData)
@@ -112,6 +148,9 @@ export class VideoFormComponent {
           },
           (error) => {
             console.error('Error:', error);
+            console.error('Error status:', error.status);
+            console.error('Error message:', error.message);
+            console.error('Error details:', error.error);
             // Optionally show error message to user
           }
         );
@@ -198,6 +237,83 @@ export class VideoFormComponent {
       const urls = this.urls.value;
       [urls[index + 1], urls[index]] = [urls[index], urls[index + 1]];
       this.urls.setValue(urls);
+    }
+  }
+
+  // Trigger file upload from drawer
+  triggerFileUpload(): void {
+    this.showUploadDrawer = false;
+    setTimeout(() => {
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.click();
+      }
+    }, 100);
+  }
+
+  // Switch to image URL input mode
+  switchToImageUrlInput(): void {
+    this.showUploadDrawer = false;
+    this.showImageUrlInput = true;
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+  }
+
+  // Handle image file selection
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.referenceImageFile = input.files[0];
+      console.log('Reference image file selected:', this.referenceImageFile.name);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.uploadedImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.referenceImageFile);
+
+      // Remove URL input mode and clear URL values when file is uploaded
+      this.showImageUrlInput = false;
+      this.referenceImageUrl = '';
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  // Handle image URL change
+  onImageUrlChange(): void {
+    if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+      this.imagePreviewUrl = this.referenceImageUrl;
+      // Clear uploaded file when URL is provided
+      this.uploadedImagePreview = '';
+      this.referenceImageFile = null;
+    } else {
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  // Clear input
+  clearInput(): void {
+    this.showImageUrlInput = false;
+    this.referenceImageUrl = '';
+    this.imagePreviewUrl = '';
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.socialwebsite.patchValue({ prompt: '' });
+  }
+
+  // Remove reference image (both uploaded and URL)
+  removeReferenceImage(): void {
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.imagePreviewUrl = '';
+    this.referenceImageUrl = '';
+    this.showImageUrlInput = false;
+
+    // Reset file input to allow re-uploading the same file
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
   }
 }

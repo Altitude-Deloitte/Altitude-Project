@@ -98,13 +98,52 @@
     @case ('na') {
     }
     @case ('AI Generated') {
-    <div class="flex flex-col">
+    <div class="flex flex-col space-y-4">
         <label for="imagedesc">
             Image Description
         </label>
         <input
             class="bg-transparent border border-[#363636] w-1/2 rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
             formControlName="imgDesc" placeholder="Please enter the image description" />
+
+        <!-- Reference Image Upload Section -->
+        <div class="mt-4">
+            <label class="block text-gray-300 mb-2">Reference Image (Optional)</label>
+
+            <!-- Show uploaded image or URL image preview -->
+            <div *ngIf="uploadedImagePreview || imagePreviewUrl" class="mb-4">
+                <div class="relative inline-block">
+                    <img [src]="uploadedImagePreview || imagePreviewUrl" alt="Reference"
+                        class="max-w-full max-h-48 rounded-lg border border-[#363636]" />
+                    <button type="button" (click)="removeReferenceImage()"
+                        class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 transition">
+                        <i class="pi pi-times text-white text-sm"></i>
+                    </button>
+                </div>
+                <p class="text-gray-400 text-xs mt-2">Reference Image</p>
+            </div>
+
+            <!-- Image URL Input (when in URL mode) -->
+            <div *ngIf="showImageUrlInput && !imagePreviewUrl" class="mb-4">
+                <input pInputText [(ngModel)]="referenceImageUrl" [ngModelOptions]="{standalone: true}"
+                    (ngModelChange)="onReferenceImageUrlChange()"
+                    class="w-full bg-[#2A2A2A] border border-[#4A4A4A] text-white text-base px-4 py-3 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-[#8D4BFF] focus:border-[#8D4BFF] outline-none"
+                    placeholder="Paste image URL here" />
+            </div>
+
+            <!-- Add Image Button -->
+            <div class="flex items-center gap-3">
+                <button type="button" (click)="showUploadDrawer = true"
+                    class="px-4 py-2 rounded-lg bg-[#2A2A2A] border border-[#4A4A4A] text-white hover:border-[#8D4BFF] transition flex items-center gap-2">
+                    <i class="pi pi-plus text-gray-400"></i>
+                    <span>Add Reference Image</span>
+                </button>
+                <button type="button" *ngIf="uploadedImagePreview || imagePreviewUrl" (click)="clearReferenceInput()"
+                    class="px-4 py-2 rounded-lg bg-transparent border border-[#4A4A4A] text-gray-400 hover:border-red-500 hover:text-red-500 transition">
+                    Clear
+                </button>
+            </div>
+        </div>
     </div>
 
     }@case ('URL Image') {
@@ -146,5 +185,29 @@
             [disabled]="socialwebsite.invalid"></p-button>
     </div>
 
+    <!-- Reference Image Upload Drawer -->
+    <p-drawer [(visible)]="showUploadDrawer" position="bottom" [style]="{height: 'auto'}" [modal]="true">
+        <div class="flex gap-6 justify-center py-6">
+            <!-- Upload Image Option -->
+            <div (click)="triggerFileUpload()"
+                class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
+                <i class="pi pi-upload text-5xl text-white"></i>
+                <span class="text-white font-medium text-lg">Upload Image</span>
+                <span class="text-gray-400 text-sm">.png, .jpg, .webp, .heic, .avif, .svg</span>
+            </div>
+
+            <!-- Upload Image URL Option -->
+            <div (click)="switchToImageUrlInput()"
+                class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
+                <i class="pi pi-link text-5xl text-white"></i>
+                <span class="text-white font-medium text-lg">Upload Image URL</span>
+                <span class="text-gray-400 text-sm">Paste image link</span>
+            </div>
+        </div>
+    </p-drawer>
+
+    <!-- Hidden file input for reference image -->
+    <input type="file" id="referenceImageInput" (change)="onReferenceImageSelected($event)"
+        accept=".png,.jpg,.jpeg,.webp,.heic,.avif,.svg" class="hidden" />
 
 </form>

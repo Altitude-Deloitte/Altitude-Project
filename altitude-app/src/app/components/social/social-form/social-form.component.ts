@@ -19,6 +19,9 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router } from '@angular/router';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
+
 @Component({
   selector: 'app-social-form',
   imports: [
@@ -29,6 +32,8 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     ReactiveFormsModule,
     SelectModule,
     MultiSelectModule,
+    DrawerModule,
+    InputTextModule,
   ],
   templateUrl: './social-form.component.html',
   styleUrl: './social-form.component.css',
@@ -128,6 +133,14 @@ export class SocialFormComponent {
   combinedLimit: string = '';
   urlImage: any;
 
+  // Properties for reference image upload functionality
+  showUploadDrawer: boolean = false;
+  showImageUrlInput: boolean = false;
+  referenceImageUrl: string = '';
+  referenceImageFile: File | null = null;
+  imagePreviewUrl: string = '';
+  uploadedImagePreview: string = '';
+
   constructor(
     private fb: FormBuilder,
     private route: Router,
@@ -184,6 +197,18 @@ export class SocialFormComponent {
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.socialMediaPayload.append('additional_details', formValues?.additional);
+    }
+
+    // Append reference_image if file is uploaded (only for AI Generated)
+    if (formValues?.imageOpt === 'AI Generated' && this.referenceImageFile) {
+      this.socialMediaPayload.append('reference_image', this.referenceImageFile, this.referenceImageFile.name);
+      console.log('Reference image file added to payload:', this.referenceImageFile.name, 'Size:', this.referenceImageFile.size, 'Type:', this.referenceImageFile.type);
+    }
+
+    // Append reference_image_url if URL is provided (only for AI Generated)
+    if (formValues?.imageOpt === 'AI Generated' && this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+      this.socialMediaPayload.append('reference_image_url', this.referenceImageUrl);
+      console.log('Reference image URL added to payload:', this.referenceImageUrl);
     }
 
 
@@ -497,6 +522,73 @@ export class SocialFormComponent {
       } else {
         alert('No files dropped');
       }
+    }
+  }
+
+  // Reference Image Upload Methods
+  triggerFileUpload(): void {
+    this.showUploadDrawer = false;
+    setTimeout(() => {
+      const fileInput = document.querySelector('input[type="file"]#referenceImageInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.click();
+      }
+    }, 100);
+  }
+
+  switchToImageUrlInput(): void {
+    this.showUploadDrawer = false;
+    this.showImageUrlInput = true;
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+  }
+
+  onReferenceImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.referenceImageFile = input.files[0];
+      console.log('Reference image file selected:', this.referenceImageFile.name);
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.uploadedImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.referenceImageFile);
+
+      this.showImageUrlInput = false;
+      this.referenceImageUrl = '';
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  onReferenceImageUrlChange(): void {
+    if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+      this.imagePreviewUrl = this.referenceImageUrl;
+      this.uploadedImagePreview = '';
+      this.referenceImageFile = null;
+    } else {
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  clearReferenceInput(): void {
+    this.showImageUrlInput = false;
+    this.referenceImageUrl = '';
+    this.imagePreviewUrl = '';
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+  }
+
+  removeReferenceImage(): void {
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.imagePreviewUrl = '';
+    this.referenceImageUrl = '';
+    this.showImageUrlInput = false;
+
+    const fileInput = document.querySelector('input[type="file"]#referenceImageInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
   }
 }
