@@ -200,6 +200,10 @@ export class CombinedReviewComponent implements OnDestroy {
     if (this.dataLoadedCount >= this.totalDataToLoad) {
       this.loading = false;
       console.log('All data loaded, hiding loader');
+
+      // Disconnect socket after all content is loaded
+      this.socketConnection.disconnect();
+
       this.chnge.detectChanges();
     }
   }

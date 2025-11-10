@@ -216,6 +216,9 @@ export class BlogReviewComponent implements OnDestroy {
           this.existingContent = this.editorContentSocialMedia;
           this.contentDisabled = false;
 
+          // Disconnect socket after content is loaded
+          this.socketConnection.disconnect();
+
           const countWords = (content: string) => {
             if (!content) return 0;
             return content.trim().replace(/\s+/g, ' ').split(' ').length;
@@ -484,29 +487,24 @@ export class BlogReviewComponent implements OnDestroy {
 
     this.blogPayload = new FormData();
 
-    // Use collected data structure (from chat-app) if available, otherwise use formData (from blog-form)
-    const useCase = this.formData?.use_case || 'Blog';
-    const purpose = this.formData?.purpose || '';
-    const brand = this.formData?.brand || '';
-    const tone = this.formData?.tone || this.formData?.Type || '';
-    const topic = this.formData?.topic || '';
-    const wordLimit = this.formData?.word_limit || this.formData?.wordLimit || '';
-    const targetReader = this.formData?.target_reader || this.formData?.targetAudience || this.formData?.readers || '';
-    const imageDetails = this.formData?.image_details || this.formData?.imageOpt || '';
-    const imageDescription = this.formData?.image_description || this.formData?.imgDesc || '';
+    // Match the exact payload structure from blog-form component
+    this.blogPayload.append('use_case', 'Blog Generation');
+    this.blogPayload.append('purpose', this.formData?.purpose || '');
+    this.blogPayload.append('outline', this.formData?.outline || '');
+    this.blogPayload.append('format', this.formData?.format || '');
+    this.blogPayload.append('primary_keywords', this.formData?.keywords || '');
+    this.blogPayload.append('word_limit', this.formData?.wordLimit || '');
+    this.blogPayload.append('target_reader', this.formData?.readers || '');
+    this.blogPayload.append('tone', this.formData?.Type || '');
+    this.blogPayload.append('image_details', this.formData?.imageOpt || '');
+    this.blogPayload.append('brand', this.formData?.brand || '');
 
-    this.blogPayload.append('use_case', useCase);
-    this.blogPayload.append('purpose', purpose);
-    this.blogPayload.append('brand', brand);
-    this.blogPayload.append('tone', tone);
-    this.blogPayload.append('topic', topic);
-    this.blogPayload.append('word_limit', wordLimit);
-    this.blogPayload.append('target_reader', targetReader);
-    this.blogPayload.append('image_details', imageDetails);
-
-    if (imageDescription && imageDescription.trim() !== '') {
-      this.blogPayload.append('image_description', imageDescription);
+    // Conditionally append image_description if it exists
+    if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
+      this.blogPayload.append('image_description', this.formData?.imgDesc);
     }
+
+    // Conditionally append additional_details if it exists
     if (this.formData?.additional && this.formData?.additional.trim() !== '') {
       this.blogPayload.append('additional_details', this.formData?.additional);
     }

@@ -53,9 +53,7 @@ export class VideoReviewComponent {
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
   showAgenticWorkflow = false;
 
-  // Video generation properties
-  videoPrompt: string = '';
-  isGeneratingVideo: boolean = false;
+  // Video regeneration properties
   imageFeedback: string = '';
   isRegeneratingImage: boolean = false;
   videoPayload: FormData | null = null;
@@ -84,19 +82,19 @@ export class VideoReviewComponent {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
+      console.log('Video form data received:', this.formData);
       this.initializeVideoPayload();
     });
 
-    // this.aiContentGenerationService.getImage().subscribe((data) => {
-    //   setTimeout(() => {
-    //     if (data) {
-    //       this.imageUrl = data;
-    //       this.isVideoFormat = this.isMp4(data);
-    //     }
-    //     this.contentDisabled = false;
-    //     this.loading = false;
-    //   }, 3000);
-    // });
+    this.aiContentGenerationService.getImage().subscribe((data) => {
+      if (data) {
+        console.log('Video URL received:', data);
+        this.imageUrl = data;
+        this.isVideoFormat = this.isMp4(data);
+        this.contentDisabled = false;
+        this.loading = false;
+      }
+    });
 
     this.isImageRegenrateDisabled = false;
   }
@@ -113,6 +111,9 @@ export class VideoReviewComponent {
     this.contentDisabled = false;
     this.isImageRegenrateDisabled = false;
 
+    // Disconnect socket after content is loaded
+    this.socketConnection.disconnect();
+
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
     }, 300);
@@ -121,17 +122,11 @@ export class VideoReviewComponent {
   initializeVideoPayload(): void {
     if (!this.formData) return;
 
+    // For video generation, we only need the prompt/brief
     this.videoPayload = new FormData();
-    this.videoPayload.append('use_case', this.formData?.use_case || 'Video Generation');
-    this.videoPayload.append('purpose', this.formData?.purpose || '');
-    this.videoPayload.append('brand', this.formData?.brand || '');
-    this.videoPayload.append('tone', this.formData?.tone || '');
-    this.videoPayload.append('topic', this.formData?.topic || '');
-    this.videoPayload.append('video_description', this.formData?.videoDesc || this.formData?.imgDesc || '');
+    this.videoPayload.append('brief', this.formData?.prompt || '');
 
-    if (this.formData?.additional && this.formData?.additional.trim() !== '') {
-      this.videoPayload.append('additional_details', this.formData?.additional);
-    }
+    console.log('Video payload initialized with brief:', this.formData?.prompt);
   }
 
   regenerateVideo(): void {
@@ -145,23 +140,27 @@ export class VideoReviewComponent {
       return;
     }
 
-    if (!this.videoPayload) {
-      this.initializeVideoPayload();
-    }
+    // Combine original prompt with feedback for regeneration
+    const originalPrompt = this.formData?.prompt || '';
+    const regenerationBrief = `${originalPrompt}\n\nAdditional feedback: ${this.imageFeedback}`;
 
-    this.videoPayload?.append('feedback', this.imageFeedback);
+    console.log('Regenerating video with brief:', regenerationBrief);
+
+    // Create FormData for multipart form data
+    const videoFormData = new FormData();
+    videoFormData.append('brief', regenerationBrief);
 
     this.isRegeneratingImage = true;
-    // Don't set loading = true for regeneration (keep loader hidden)
-    this.contentDisabled = true;
+    // Don't set loading = true for regeneration (keep main loader hidden)
 
-    this.aiContentGenerationService.generateContent(this.videoPayload!).subscribe({
-      next: (data) => {
-        console.log('Video regenerated:', data);
+    this.aiContentGenerationService.generateVoeVideo(videoFormData).subscribe({
+      next: (response: any) => {
+        console.log('Video regenerated:', response);
 
-        if (data?.result?.video_url || data?.result?.image_url) {
-          this.imageUrl = data.result.video_url || data.result.image_url;
+        if (response?.video_url) {
+          this.imageUrl = response.video_url;
           this.isVideoFormat = this.isMp4(this.imageUrl);
+          this.aiContentGenerationService.setImage(this.imageUrl);
         }
 
         this.messageService.add({
@@ -172,8 +171,8 @@ export class VideoReviewComponent {
           styleClass: 'custom-toast-success'
         });
 
+        // Clear feedback input
         this.imageFeedback = '';
-        this.initializeVideoPayload();
       },
       error: (error) => {
         console.error('Error regenerating video:', error);
@@ -184,11 +183,9 @@ export class VideoReviewComponent {
           life: 3000
         });
         this.isRegeneratingImage = false;
-        this.contentDisabled = false;
       },
       complete: () => {
         this.isRegeneratingImage = false;
-        this.contentDisabled = false;
       }
     });
   }
@@ -308,60 +305,60 @@ export class VideoReviewComponent {
     }
   }
 
-  generateVideo(): void {
-    if (!this.videoPrompt || this.videoPrompt.trim() === '') {
-      this.messageService.add({
-        severity: 'warn',
-        summary: 'Warning',
-        detail: 'Please enter a prompt to generate video',
-        life: 3000
-      });
-      return;
-    }
+  // generateVideo(): void {
+  //   if (!this.videoPrompt || this.videoPrompt.trim() === '') {
+  //     this.messageService.add({
+  //       severity: 'warn',
+  //       summary: 'Warning',
+  //       detail: 'Please enter a prompt to generate video',
+  //       life: 3000
+  //     });
+  //     return;
+  //   }
 
-    if (!this.videoPayload) {
-      this.initializeVideoPayload();
-    }
+  //   if (!this.videoPayload) {
+  //     this.initializeVideoPayload();
+  //   }
 
-    this.videoPayload?.append('prompt', this.videoPrompt);
+  //   this.videoPayload?.append('prompt', this.videoPrompt);
 
-    this.isGeneratingVideo = true;
-    this.loading = true;
+  //   this.isGeneratingVideo = true;
+  //   this.loading = true;
 
-    this.aiContentGenerationService.generateContent(this.videoPayload!).subscribe({
-      next: (data) => {
-        console.log('Video generated:', data);
+  //   this.aiContentGenerationService.generateVoeVideo(this.videoPayload!).subscribe({
+  //     next: (data) => {
+  //       console.log('Video generated:', data);
 
-        if (data?.result?.video_url || data?.result?.image_url) {
-          this.imageUrl = data.result.video_url || data.result.image_url;
-          this.isVideoFormat = this.isMp4(this.imageUrl);
-        }
+  //       if (data?.result?.video_url || data?.result?.image_url) {
+  //         this.imageUrl = data.result.video_url || data.result.image_url;
+  //         this.isVideoFormat = this.isMp4(this.imageUrl);
+  //       }
 
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Video generated successfully',
-          life: 3000,
-          styleClass: 'custom-toast-success'
-        });
+  //       this.messageService.add({
+  //         severity: 'success',
+  //         summary: 'Success',
+  //         detail: 'Video generated successfully',
+  //         life: 3000,
+  //         styleClass: 'custom-toast-success'
+  //       });
 
-        this.videoPrompt = '';
-        this.initializeVideoPayload();
-      },
-      error: (error) => {
-        console.error('Error generating video:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Failed to generate video. Please try again.',
-          life: 3000
-        });
-      },
-      complete: () => {
-        this.isGeneratingVideo = false;
-        this.loading = false;
-      }
-    });
-  }
+  //       this.videoPrompt = '';
+  //       this.initializeVideoPayload();
+  //     },
+  //     error: (error) => {
+  //       console.error('Error generating video:', error);
+  //       this.messageService.add({
+  //         severity: 'error',
+  //         summary: 'Error',
+  //         detail: 'Failed to generate video. Please try again.',
+  //         life: 3000
+  //       });
+  //     },
+  //     complete: () => {
+  //       this.isGeneratingVideo = false;
+  //       this.loading = false;
+  //     }
+  //   });
+  // }
 }
 

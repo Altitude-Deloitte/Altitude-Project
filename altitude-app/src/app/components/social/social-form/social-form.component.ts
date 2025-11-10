@@ -137,7 +137,7 @@ export class SocialFormComponent {
 
 
   ngOnInit(): void {
-      this.socketConnection.dataSignal.set({});
+    this.socketConnection.dataSignal.set({});
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
       taskId: [{ value: this.generateTaskId(), disabled: true }],
@@ -178,14 +178,14 @@ export class SocialFormComponent {
     this.socialMediaPayload.append('topic', topic || '');
     this.socialMediaPayload.append('word_limit', formValues?.wordLimit || '');
     this.socialMediaPayload.append('image_details', formValues?.imageOpt);
-     if(formValues?.imgDesc ){
+    if (formValues?.imgDesc) {
       this.socialMediaPayload.append('image_description', formValues?.imgDesc || '');
-    } 
+    }
     // Conditionally append additional fields
     if (formValues?.additional && formValues?.additional.trim() !== '') {
       this.socialMediaPayload.append('additional_details', formValues?.additional);
     }
-    
+
 
     this.addImageFromURL();
     this.imageUrl = null;
@@ -289,6 +289,14 @@ export class SocialFormComponent {
       if (formValues.imageOpt === 'N/A') {
         this.aiContentGenerationService.setImage(null);
       }
+
+      // Map Type1/Type2 and target1/target2 to Type and readers for backward compatibility
+      formValues.Type = formValues.Type1 || formValues.Type2 || '';
+      formValues.readers = formValues.target1 || formValues.target2 || '';
+      formValues.campaign = formValues.campaign || '';
+
+      console.log('Social Form - Mapped Type:', formValues.Type);
+      console.log('Social Form - Mapped readers:', formValues.readers);
 
       this.aiContentGenerationService.setData(formValues);
       this.navigateToForm();

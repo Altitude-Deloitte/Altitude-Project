@@ -128,6 +128,29 @@ export class SocialReviewComponent implements OnDestroy {
         console.log('Loading state after processing:', this.loading);
       }
     });
+
+    // Watch socket data to detect when all agents are completed
+    effect(() => {
+      const socketData = this.socketConnection.dataSignal();
+      const agentNames = ['Extraction Agent', 'prompt generation agent', 'content generation agent', 'reviewer agent'];
+
+      // Check if all agents are completed
+      const allCompleted = agentNames.every(name =>
+        socketData[name]?.status === 'COMPLETED'
+      );
+
+      // If all agents completed and we have content, hide loader
+      if (allCompleted && (this.editorContentSocialMedia || this.editorContentSocialMedia1)) {
+        console.log('All socket agents completed, hiding loader');
+        setTimeout(() => {
+          this.loading = false;
+          this.contentDisabled = false;
+
+          // Disconnect socket after all agents are completed
+          this.socketConnection.disconnect();
+        }, 1000); // Small delay to ensure smooth transition
+      }
+    });
   }
 
   ngOnInit(): void {
@@ -152,6 +175,8 @@ export class SocialReviewComponent implements OnDestroy {
       this.formData = data;
       console.log('Form Data received:', this.formData);
       console.log('Campaign data:', this.formData?.campaign);
+      console.log('Tone (Type):', this.formData?.Type);
+      console.log('Target Audience (readers):', this.formData?.readers);
 
       // If campaign data is not present, try to extract from platform_campaign
       if (!this.formData?.campaign && this.formData?.platform_campaign) {
@@ -313,12 +338,10 @@ export class SocialReviewComponent implements OnDestroy {
             '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
         }
 
-        // Set loading to false immediately after content is extracted
-        console.log('Setting loading = false in getSocialResponsetData subscription');
-        this.contentDisabled = false;
-        this.loading = false;
-        console.log('Loading state after getSocialResponsetData:', this.loading);
+        // Content extracted, but loader will remain visible until all socket agents complete
+        console.log('Content extracted in getSocialResponsetData subscription');
         console.log('Content extracted - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1);
+        console.log('Waiting for all socket agents to complete before hiding loader...');
       });
     this.socialContent1Subscription = this.aiContentGenerationService
       .getSocialResponsetData1()
@@ -669,15 +692,14 @@ export class SocialReviewComponent implements OnDestroy {
       }
     }
 
-    // Set loading states
-    console.log('Setting loading = false in processChatResponse');
-    this.loading = false;
-    this.contentDisabled = false;
+    // Set states (but keep loading true until all socket agents complete)
+    console.log('Content processed in processChatResponse - waiting for socket agents');
+    // this.loading will be set to false by the socket effect when all agents complete
     this.isEMailPromptDisabled = false;
     this.commonPromptIsLoading = false;
     this.isImageRegenrateDisabled = false;
     this.isImageRefineDisabled = false;
-    console.log('Loading state after setting false:', this.loading);
+    console.log('Content ready, waiting for all socket agents to complete...');
 
     // Clear chat response after processing
     setTimeout(() => {
@@ -691,29 +713,21 @@ export class SocialReviewComponent implements OnDestroy {
 
     this.socialPayload = new FormData();
 
-    // Use collected data structure (from chat-app) if available, otherwise use formData (from social-form)
-    const useCase = this.formData?.use_case || 'Social Media Campaign';
-    const purpose = this.formData?.purpose || '';
-    const brand = this.formData?.brand || '';
-    const tone = this.formData?.tone || this.formData?.Type || '';
-    const topic = this.formData?.topic || '';
-    const platform = this.formData?.platform_campaign || this.formData?.platform || this.formData?.socialPlatform || '';
-    const targetReader = this.formData?.target_reader || this.formData?.targetAudience || this.formData?.readers || '';
-    const imageDetails = this.formData?.image_details || this.formData?.imageOpt || '';
-    const imageDescription = this.formData?.image_description || this.formData?.imgDesc || '';
+    // Match the exact payload structure from social-form component
+    this.socialPayload.append('use_case', 'Social Media Posting');
+    this.socialPayload.append('purpose', this.formData?.purpose || '');
+    this.socialPayload.append('brand', this.formData?.brand || '');
+    this.socialPayload.append('platform_campaign', this.formData?.campaign || '');
+    this.socialPayload.append('topic', this.formData?.topic || '');
+    this.socialPayload.append('word_limit', this.formData?.wordLimit || '');
+    this.socialPayload.append('image_details', this.formData?.imageOpt || '');
 
-    this.socialPayload.append('use_case', useCase);
-    this.socialPayload.append('purpose', purpose);
-    this.socialPayload.append('brand', brand);
-    this.socialPayload.append('tone', tone);
-    this.socialPayload.append('topic', topic);
-    this.socialPayload.append('platform', platform);
-    this.socialPayload.append('target_reader', targetReader);
-    this.socialPayload.append('image_details', imageDetails);
-
-    if (imageDescription && imageDescription.trim() !== '') {
-      this.socialPayload.append('image_description', imageDescription);
+    // Conditionally append image_description if it exists
+    if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
+      this.socialPayload.append('image_description', this.formData?.imgDesc);
     }
+
+    // Conditionally append additional_details if it exists
     if (this.formData?.additional && this.formData?.additional.trim() !== '') {
       this.socialPayload.append('additional_details', this.formData?.additional);
     }

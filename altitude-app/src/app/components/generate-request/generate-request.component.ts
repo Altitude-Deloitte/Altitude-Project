@@ -116,8 +116,8 @@ export class GenerateRequestComponent implements OnInit {
       this.selection = this.store.campaignType();
       console.log('store: ', this.store.campaignType());
 
-      // Ensure socket connection is established when entering this page
-      // this.socketConnection.ensureConnection();
+      // Reconnect socket when entering this page
+      this.socketConnection.reconnect();
     } else {
       // Set default values for SSR
       this.taskID = 'EM-2203-PENDING';

@@ -328,6 +328,9 @@ export class EmailReviewComponent implements OnDestroy {
             this.translateIsLoading = false;
             this.isImageRegenrateDisabled = false;
             this.isImageRefineDisabled = false;
+
+            // Disconnect socket after content is loaded
+            this.socketConnection.disconnect();
           }
         }, 8000);
       });

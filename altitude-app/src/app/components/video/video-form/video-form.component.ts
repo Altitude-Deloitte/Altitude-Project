@@ -64,15 +64,15 @@ export class VideoFormComponent {
   selectedToppings: any;
   announcer = inject(LiveAnnouncer);
   imageUrl: null | undefined;
-    currentDate: any = new Date();
+  currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
-  
+
   constructor(
     private fb: FormBuilder,
 
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
-     public socketConnection: SocketConnectionService
+    public socketConnection: SocketConnectionService
   ) { }
 
   urlImage: any;
@@ -91,21 +91,30 @@ export class VideoFormComponent {
       var formValues = { ...this.socialwebsite.getRawValue() };
       console.log('Form Values:', formValues);
 
+      // Set form data first so review screen can access it
+      this.aiContentGenerationService.setData(formValues);
+
+      // Create FormData for multipart form data
+      const videoFormData = new FormData();
+      videoFormData.append('brief', prompt);
+
       this.aiContentGenerationService
-        .generateVoeVideo(prompt)
+        .generateVoeVideo(videoFormData)
         .subscribe(
           (response: any) => {
             console.log('Response background animation response:', response);
             this.imageUrl = response?.video_url;
             console.log('background image:', this.imageUrl);
             this.aiContentGenerationService.setImage(this.imageUrl);
-            // Handle the response, maybe navigate to another component to display the image
+
+            // Navigate to review only after getting the response
+
           },
           (error) => {
             console.error('Error:', error);
+            // Optionally show error message to user
           }
         );
-      this.aiContentGenerationService.setData(formValues);
       this.navigateToForm();
     } else {
       console.log('Form is invalid');
@@ -125,7 +134,7 @@ export class VideoFormComponent {
   // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-     this.socketConnection.dataSignal.set({});
+    this.socketConnection.dataSignal.set({});
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
       taskId: [{ value: this.generateTaskId(), disabled: true }],

@@ -460,8 +460,8 @@ export class ContentGenerationService {
   generateContent(formFieldData: any): Observable<any> {
     return this.http.post<any>(this.apiUrl, formFieldData);
   }
-  generateVoeVideo(brief: string) {
-    return this.http.post(this.videoUrl, { brief });
+  generateVoeVideo(formData: FormData) {
+    return this.http.post(this.videoUrl, formData);
   }
 
   // Method to fetch campaign data

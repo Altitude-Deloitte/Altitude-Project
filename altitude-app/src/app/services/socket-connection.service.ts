@@ -62,23 +62,33 @@ export class SocketConnectionService {
     }
   }
 
-  sendMessage(event: string, payload: any) {
+  // sendMessage(event: string, payload: any) {
+  //   if (this.socket && this.connection) {
+  //     this.socket.emit(event, payload);
+  //   } else {
+  //     console.warn('⚠️ Socket not connected. Message not sent:', event, payload);
+  //   }
+  // }
+
+  disconnect() {
     if (this.socket && this.connection) {
-      this.socket.emit(event, payload);
-    } else {
-      console.warn('⚠️ Socket not connected. Message not sent:', event, payload);
+      this.socket.disconnect();
+      this.connection = false;
+      console.log('🔌 Socket manually disconnected');
+    }
+    if (this.processingInterval) {
+      clearInterval(this.processingInterval);
+      this.processingInterval = null;
     }
   }
 
-  // disconnect() {
-  //   if (this.socket) {
-  //     this.socket.disconnect();
-  //     console.log('🔌 Socket manually disconnected');
-  //   }
-  //   if (this.processingInterval) {
-  //     clearInterval(this.processingInterval);
-  //   }
-  // }
+  reconnect() {
+    if (!this.connection) {
+      this.connect();
+      this.startProcessingQueue();
+      console.log('🔄 Socket manually reconnected');
+    }
+  }
 
   private startProcessingQueue() {
     this.processingInterval = setInterval(() => {
