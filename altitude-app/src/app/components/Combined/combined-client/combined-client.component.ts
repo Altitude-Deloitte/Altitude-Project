@@ -20,6 +20,7 @@ import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
+import { CarouselModule } from 'primeng/carousel';
 
 @Component({
   selector: 'app-combined-client',
@@ -40,6 +41,7 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
     MenuModule,
     DialogModule,
     OverlayPanelModule,
+    CarouselModule,
   ],
   templateUrl: './combined-client.component.html',
   styleUrl: './combined-client.component.css',
@@ -99,6 +101,13 @@ export class CombinedClientComponent {
   emailClosingMark: string = '';
   AiContentResponse: any;
   videoUrl: string | null = null;
+  carouselVideos: string[] = [
+    'assets/videos/4380323-hd_1080_1920_30fps.mp4',
+    'assets/videos/8533110-uhd_3840_2160_25fps.mp4',
+    'assets/videos/854008-hd_1920_1080_30fps.mp4'
+  ];
+  currentVideoIndex: number = 0;
+  currentCarouselVideo: string = this.carouselVideos[0];
   emailPrompt: any;
   blogPrompt: any;
   commonPrompt: any;
@@ -1203,6 +1212,20 @@ The html tags are separate and it should not be part of word count`;
     // Add your video publishing logic here
     // For now, just navigate to success
     this.navigateToSuccess();
+  }
+
+  nextVideo(): void {
+    if (this.currentVideoIndex < this.carouselVideos.length - 1) {
+      this.currentVideoIndex++;
+      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+    }
+  }
+
+  previousVideo(): void {
+    if (this.currentVideoIndex > 0) {
+      this.currentVideoIndex--;
+      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+    }
   }
 
   onPanelClick(event: MouseEvent) {

@@ -538,15 +538,25 @@
                                 <h2 class="text-2xl text-center mb-4">AI Generated Video</h2>
                             </div>
 
-                            <!-- Video Player -->
-                            <div class="w-full flex justify-center items-center" *ngIf="videoUrl">
-                                <video [src]="videoUrl" controls class="w-full max-w-4xl rounded-lg"></video>
-                            </div>
+                            <!-- Video Carousel -->
+                            <p-carousel [value]="carouselVideos" [numVisible]="1" [numScroll]="1" [circular]="false"
+                                [showNavigators]="true" [showIndicators]="false"
+                                (onPage)="currentVideoIndex = $event.page ?? 0">
+                                <ng-template let-video pTemplate="item">
+                                    <div class="w-full flex justify-center items-center" style="min-height: 500px;">
+                                        <video [src]="video" controls class="w-full rounded-lg"
+                                            style="aspect-ratio: 1/1; object-fit: cover; max-height: 500px;">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </ng-template>
+                            </p-carousel>
 
-                            <!-- No Video Message -->
-                            <div *ngIf="!videoUrl" class="text-gray-400 text-center py-20">
-                                <i class="pi pi-video text-6xl mb-4"></i>
-                                <p>No video generated</p>
+                            <!-- Video Counter -->
+                            <div class="text-center mt-4">
+                                <p class="text-white text-lg font-semibold">
+                                    Video {{ currentVideoIndex + 1 }} of {{ carouselVideos.length }}
+                                </p>
                             </div>
                         </div>
                     </div>

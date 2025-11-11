@@ -536,7 +536,7 @@
                         </div>
                         <div class="md:flex-2">
                             <div class="flex flex-col">
-                                <p-tabs value="1">
+                                <p-tabs value="0">
                                     <div class="rounded-t-xl bg-[#363636]">
 
                                         <div class="flex justify-between items-center p-4 flex-wrap">
@@ -582,56 +582,239 @@
 
                                                 <div class="flex justify-center items-center min-h-screen py-8">
                                                     <p-tabpanels
-                                                        class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
+                                                        class="rounded-2xl shadow-xl max-w-3xl w-full overflow-hidden">
 
 
                                                         <p-tabpanel
                                                             *ngFor="let platform of selectedSocialPlatforms; let i = index"
                                                             [value]="i.toString()">
+                                                            <!-- Facebook Post UI -->
                                                             <ng-container *ngIf="platform === 'Facebook'">
-                                                                <p class="post-caption text-black">
-                                                                    {{ this.editorContentSocialMedia1 }}
-                                                                </p>
-                                                                @if (hyperUrl) {
-                                                                <p class="post-caption text-black">For more details,
-                                                                    visit
-                                                                    our
-                                                                    website:
-                                                                    <a [href]="this.hyperUrl" target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        style="color: #0866ff;">
-                                                                        {{this.hyperUrl}}
-                                                                    </a>
-                                                                </p>
-                                                                }
-                                                                @if (imageUrl) {
-                                                                <img [src]="imageUrl" alt="Facebook Post"
-                                                                    class="post-image" />
-                                                                }
-                                                            </ng-container>
+                                                                <div class="facebook-post bg-white rounded-lg shadow-md p-4"
+                                                                    style="max-width: 500px; margin: 0 auto;">
+                                                                    <!-- Facebook Header -->
+                                                                    <div class="flex items-center gap-3 mb-3">
+                                                                        <div
+                                                                            class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center flex-shrink-0">
+                                                                            <i
+                                                                                class="pi pi-facebook text-white text-lg"></i>
+                                                                        </div>
+                                                                        <div class="flex-1">
+                                                                            <h4
+                                                                                class="font-semibold text-[#050505] text-[15px] leading-tight">
+                                                                                {{ this.formData?.brand || 'Brand Name'
+                                                                                }}</h4>
+                                                                            <p
+                                                                                class="text-[12px] text-[#65676B] flex items-center gap-1">
+                                                                                <span>Just now</span>
+                                                                                <span>·</span>
+                                                                                <i class="pi pi-globe text-[12px]"></i>
+                                                                            </p>
+                                                                        </div>
+                                                                        <button
+                                                                            class="text-[#65676B] hover:bg-[#F2F3F5] w-9 h-9 rounded-full flex items-center justify-center">
+                                                                            <i class="pi pi-ellipsis-h"></i>
+                                                                        </button>
+                                                                    </div>
 
-                                                            <ng-container *ngIf="platform === 'Instagram'">
-                                                                <div class="instagram-post">
+                                                                    <!-- Facebook Content -->
+                                                                    <div class="mb-3">
+                                                                        <p
+                                                                            class="text-[#050505] text-[15px] leading-5 whitespace-pre-wrap">
+                                                                            {{ this.editorContentSocialMedia1 }}</p>
+                                                                        @if (hyperUrl) {
+                                                                        <p class="mt-2 text-[15px]">
+                                                                            <a [href]="this.hyperUrl" target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                class="text-[#385898] hover:underline">
+                                                                                {{this.hyperUrl}}
+                                                                            </a>
+                                                                        </p>
+                                                                        }
+                                                                    </div>
+
+                                                                    <!-- Facebook Image -->
                                                                     @if (imageUrl) {
-                                                                    <img [src]="imageUrl" alt="Instagram Post"
-                                                                        class="post-image" />
+                                                                    <div class="-mx-4 mb-3">
+                                                                        <img [src]="imageUrl" alt="Facebook Post"
+                                                                            class="w-full h-auto object-cover" />
+                                                                    </div>
                                                                     }
-                                                                    <p class="post-caption text-black">{{
-                                                                        this.editorContentSocialMedia2 }}</p>
-                                                                    <p class="post-caption text-black   ">For more
-                                                                        details,
-                                                                        visit our
-                                                                        website:
-                                                                        <a [href]="this.hyperUrl" target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            style="color: #0866ff;">
-                                                                            {{this.hyperUrl}}
-                                                                        </a>
-                                                                    </p>
+
+                                                                    <!-- Facebook Reactions Summary -->
+                                                                    <div
+                                                                        class="flex items-center justify-between py-2 text-[#65676B] text-[13px] border-b border-[#CED0D4]">
+                                                                        <div class="flex items-center gap-1">
+                                                                            <div class="flex -space-x-1">
+                                                                                <span
+                                                                                    class="w-[18px] h-[18px] bg-[#1877F2] rounded-full flex items-center justify-center text-white text-[10px]">👍</span>
+                                                                                <span
+                                                                                    class="w-[18px] h-[18px] bg-[#F33E58] rounded-full flex items-center justify-center text-white text-[10px]">❤️</span>
+                                                                            </div>
+                                                                            <span class="ml-1">125</span>
+                                                                        </div>
+                                                                        <div class="flex gap-3">
+                                                                            <span>42 comments</span>
+                                                                            <span>15 shares</span>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <!-- Facebook Interactions -->
+                                                                    <div class="flex justify-around pt-1">
+                                                                        <button
+                                                                            class="flex-1 flex items-center justify-center gap-2 hover:bg-[#F2F3F5] py-2 rounded-md transition text-[#65676B] font-semibold text-[15px]">
+                                                                            <i class="pi pi-thumbs-up text-lg"></i>
+                                                                            <span>Like</span>
+                                                                        </button>
+                                                                        <button
+                                                                            class="flex-1 flex items-center justify-center gap-2 hover:bg-[#F2F3F5] py-2 rounded-md transition text-[#65676B] font-semibold text-[15px]">
+                                                                            <i class="pi pi-comment text-lg"></i>
+                                                                            <span>Comment</span>
+                                                                        </button>
+                                                                        <button
+                                                                            class="flex-1 flex items-center justify-center gap-2 hover:bg-[#F2F3F5] py-2 rounded-md transition text-[#65676B] font-semibold text-[15px]">
+                                                                            <i class="pi pi-share-alt text-lg"></i>
+                                                                            <span>Share</span>
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </ng-container>
 
-                                                            <!-- Add more platforms as needed -->
+                                                            <!-- Instagram Post UI -->
+                                                            <ng-container *ngIf="platform === 'Instagram'">
+                                                                <div class="instagram-post bg-black rounded-lg overflow-hidden"
+                                                                    style="max-width: 500px; margin: 0 auto;">
+                                                                    <!-- Instagram Header -->
+                                                                    <div
+                                                                        class="flex items-center justify-between p-3 bg-black">
+                                                                        <div class="flex items-center gap-3">
+                                                                            <div
+                                                                                class="w-8 h-8 rounded-full p-[2px] bg-gradient-to-br from-[#F58529] via-[#DD2A7B] to-[#8134AF]">
+                                                                                <div
+                                                                                    class="w-full h-full rounded-full bg-black flex items-center justify-center">
+                                                                                    <span
+                                                                                        class="text-white text-xs font-semibold">{{
+                                                                                        (this.formData?.brand ||
+                                                                                        'B')[0].toUpperCase() }}</span>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div>
+                                                                                <h4
+                                                                                    class="font-semibold text-white text-sm">
+                                                                                    {{
+                                                                                    (this.formData?.brand?.toLowerCase()
+                                                                                    || 'brand_name').split('
+                                                                                    ').join('_') }}
+                                                                                </h4>
+                                                                                <p class="text-[11px] text-white/60">
+                                                                                    Sponsored</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button class="text-white">
+                                                                            <i class="pi pi-ellipsis-v text-xl"></i>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <!-- Instagram Image -->
+                                                                    @if (imageUrl) {
+                                                                    <div class="w-full bg-black">
+                                                                        <img [src]="imageUrl" alt="Instagram Post"
+                                                                            class="w-full h-auto object-cover"
+                                                                            style="max-height: 500px;" />
+                                                                    </div>
+                                                                    }
+
+                                                                    <!-- Instagram Interactions -->
+                                                                    <div class="flex items-center gap-4 p-3 bg-black">
+                                                                        <button class="hover:opacity-50 transition">
+                                                                            <svg width="24" height="24"
+                                                                                viewBox="0 0 24 24" fill="none"
+                                                                                stroke="white" stroke-width="2">
+                                                                                <path
+                                                                                    d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                                                                </path>
+                                                                            </svg>
+                                                                        </button>
+                                                                        <button class="hover:opacity-50 transition">
+                                                                            <svg width="24" height="24"
+                                                                                viewBox="0 0 24 24" fill="none"
+                                                                                stroke="white" stroke-width="2">
+                                                                                <path
+                                                                                    d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
+                                                                                </path>
+                                                                            </svg>
+                                                                        </button>
+                                                                        <button class="hover:opacity-50 transition">
+                                                                            <svg width="24" height="24"
+                                                                                viewBox="0 0 24 24" fill="none"
+                                                                                stroke="white" stroke-width="2">
+                                                                                <line x1="22" y1="2" x2="11" y2="13">
+                                                                                </line>
+                                                                                <polygon
+                                                                                    points="22 2 15 22 11 13 2 9 22 2">
+                                                                                </polygon>
+                                                                            </svg>
+                                                                        </button>
+                                                                        <button
+                                                                            class="ml-auto hover:opacity-50 transition">
+                                                                            <svg width="24" height="24"
+                                                                                viewBox="0 0 24 24" fill="none"
+                                                                                stroke="white" stroke-width="2">
+                                                                                <path
+                                                                                    d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z">
+                                                                                </path>
+                                                                            </svg>
+                                                                        </button>
+                                                                    </div>
+
+                                                                    <!-- Instagram Likes -->
+                                                                    <div class="px-3 pb-2 bg-black">
+                                                                        <p class="text-white font-semibold text-sm">
+                                                                            1,234 likes</p>
+                                                                    </div>
+
+                                                                    <!-- Instagram Caption -->
+                                                                    <div class="px-3 pb-3 bg-black">
+                                                                        <p class="text-white text-sm leading-tight">
+                                                                            <span class="font-semibold">{{
+                                                                                (this.formData?.brand?.toLowerCase() ||
+                                                                                'brand_name').split(' ').join('_')
+                                                                                }}</span>
+                                                                            <span class="ml-2">{{
+                                                                                this.editorContentSocialMedia2 }}</span>
+                                                                        </p>
+                                                                        @if (hyperUrl) {
+                                                                        <p class="text-sm mt-2">
+                                                                            <a [href]="this.hyperUrl" target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                class="text-[#E0F1FF] hover:underline">
+                                                                                {{this.hyperUrl}}
+                                                                            </a>
+                                                                        </p>
+                                                                        }
+                                                                        <p class="text-white/50 text-xs mt-2">View all
+                                                                            42 comments</p>
+                                                                        <p
+                                                                            class="text-white/40 text-[10px] mt-1 uppercase">
+                                                                            2 hours ago</p>
+                                                                    </div>
+
+                                                                    <!-- Instagram Comment Input -->
+                                                                    <div
+                                                                        class="flex items-center gap-3 px-3 py-2 border-t border-white/10 bg-black">
+                                                                        <button class="hover:opacity-50 transition">
+                                                                            <span class="text-xl">😊</span>
+                                                                        </button>
+                                                                        <input type="text"
+                                                                            placeholder="Add a comment..."
+                                                                            class="flex-1 bg-transparent text-white text-sm outline-none placeholder-white/50" />
+                                                                        <button
+                                                                            class="text-[#0095F6] font-semibold text-sm hover:text-white transition">Post</button>
+                                                                    </div>
+                                                                </div>
+                                                            </ng-container>
+
+                                                            <!-- Other platforms fallback -->
                                                             <ng-container
                                                                 *ngIf="platform !== 'Facebook' && platform !== 'Instagram'">
                                                                 <p class="post-caption text-black">
@@ -977,9 +1160,9 @@
                                             <div class="flex justify-between items-start">
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Brief</span>
-                                                        <span class="font-semibold">{{this.formData?.videoPrompt ||
-                                                            'N/A'}}</span>
+                                                        <span class="text-[#9b9b9b] text-sm">Video</span>
+                                                        <span class="font-semibold">{{ currentVideoIndex + 1 }} of {{
+                                                            carouselVideos.length }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -989,14 +1172,26 @@
                             </div>
                         </div>
 
-                        <!-- Video Preview Section -->
+                        <!-- Video Carousel Section -->
                         <div class="flex-[2] rounded-xl bg-[#1A1A1A] p-6 flex flex-col items-center justify-center">
-                            <div class="w-full" *ngIf="videoUrl">
-                                <video [src]="videoUrl" controls class="w-full rounded-lg"></video>
-                            </div>
-                            <div *ngIf="!videoUrl" class="text-gray-400 text-center py-20">
-                                <i class="pi pi-video text-6xl mb-4"></i>
-                                <p>Video will appear here after generation</p>
+                            <p-carousel [value]="carouselVideos" [numVisible]="1" [numScroll]="1" [circular]="false"
+                                [showNavigators]="true" [showIndicators]="false"
+                                (onPage)="currentVideoIndex = $event.page ?? 0">
+                                <ng-template let-video pTemplate="item">
+                                    <div class="w-full flex justify-center items-center" style="min-height: 500px;">
+                                        <video [src]="video" controls class="w-full rounded-lg"
+                                            style="aspect-ratio: 1/1; object-fit: cover; max-height: 500px;">
+                                            Your browser does not support the video tag.
+                                        </video>
+                                    </div>
+                                </ng-template>
+                            </p-carousel>
+
+                            <!-- Video Counter -->
+                            <div class="text-center mt-4">
+                                <p class="text-white text-lg font-semibold">
+                                    Video {{ currentVideoIndex + 1 }} of {{ carouselVideos.length }}
+                                </p>
                             </div>
                         </div>
                     </div>

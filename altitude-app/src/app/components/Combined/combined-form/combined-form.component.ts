@@ -99,7 +99,7 @@ export class CombinedFormComponent {
     'Audience Engagement',
     'Caption',
   ];
-  socialCampaignData = ['Facebook', 'Instagram', 'X', 'LinkedIn'];
+  socialCampaignData = ['Facebook', 'Instagram'];
   platformWordLimits = {
     Facebook: '63206',
     Instagram: '2200',

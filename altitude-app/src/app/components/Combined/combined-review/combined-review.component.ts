@@ -28,6 +28,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { CarouselModule } from 'primeng/carousel';
 
 @Component({
   selector: 'app-combined-review',
@@ -52,6 +53,7 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     LoaderComponent,
     ToastModule,
     ProgressSpinnerModule,
+    CarouselModule,
   ],
   providers: [MessageService],
   templateUrl: './combined-review.component.html',
@@ -166,6 +168,15 @@ export class CombinedReviewComponent implements OnDestroy {
   blogstructure: any;
   editorContentSocialMedia2: any;
   videoUrl: string | null = null;
+
+  // Carousel for AI Video tab (hardcoded videos)
+  carouselVideos: string[] = [
+    'assets/videos/4380323-hd_1080_1920_30fps.mp4',
+    'assets/videos/8533110-uhd_3840_2160_25fps.mp4',
+    'assets/videos/854008-hd_1920_1080_30fps.mp4'
+  ];
+  currentVideoIndex: number = 0;
+  currentCarouselVideo: string = this.carouselVideos[0];
 
   // Regeneration fields for Email tab
   emailContentFeedback: string = '';
@@ -691,8 +702,82 @@ export class CombinedReviewComponent implements OnDestroy {
   }
 
   navigateToForm(): void {
-    this.route.navigateByUrl('combined-client');
+    // Store all current data before navigating to client component
+    console.log('Storing data before navigation to combined-client');
 
+    // Store email header data WITH email body content (combined-review expects both in one object)
+    if (this.emailHeader || this.subjctsEmail || this.imageUrl || this.editorContentEmail) {
+      const emailHeadData = {
+        result: {
+          generation: {
+            email_header: this.emailHeader,
+            email_subjects: this.subjctsEmail,
+            image_url: this.imageUrl,
+            html: this.editorContentEmail // Include email body in the same object
+          }
+        }
+      };
+      this.aiContentGenerationService.setEmailHeadResponseData(emailHeadData);
+      console.log('Stored email head data with body:', emailHeadData);
+    }
+
+    // Also store email body separately for combined-client (it uses separate subscription)
+    if (this.editorContentEmail) {
+      const emailBodyData = {
+        result: {
+          generation: {
+            html: this.editorContentEmail
+          }
+        }
+      };
+      this.aiContentGenerationService.setEmailResponseData(emailBodyData);
+      console.log('Stored email body data separately:', emailBodyData);
+    }
+
+    // Store social media data
+    if (this.editorContentSocialMedia1 || this.editorContentSocialMedia2) {
+      const socialData = {
+        result: {
+          generation: {
+            facebook: this.editorContentSocialMedia1,
+            instagram: this.editorContentSocialMedia2,
+            image_url: this.imageUrl
+          }
+        }
+      };
+      this.aiContentGenerationService.setSocialResponseData(socialData);
+      console.log('Stored social media data:', socialData);
+    }
+
+    // Store blog data
+    if (this.editorContentSocialMedia || this.blog_title) {
+      const blogData = {
+        result: {
+          generation: {
+            html: this.editorContentSocialMedia,
+            blog_title: this.blog_title,
+            image_url: this.imageUrl
+          }
+        }
+      };
+      this.aiContentGenerationService.setBlogResponseData(blogData);
+      console.log('Stored blog data:', blogData);
+    }
+
+    // Store the image separately as well
+    if (this.imageUrl) {
+      this.aiContentGenerationService.setImage(this.imageUrl);
+      console.log('Stored image URL:', this.imageUrl);
+    }
+
+    // Store video URL for AI Video tab
+    if (this.videoUrl) {
+      localStorage.setItem('combinedVideoUrl', this.videoUrl);
+      console.log('Stored video URL in localStorage:', this.videoUrl);
+    }
+
+    // Navigate to client component
+    this.route.navigateByUrl('combined-client');
     this.chnge.detectChanges();
   }
 
@@ -1560,6 +1645,21 @@ Output the entire blog in HTML format, followed by:
       this.blogContentFeedback += ' ' + text;
     } else {
       this.blogContentFeedback = text;
+    }
+  }
+
+  // Carousel navigation methods for AI Video tab
+  nextVideo(): void {
+    if (this.currentVideoIndex < this.carouselVideos.length - 1) {
+      this.currentVideoIndex++;
+      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+    }
+  }
+
+  previousVideo(): void {
+    if (this.currentVideoIndex > 0) {
+      this.currentVideoIndex--;
+      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
     }
   }
 
