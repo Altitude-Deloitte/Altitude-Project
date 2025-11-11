@@ -85,3 +85,41 @@
   background: var(--app-bg-color);
   border: 1px solid #686868;
 }
+
+/* Fix for form components - ensure proper spacing at bottom to prevent border cutting */
+::ng-deep app-email-form,
+::ng-deep app-social-form,
+::ng-deep app-blog-form,
+::ng-deep app-video-form,
+::ng-deep app-image-form,
+::ng-deep app-virtual-form,
+::ng-deep app-product-desc,
+::ng-deep app-combined-form {
+  display: block;
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+::ng-deep app-email-form form,
+::ng-deep app-social-form form,
+::ng-deep app-blog-form form,
+::ng-deep app-video-form form,
+::ng-deep app-image-form form,
+::ng-deep app-virtual-form form,
+::ng-deep app-product-desc form,
+::ng-deep app-combined-form form {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Ensure submit buttons have proper spacing from container bottom */
+::ng-deep app-email-form button[type="submit"],
+::ng-deep app-social-form button[type="submit"],
+::ng-deep app-blog-form button[type="submit"],
+::ng-deep app-video-form button[type="submit"],
+::ng-deep app-image-form button[type="submit"],
+::ng-deep app-virtual-form button[type="submit"],
+::ng-deep app-product-desc button[type="submit"],
+::ng-deep app-combined-form button[type="submit"] {
+  margin-bottom: 0 !important;
+}

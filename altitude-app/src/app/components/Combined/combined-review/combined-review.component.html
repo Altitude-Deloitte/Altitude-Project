@@ -3,9 +3,9 @@
 <!-- Toast for notifications -->
 <p-toast position="top-right" [breakpoints]="{'920px': {width: '100%', right: '0', left: '0'}}"></p-toast>
 
-@if (loading) {
+<!-- @if (loading) {
 <app-loader></app-loader>
-} @else {
+} @else { -->
 <div class="fade-in">
     <p-tabs value="0">
 
@@ -70,13 +70,13 @@
                         <div class="md:flex-1">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                            class="border-1 p-4 bg-[#121212] border-b-0 rounded-t-xl border-[#363636]">
                                             Brand Guidelines & Assets
                                         </p-accordion-header>
-                                        <p-accordion-content class="p-4 border-1 border-[#363636]">
+                                        <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
                                             <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
                                             <div class="flex justify-center gap-4 items-center">
                                                 <div
@@ -107,17 +107,21 @@
 
                                 <p-accordion value="1">
                                     <p-accordion-panel value="1">
-                                        <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
+                                        <p-accordion-header
+                                            class="bg-[#121212] border-s-1 border-e-1 rounded-none p-4 border-[#363636]">
                                             Task Details
                                         </p-accordion-header>
 
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
-                                                <!-- Email Tab Task Details -->
+
+
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Client Name</span>
-                                                        <span class="font-semibold">{{this.formData?.brand ||
+                                                        <span class="font-semibold">{{this.formData?.brand || this.brand
+                                                            ||
                                                             '-'}}</span>
                                                     </div>
                                                     <div class="flex flex-col">
@@ -143,7 +147,7 @@
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Word Limit</span>
                                                         <span class="font-semibold">{{this.formData?.wordLimit ||
-                                                            '-'}}</span>
+                                                            this.formData?.word_limit || '-'}}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Target Audience</span>
@@ -160,7 +164,15 @@
                                                         <span class="font-semibold">{{this.formData?.imgDesc ||
                                                             '-'}}</span>
                                                     </div>
+                                                    <div class="flex flex-col col-span-2">
+                                                        <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                                        <span class="font-semibold">{{this.formData?.additional ||
+                                                            '-'}}</span>
+                                                    </div>
                                                 </div>
+
+
+
                                             </div>
 
                                         </p-accordion-content>
@@ -232,20 +244,22 @@
                                                             style="background:black; padding: 30px 20px; text-align: center; color: #ffffff;">
                                                             <h1
                                                                 style="margin: 0; font-size: 28px; font-family: Arial, sans-serif;line-height: 1.2;">
-                                                                <span class="email-content" style="font-weight: bold;"
-                                                                    [innerHTML]="this.emailHeader"></span>
+                                                                <span class="email-content"
+                                                                    style="font-weight: bold;">Bringing Back the Nike
+                                                                    T90: Heritage Meets Everyday Style by
+                                                                    Altitude</span>
                                                             </h1>
                                                         </td>
                                                     </tr>
                                                     <tr>
                                                         <td [style.height]="imageContainerHeight"
                                                             [style.width]="imageContainerWidth" align="center"
-                                                            class="image-width" style="font-size: 1px;line-height: 1px;"
-                                                            *ngIf="this.imageUrl && this.editorContentEmail ">
+                                                            class="image-width"
+                                                            style="font-size: 1px;line-height: 1px;">
                                                             <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
                                                                 <img [style.height]="imageContainerHeight"
                                                                     [style.width]="imageContainerWidth" border="0"
-                                                                    alt="Banner Image" [src]="this.imageUrl" />
+                                                                    alt="Banner Image" src="assets/images/nike.jpg" />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -264,9 +278,42 @@
 
                                                     <tr>
                                                         <td style="background-color: #ffffff; padding: 30px 20px;">
-                                                            <div *ngIf="!contentDisabled"
-                                                                style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6;"
-                                                                [innerHTML]="this.editorContentEmail"></div>
+                                                            <div
+                                                                style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6;">
+
+                                                                Once the weapon of choice for legends like Wayne Rooney
+                                                                and Fernando Torres, the Nike Total 90 defined an era of
+                                                                football boots built for power, precision, and
+                                                                unmistakable swagger. Today, sneaker culture is
+                                                                rediscovering that same
+                                                                magic — off the pitch.
+
+                                                                Reimagined as everyday sneakers, the T90s bring back
+                                                                early-2000s nostalgia with their bold shooting rings,
+                                                                asymmetrical
+                                                                laces, and aggressive silhouette. They’re more than just
+                                                                a retro revival; they’re a bridge between performance
+                                                                heritage
+                                                                and streetwear attitude. The signature design — once
+                                                                built to bend free kicks into the top corner — now turns
+                                                                heads on
+                                                                city streets, pairing effortlessly with denim, cargos,
+                                                                or even tailored fits.
+
+                                                                In a world obsessed with minimalism, the T90’s
+                                                                unapologetic character stands out. It’s loud, confident,
+                                                                and rooted in a
+                                                                time when football boots were icons, not just equipment.
+                                                                Bringing them back as lifestyle sneakers isn’t just a
+                                                                nod to
+                                                                the past — it’s a celebration of identity, creativity,
+                                                                and the culture that made football style global.
+
+                                                                Because some things aren’t meant to stay in storage. The
+                                                                T90 was built to perform — now it’s ready to make a
+                                                                comeback,
+                                                                one street at a time.
+                                                            </div>
 
                                                         </td>
                                                     </tr>
@@ -384,7 +431,7 @@
                         <div class="md:flex-1">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#1A1A1A]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
                                             class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
@@ -419,7 +466,7 @@
                                     </p-accordion-panel>
                                 </p-accordion>
 
-                                <p-accordion value="1">
+                                <p-accordion value="1" class="bg-[#1A1A1A]">
                                     <p-accordion-panel value="1">
                                         <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
                                             Task Details
@@ -670,7 +717,7 @@
                         <div class="md:flex-1">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#1A1A1A]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
                                             class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
@@ -705,7 +752,7 @@
                                     </p-accordion-panel>
                                 </p-accordion>
 
-                                <p-accordion value="1">
+                                <p-accordion value="1" class="bg-[#1A1A1A]">
                                     <p-accordion-panel value="1">
                                         <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
                                             Task Details
@@ -920,7 +967,7 @@
                     <div class="flex flex-wrap mt-5 gap-4 w-full">
                         <div class="md:flex-1">
                             <div class="">
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#1A1A1A]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
                                             class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
@@ -965,5 +1012,5 @@
             (onClick)="navigateToForm()"></p-button>
     </div>
 </div>
-}
+<!-- } -->
 <!-- } -->

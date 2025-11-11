@@ -267,7 +267,7 @@ export class CombinedReviewComponent implements OnDestroy {
     this.brand = this.formData?.brand?.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
     brandName = brandName.replace(/\s+/g, '');
-    this.showMore = 'https://www.' + brandName + '.com/';
+    this.showMore = 'https://www.' + brandName;
 
     //heading and email content - now using new API format
     this.contentDisabled = true;
