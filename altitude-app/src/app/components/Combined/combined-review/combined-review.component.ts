@@ -210,6 +210,9 @@ export class CombinedReviewComponent implements OnDestroy {
 
   formData: any;
   ngOnInit(): void {
+    // Reset data loaded counter for fresh page load
+    this.dataLoadedCount = 0;
+
     // Clear socket data before starting (for combined, only clear once)
     this.socketConnection.clearAgentData();
 
@@ -259,7 +262,7 @@ export class CombinedReviewComponent implements OnDestroy {
     this.brand = this.formData?.brand?.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
     brandName = brandName.replace(/\s+/g, '');
-    this.showMore = 'https://www.' + brandName + '.com/';
+    this.showMore = 'https://www.' + brandName;
 
     //heading and email content - now using new API format
     this.contentDisabled = true;
@@ -295,7 +298,6 @@ export class CombinedReviewComponent implements OnDestroy {
             // Count words in different parts of the email content
             this.totalWordCount = countWords(this.editorContentEmail);
 
-            this.checkAllDataLoaded(); // Email data loaded
             this.isEMailPromptDisabled = false;
             this.commonPromptIsLoading = false;
             this.translateIsLoading = false;
@@ -318,6 +320,9 @@ export class CombinedReviewComponent implements OnDestroy {
             this.imageUrl = data.result.generation.image_url;
             console.log('image URL (new format):', this.imageUrl);
           }
+
+          // Mark email data as loaded - call this regardless of html content
+          this.checkAllDataLoaded(); // Email data loaded
         } else if (data?.content) {
           // Old API format fallback (for backward compatibility)
           let emailContent =
@@ -326,6 +331,9 @@ export class CombinedReviewComponent implements OnDestroy {
               : JSON.parse(data.content);
           this.emailHeader = emailContent;
           console.log('email header (old format):', this.emailHeader);
+
+          // Mark email data as loaded for old format too
+          this.checkAllDataLoaded(); // Email data loaded
         }
 
         let brandName = this.formData?.brand?.trim();
@@ -683,8 +691,76 @@ export class CombinedReviewComponent implements OnDestroy {
   }
 
   navigateToForm(): void {
-    this.route.navigateByUrl('combined-client');
+    // Store all current data before navigating to client component
+    console.log('Storing data before navigation to combined-client');
 
+    // Store email header data WITH email body content (combined-review expects both in one object)
+    if (this.emailHeader || this.subjctsEmail || this.imageUrl || this.editorContentEmail) {
+      const emailHeadData = {
+        result: {
+          generation: {
+            email_header: this.emailHeader,
+            email_subjects: this.subjctsEmail,
+            image_url: this.imageUrl,
+            html: this.editorContentEmail // Include email body in the same object
+          }
+        }
+      };
+      this.aiContentGenerationService.setEmailHeadResponseData(emailHeadData);
+      console.log('Stored email head data with body:', emailHeadData);
+    }
+
+    // Also store email body separately for combined-client (it uses separate subscription)
+    if (this.editorContentEmail) {
+      const emailBodyData = {
+        result: {
+          generation: {
+            html: this.editorContentEmail
+          }
+        }
+      };
+      this.aiContentGenerationService.setEmailResponseData(emailBodyData);
+      console.log('Stored email body data separately:', emailBodyData);
+    }
+
+    // Store social media data
+    if (this.editorContentSocialMedia1 || this.editorContentSocialMedia2) {
+      const socialData = {
+        result: {
+          generation: {
+            facebook: this.editorContentSocialMedia1,
+            instagram: this.editorContentSocialMedia2,
+            image_url: this.imageUrl
+          }
+        }
+      };
+      this.aiContentGenerationService.setSocialResponseData(socialData);
+      console.log('Stored social media data:', socialData);
+    }
+
+    // Store blog data
+    if (this.editorContentSocialMedia || this.blog_title) {
+      const blogData = {
+        result: {
+          generation: {
+            html: this.editorContentSocialMedia,
+            blog_title: this.blog_title,
+            image_url: this.imageUrl
+          }
+        }
+      };
+      this.aiContentGenerationService.setBlogResponseData(blogData);
+      console.log('Stored blog data:', blogData);
+    }
+
+    // Store the image separately as well
+    if (this.imageUrl) {
+      this.aiContentGenerationService.setImage(this.imageUrl);
+      console.log('Stored image URL:', this.imageUrl);
+    }
+
+    // Navigate to client component
+    this.route.navigateByUrl('combined-client');
     this.chnge.detectChanges();
   }
 
@@ -1560,18 +1636,21 @@ Output the entire blog in HTML format, followed by:
     this.socialContentSubscription?.unsubscribe();
     this.blogContentSubscription?.unsubscribe();
 
-    // Clear all data when leaving the review screen to prevent retention
-    this.aiContentGenerationService.setData(null);
-    this.aiContentGenerationService.setEmailResponseData(null);
-    this.aiContentGenerationService.setEmailHeadResponseData(null);
-    this.aiContentGenerationService.setSocialResponseData(null);
-    this.aiContentGenerationService.setBlogResponseData(null);
-    this.aiContentGenerationService.setImage(null);
-    this.aiContentGenerationService.setOfferImage(null);
-    this.aiContentGenerationService.setEventImage(null);
-    this.aiContentGenerationService.setEmailSubResponseData(null);
-    this.aiContentGenerationService.setplagrism(null);
+    // NOTE: We don't clear data here because the user might be navigating to combined-client
+    // The data will be cleared when the user truly leaves the combined workflow
+    // or when a new generation starts in combined-form
 
-    console.log('Combined review component destroyed - all data cleared');
+    // this.aiContentGenerationService.setData(null);
+    // this.aiContentGenerationService.setEmailResponseData(null);
+    // this.aiContentGenerationService.setEmailHeadResponseData(null);
+    // this.aiContentGenerationService.setSocialResponseData(null);
+    // this.aiContentGenerationService.setBlogResponseData(null);
+    // this.aiContentGenerationService.setImage(null);
+    // this.aiContentGenerationService.setOfferImage(null);
+    // this.aiContentGenerationService.setEventImage(null);
+    // this.aiContentGenerationService.setEmailSubResponseData(null);
+    // this.aiContentGenerationService.setplagrism(null);
+
+    console.log('Combined review component destroyed - data retained for client view');
   }
 }

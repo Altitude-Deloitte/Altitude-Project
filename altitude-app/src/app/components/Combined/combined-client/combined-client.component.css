@@ -1,10 +1,13 @@
 /* Tab Container Background - applies to all tab lists */
+::ng-deep .p-tablist-active-bar {
+  background-color: #09040e !important;
+}
 ::ng-deep .p-tablist {
   background-color: #09040e !important;
   border-radius: 9999px !important;
 }
-.combined-container{
-    margin: 2% 5% 0 5%;
+.combined-container {
+  margin: 2% 5% 0 5%;
 }
 /* Remove the active bar indicator */
 ::ng-deep .p-tabs .p-tablist .p-activebar {

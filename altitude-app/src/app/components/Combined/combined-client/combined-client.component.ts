@@ -398,6 +398,12 @@ export class CombinedClientComponent {
           console.log('Instagram content (old format fallback):', this.editorContentSocialMedia2);
         }
 
+        // Extract image URL from social media response if not already set
+        if (!this.imageUrl && data?.result?.generation?.image_url) {
+          this.imageUrl = data.result.generation.image_url;
+          console.log('Image URL from social media response:', this.imageUrl);
+        }
+
         //refine content
         this.characterCount = this.editorContentSocialMedia1?.length || 0;
         this.existingContent = this.editorContentSocialMedia1;
@@ -451,6 +457,13 @@ export class CombinedClientComponent {
         this.editorContentSocialMedia = data.content;
         console.log('Blog content (old format):', this.editorContentSocialMedia);
       }
+
+      // Extract image URL from blog response if not already set
+      if (!this.imageUrl && data?.result?.generation?.image_url) {
+        this.imageUrl = data.result.generation.image_url;
+        console.log('Image URL from blog response:', this.imageUrl);
+      }
+
       const cleanedString = this.editorContentSocialMedia
         .replace(/^```html/, '')
         .replace(/```$/, '');
