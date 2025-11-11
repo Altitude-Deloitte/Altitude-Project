@@ -11,9 +11,11 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ContentGenerationService } from '../../../services/content-generation.service';
 import { Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
-import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-combined-form',
@@ -24,6 +26,9 @@ import { RadioButtonModule } from 'primeng/radiobutton';
     CommonModule,
     ReactiveFormsModule,
     RadioButtonModule,
+    DrawerModule,
+    InputTextModule,
+    FormsModule,
   ],
   templateUrl: './combined-form.component.html',
   styleUrl: './combined-form.component.css',
@@ -134,6 +139,16 @@ export class CombinedFormComponent {
   facebookLimit: string | undefined;
   instagramLimit: string | undefined;
   uploadedIamges: any;
+
+  // Video generation properties
+  showUploadDrawer: boolean = false;
+  showImageUrlInput: boolean = false;
+  referenceImageUrl: string = '';
+  referenceImageFile: File | null = null;
+  imagePreviewUrl: string = '';
+  uploadedImagePreview: string = '';
+  videoUrl: string | null = null;
+
   constructor(
     private fb: FormBuilder,
 
@@ -177,6 +192,7 @@ export class CombinedFormComponent {
       brand: [''],
       imageOpt: ['N/A'],
       imgDesc: [''],
+      videoPrompt: [''], // Video generation prompt
     });
     //this.fetchCampaignData();
     this.aiContentGenerationService.setImage(null);
@@ -351,6 +367,38 @@ export class CombinedFormComponent {
           console.error(`Error occurred for blog:`, error);
         },
       });
+
+      // ========== VIDEO GENERATION ==========
+      if (formValues?.videoPrompt && formValues.videoPrompt.trim() !== '') {
+        const videoFormData = new FormData();
+        videoFormData.append('brief', formValues.videoPrompt);
+
+        // Append optional reference_image if file is uploaded
+        if (this.referenceImageFile) {
+          videoFormData.append('reference_image', this.referenceImageFile, this.referenceImageFile.name);
+          console.log('Reference image file added to video payload:', this.referenceImageFile.name);
+        }
+
+        // Append optional reference_image_url if URL is provided
+        if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+          videoFormData.append('reference_image_url', this.referenceImageUrl);
+          console.log('Reference image URL added to video payload:', this.referenceImageUrl);
+        }
+
+        this.aiContentGenerationService.generateVoeVideo(videoFormData).subscribe({
+          next: (response: any) => {
+            console.log('Video generation response:', response);
+            this.videoUrl = response?.video_url;
+            // Store video URL in localStorage for review screen
+            if (this.videoUrl) {
+              localStorage.setItem('combinedVideoUrl', this.videoUrl);
+            }
+          },
+          error: (error) => {
+            console.error('Error occurred for video generation:', error);
+          },
+        });
+      }
 
       if (this.uploadedIamges) {
         this.aiContentGenerationService.setImage(this.uploadedIamges);
@@ -770,5 +818,73 @@ Output the entire blog in HTML format, followed by:
         }
         console.log('audiance string 0 : ', this.audianceData);
       });
+  }
+
+  // Video generation methods
+  triggerFileUpload(): void {
+    this.showUploadDrawer = false;
+    setTimeout(() => {
+      const fileInput = document.querySelector('input[type="file"]#videoReferenceImageInput') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.click();
+      }
+    }, 100);
+  }
+
+  switchToImageUrlInput(): void {
+    this.showUploadDrawer = false;
+    this.showImageUrlInput = true;
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+  }
+
+  onReferenceImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.referenceImageFile = input.files[0];
+      console.log('Reference image file selected:', this.referenceImageFile.name);
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.uploadedImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.referenceImageFile);
+
+      this.showImageUrlInput = false;
+      this.referenceImageUrl = '';
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  onReferenceImageUrlChange(): void {
+    if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+      this.imagePreviewUrl = this.referenceImageUrl;
+      this.uploadedImagePreview = '';
+      this.referenceImageFile = null;
+    } else {
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  clearVideoInput(): void {
+    this.showImageUrlInput = false;
+    this.referenceImageUrl = '';
+    this.imagePreviewUrl = '';
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.socialwebsite.patchValue({ videoPrompt: '' });
+  }
+
+  removeReferenceImage(): void {
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.imagePreviewUrl = '';
+    this.referenceImageUrl = '';
+    this.showImageUrlInput = false;
+
+    const fileInput = document.querySelector('input[type="file"]#videoReferenceImageInput') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   }
 }

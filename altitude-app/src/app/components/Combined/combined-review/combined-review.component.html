@@ -33,6 +33,7 @@
                             Media</p-tab>
                         <p-tab value="2" class="text-white"><img src="assets/images/Browser.svg" alt="">Website
                             Blog</p-tab>
+                        <p-tab value="3" class="text-white"><i class="pi pi-video text-white"></i>AI Video</p-tab>
                     </div>
 
                 </p-tablist>
@@ -909,6 +910,46 @@
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </p-tabpanel>
+
+                <!-- AI Video Tab Panel -->
+                <p-tabpanel value="3">
+                    <div class="flex flex-wrap mt-5 gap-4 w-full">
+                        <div class="md:flex-1">
+                            <div class="">
+                                <p-accordion value="0">
+                                    <p-accordion-panel value="0">
+                                        <p-accordion-header
+                                            class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                            Video Details
+                                        </p-accordion-header>
+                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                            <div class="flex justify-between items-start">
+                                                <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Brief</span>
+                                                        <span class="font-semibold">{{this.formData?.videoPrompt ||
+                                                            'N/A'}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </p-accordion-content>
+                                    </p-accordion-panel>
+                                </p-accordion>
+                            </div>
+                        </div>
+
+                        <!-- Video Preview Section -->
+                        <div class="flex-[2] rounded-xl bg-[#1A1A1A] p-6 flex flex-col items-center justify-center">
+                            <div class="w-full" *ngIf="videoUrl">
+                                <video [src]="videoUrl" controls class="w-full rounded-lg"></video>
+                            </div>
+                            <div *ngIf="!videoUrl" class="text-gray-400 text-center py-20">
+                                <i class="pi pi-video text-6xl mb-4"></i>
+                                <p>Video will appear here after generation</p>
                             </div>
                         </div>
                     </div>

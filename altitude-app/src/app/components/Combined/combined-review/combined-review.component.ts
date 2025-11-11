@@ -165,6 +165,7 @@ export class CombinedReviewComponent implements OnDestroy {
   emailHeader: any;
   blogstructure: any;
   editorContentSocialMedia2: any;
+  videoUrl: string | null = null;
 
   // Regeneration fields for Email tab
   emailContentFeedback: string = '';
@@ -248,6 +249,13 @@ export class CombinedReviewComponent implements OnDestroy {
         this.imageOfferUrl = data;
       }
     });
+
+    // Get video URL from localStorage
+    const storedVideoUrl = localStorage.getItem('combinedVideoUrl');
+    if (storedVideoUrl) {
+      this.videoUrl = storedVideoUrl;
+      console.log('Video URL retrieved:', this.videoUrl);
+    }
 
     //offer image
     this.aiContentGenerationService.getEventImage().subscribe((data) => {

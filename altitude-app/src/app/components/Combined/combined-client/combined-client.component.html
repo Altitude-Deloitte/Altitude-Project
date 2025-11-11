@@ -27,6 +27,7 @@
                                 Media</p-tab>
                             <p-tab value="2" class="text-white"><img src="assets/images/Browser.svg" alt="">Website
                                 Blog</p-tab>
+                            <p-tab value="3" class="text-white"><i class="pi pi-video text-white"></i>AI Video</p-tab>
                         </div>
 
                     </p-tablist>
@@ -525,6 +526,35 @@
                         <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
                             Rework</button>
                         <button (click)="publishContent2()"
+                            class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
+                    </div>
+                </p-tabpanel>
+
+                <!-- AI Video Tab Panel -->
+                <p-tabpanel value="3">
+                    <div class="flex justify-center items-start gap-6 mt-8">
+                        <div class="flex-[3] rounded-xl bg-[#1A1A1A] p-6 justify-center items-center">
+                            <div class="w-full mb-8">
+                                <h2 class="text-2xl text-center mb-4">AI Generated Video</h2>
+                            </div>
+
+                            <!-- Video Player -->
+                            <div class="w-full flex justify-center items-center" *ngIf="videoUrl">
+                                <video [src]="videoUrl" controls class="w-full max-w-4xl rounded-lg"></video>
+                            </div>
+
+                            <!-- No Video Message -->
+                            <div *ngIf="!videoUrl" class="text-gray-400 text-center py-20">
+                                <i class="pi pi-video text-6xl mb-4"></i>
+                                <p>No video generated</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+                        style="background-color:rgba(0, 0, 0, 0.5)">
+                        <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
+                            Rework</button>
+                        <button (click)="publishVideo()"
                             class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
                     </div>
                 </p-tabpanel>

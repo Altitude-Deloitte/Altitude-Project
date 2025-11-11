@@ -98,6 +98,7 @@ export class CombinedClientComponent {
   emailBody: string = '';
   emailClosingMark: string = '';
   AiContentResponse: any;
+  videoUrl: string | null = null;
   emailPrompt: any;
   blogPrompt: any;
   commonPrompt: any;
@@ -195,6 +196,13 @@ export class CombinedClientComponent {
       }
     });
 
+    // Get video URL from localStorage
+    const storedVideoUrl = localStorage.getItem('combinedVideoUrl');
+    if (storedVideoUrl) {
+      this.videoUrl = storedVideoUrl;
+      console.log('Video URL retrieved:', this.videoUrl);
+    }
+
     // Normalize brand name once - single source of truth
     let brandName = this.formData?.brand?.trim();
     if (brandName) {
@@ -229,15 +237,61 @@ export class CombinedClientComponent {
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        console.log('get headering for email ', data);
+        console.log('get email complete response:', data);
 
-        // Check for new API format
+        // Check if data has the new format (result.generation) or old format (content)
         if (data?.result?.generation) {
+          // New API format from generateContent
           this.emailHeader = data.result.generation.email_header;
-          this.subjctsEmail = data.result.generation.email_subjects || [];
-          this.imageUrl = data.result.generation.image_url;
-          console.log('Email header (new format):', this.emailHeader);
-          console.log('Email subjects:', this.subjctsEmail);
+          console.log('email header (new format):', this.emailHeader);
+
+          // Extract email body content
+          if (data.result.generation.html) {
+            let emailContent =
+              typeof data.result.generation.html === 'string'
+                ? data.result.generation.html
+                : JSON.parse(data.result.generation.html);
+            emailContent = emailContent.replace(/"/g, '').trim();
+            this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+            console.log('email body content:', this.editorContentEmail);
+            this.existingEmailContent = this.editorContentEmail;
+
+            // Function to count words in a string
+            const countWords = (emailContent: any) => {
+              if (!emailContent) return 0;
+              // Normalize spaces and split by space to get words
+              return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
+            };
+            // Count words in different parts of the email content
+            this.totalWordCount = countWords(this.editorContentEmail);
+
+            this.loading = false;
+            this.isEMailPromptDisabled = false;
+            this.commonPromptIsLoading = false;
+            this.translateIsLoading = false;
+            this.isImageRegenrateDisabled = false;
+            this.isImageRefineDisabled = false;
+
+            this.contentDisabled = false;
+            console.log('Total word count:', this.totalWordCount);
+            this.chnge.detectChanges();
+          }
+
+          // Extract email subjects from new format
+          if (data.result.generation.email_subjects) {
+            this.subjctsEmail = data.result.generation.email_subjects;
+            console.log('Email subjects:', this.subjctsEmail);
+            if (this.subjctsEmail && this.subjctsEmail.length > 0) {
+              this.selectedSubject = this.subjctsEmail[0];
+              console.log('Selected subject:', this.selectedSubject);
+            }
+          }
+
+          // Extract image URL if available
+          if (data.result.generation.image_url) {
+            this.imageUrl = data.result.generation.image_url;
+            console.log('Image URL from generation:', this.imageUrl);
+          }
         } else if (data?.content) {
           // Old format fallback
           let emailContent =
@@ -247,52 +301,6 @@ export class CombinedClientComponent {
           console.log('get header email heading content', emailContent);
           this.emailHeader = emailContent;
           console.log('get email header', this.emailHeader);
-        }
-      });
-
-    this.ispublisLoaderDisabled = false;
-    this.blogstructure = this.blogGuideLines();
-    this.contentDisabled = true;
-    this.aiContentGenerationService
-      .getEmailResponsetData()
-      .subscribe((data) => {
-        console.log('Email body response:', data);
-
-        // Check for new API format
-        if (data?.result?.generation?.html) {
-          this.editorContentEmail = data.result.generation.html;
-          console.log('Email content (new format - html):', this.editorContentEmail);
-          this.existingEmailContent = this.editorContentEmail;
-        } else if (data?.content) {
-          // Old format fallback
-          // Determine if the content is a string or JSON and parse accordingly
-          let emailContent =
-            typeof data.content === 'string'
-              ? data.content
-              : JSON.parse(data.content);
-          emailContent = emailContent.replace(/"/g, '').trim();
-          this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
-          console.log('email para : ', this.editorContentEmail);
-          this.existingEmailContent = this.editorContentEmail;
-          // Function to count words in a string
-          const countWords = (emailContent: any) => {
-            if (!emailContent) return 0;
-            // Normalize spaces and split by space to get words
-            return emailContent?.trim().replace(/\s+/g, ' ').split(' ').length;
-          };
-          // Count words in different parts of the email content
-          this.totalWordCount = countWords(this.editorContentEmail);
-
-          this.loading = false;
-          this.isEMailPromptDisabled = false;
-          this.commonPromptIsLoading = false;
-          this.translateIsLoading = false;
-          this.isImageRegenrateDisabled = false;
-          this.isImageRefineDisabled = false;
-
-          this.contentDisabled = false;
-          console.log('Total word count:', this.totalWordCount);
-          this.chnge.detectChanges();
         }
 
         //brand logo and links
@@ -324,6 +332,8 @@ export class CombinedClientComponent {
           });
       });
 
+    this.ispublisLoaderDisabled = false;
+    this.blogstructure = this.blogGuideLines();
     this.chnge.detectChanges();
     //fetch images
     //this.fetchMedia(this.formData?.brand);
@@ -1187,6 +1197,14 @@ The html tags are separate and it should not be part of word count`;
         console.error('Navigation error:', error);
       });
   }
+
+  publishVideo() {
+    console.log('Publishing video:', this.videoUrl);
+    // Add your video publishing logic here
+    // For now, just navigate to success
+    this.navigateToSuccess();
+  }
+
   onPanelClick(event: MouseEvent) {
     this.clickEvent = event;
     this.commentPanel.show(event);

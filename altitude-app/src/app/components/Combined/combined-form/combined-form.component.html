@@ -140,6 +140,66 @@
         </div>
     </div>
 
+    <!-- AI Video Generation Section -->
+    <div class="border-t-1 border-[#4D4D4D]">
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">AI Video Generation</h2>
+
+        <!-- Text prompt to start -->
+        <!-- <div class="text-center text-gray-400 text-sm mb-4">
+            Type in the prompt box to generate video
+        </div> -->
+
+        <!-- Video Prompt Input Box (Google Veo style) -->
+        <div class="bg-[#1A1A1A] rounded-2xl border border-[#3A3A3A] mb-4">
+            <!-- Textarea for prompt or Image URL input -->
+            <div class="p-4">
+                <!-- Show uploaded image or URL image preview at the top -->
+                <div *ngIf="uploadedImagePreview || imagePreviewUrl" class="mb-4">
+                    <div class="relative inline-block">
+                        <img [src]="uploadedImagePreview || imagePreviewUrl" alt="Reference"
+                            class="max-w-full max-h-48 rounded-lg" />
+                        <button type="button" (click)="removeReferenceImage()"
+                            class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 transition">
+                            <i class="pi pi-times text-white text-sm"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-2">Reference Image</p>
+                </div>
+
+                <!-- Image URL Input (when in URL mode) -->
+                <div *ngIf="showImageUrlInput && !imagePreviewUrl" class="mb-4">
+                    <input pInputText [(ngModel)]="referenceImageUrl" [ngModelOptions]="{standalone: true}"
+                        (ngModelChange)="onReferenceImageUrlChange()"
+                        class="w-full bg-[#2A2A2A] border border-[#4A4A4A] text-white text-base px-4 py-3 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-[#8D4BFF] focus:border-[#8D4BFF] outline-none"
+                        placeholder="Paste image URL here" />
+                </div>
+
+                <!-- Video Prompt textarea - always visible -->
+                <textarea formControlName="videoPrompt"
+                    class="w-full bg-transparent border-none text-white text-base placeholder-gray-400 focus:ring-0 focus:outline-none resize-none"
+                    rows="5" placeholder="Add a prompt..."></textarea>
+            </div>
+
+            <!-- Bottom action bar -->
+            <div class="flex items-center justify-between px-4 py-3 border-t border-[#3A3A3A]">
+                <div class="flex items-center gap-3">
+                    <button type="button" (click)="clearVideoInput()"
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition">
+                        <i class="pi pi-times text-black text-xl"></i>
+                    </button>
+                    <!-- <button type="button"
+                        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3A3A3A] transition">
+                        <i class="pi pi-refresh text-gray-400 text-xl"></i>
+                    </button> -->
+                    <button type="button" (click)="showUploadDrawer = true"
+                        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3A3A3A] transition">
+                        <i class="pi pi-plus text-gray-400 text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="border-t-1 border-[#4D4D4D]">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="col-span-2 mt-6">
@@ -229,6 +289,31 @@
             label="Submit" severity="help" rounded="true" (onClick)="onCreateProject()"
             [disabled]="socialwebsite.invalid"></p-button>
     </div>
+
+    <!-- Video Reference Image Upload Drawer -->
+    <p-drawer [(visible)]="showUploadDrawer" position="bottom" [style]="{height: 'auto'}" [modal]="true">
+        <div class="flex gap-6 justify-center py-6">
+            <!-- Upload Image Option -->
+            <div (click)="triggerFileUpload()"
+                class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
+                <i class="pi pi-upload text-5xl text-white"></i>
+                <span class="text-white font-medium text-lg">Upload Image</span>
+                <span class="text-gray-400 text-sm">.png, .jpg, .webp, .heic, .avif, .svg</span>
+            </div>
+
+            <!-- Upload Image URL Option -->
+            <div (click)="switchToImageUrlInput()"
+                class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
+                <i class="pi pi-link text-5xl text-white"></i>
+                <span class="text-white font-medium text-lg">Upload Image URL</span>
+                <span class="text-gray-400 text-sm">Paste image link</span>
+            </div>
+        </div>
+    </p-drawer>
+
+    <!-- Hidden file input for video reference image -->
+    <input type="file" id="videoReferenceImageInput" (change)="onReferenceImageSelected($event)"
+        accept=".png,.jpg,.jpeg,.webp,.heic,.avif,.svg" class="hidden" />
 
 
 </form>
