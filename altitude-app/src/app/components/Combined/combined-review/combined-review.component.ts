@@ -51,7 +51,7 @@ import { GalleriaModule } from 'primeng/galleria';
     RouterLink,
     MenuModule,
     DialogModule,
-    LoaderComponent,
+    // LoaderComponent,
     ToastModule,
     ProgressSpinnerModule,
     CarouselModule,

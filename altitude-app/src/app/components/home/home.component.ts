@@ -48,7 +48,7 @@ export class HomeComponent implements OnInit {
     },
     { name: 'AI Video', code: 'video', icon: 'assets/images/Video.svg' },
     { name: 'Image Animation', code: 'image', icon: 'assets/images/icon.svg' },
-    { name: 'Combined', code: 'combined', icon: 'assets/images/cube.svg' },
+    { name: 'Combined Campaign', code: 'combined', icon: 'assets/images/cube.svg' },
     { name: 'Meme Generation', code: 'meme', icon: 'assets/images/meme.svg' },
     // Add more options as needed
   ];
