@@ -240,7 +240,27 @@ export class CombinedReviewComponent implements OnDestroy {
   }
 
   formData: any;
+  private isReturningFromClient = false; // Flag to track if returning from client screen
+
   ngOnInit(): void {
+    // Check if we're returning from client screen by checking if content already exists
+    this.isReturningFromClient = !!(
+      this.editorContentEmail &&
+      this.editorContentEmail.length > 0 &&
+      this.formData
+    );
+
+    if (this.isReturningFromClient) {
+      console.log('🔄 Returning from client screen - preserving state');
+      // Ensure active tab is set to Email (0)
+      this.activeTabValue = '0';
+      // Don't clear data or reload - just preserve existing state
+      this.loading = false;
+      return;
+    }
+
+    console.log('🆕 Fresh load - initializing combined review');
+
     // Clear socket data before starting (for combined, only clear once)
     this.socketConnection.clearAgentData();
 
