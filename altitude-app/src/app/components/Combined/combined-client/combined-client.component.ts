@@ -21,6 +21,7 @@ import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { CarouselModule } from 'primeng/carousel';
+import { GalleriaModule } from 'primeng/galleria';
 
 @Component({
   selector: 'app-combined-client',
@@ -42,6 +43,7 @@ import { CarouselModule } from 'primeng/carousel';
     DialogModule,
     OverlayPanelModule,
     CarouselModule,
+    GalleriaModule,
   ],
   templateUrl: './combined-client.component.html',
   styleUrl: './combined-client.component.css',
@@ -69,6 +71,7 @@ export class CombinedClientComponent {
   posts: any[] = [];
   video: any = null;
   errorMessage: string | null = null;
+  activeTabValue: string = '0'; // Default to Email tab
 
   plagiarismCount: string | undefined;
   plagrismCheck: any;
@@ -101,13 +104,28 @@ export class CombinedClientComponent {
   emailClosingMark: string = '';
   AiContentResponse: any;
   videoUrl: string | null = null;
-  carouselVideos: string[] = [
-    'assets/videos/4380323-hd_1080_1920_30fps.mp4',
-    'assets/videos/8533110-uhd_3840_2160_25fps.mp4',
-    'assets/videos/854008-hd_1920_1080_30fps.mp4'
-  ];
+
+  // Dynamic video carousel - limit to 3 videos
+  carouselVideos: string[] = [];
   currentVideoIndex: number = 0;
-  currentCarouselVideo: string = this.carouselVideos[0];
+
+  // Galleria configuration
+  videoGalleryItems: any[] = [];
+  galleriaResponsiveOptions: any[] = [
+    {
+      breakpoint: '1024px',
+      numVisible: 3
+    },
+    {
+      breakpoint: '768px',
+      numVisible: 2
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1
+    }
+  ];
+
   emailPrompt: any;
   blogPrompt: any;
   commonPrompt: any;
@@ -177,6 +195,10 @@ export class CombinedClientComponent {
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
+
+    // Initialize dynamic video gallery (all videos except dark-particles)
+    this.initializeVideoGallery();
+
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
       console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
@@ -1214,18 +1236,34 @@ The html tags are separate and it should not be part of word count`;
     this.navigateToSuccess();
   }
 
-  nextVideo(): void {
-    if (this.currentVideoIndex < this.carouselVideos.length - 1) {
-      this.currentVideoIndex++;
-      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+  // Galleria methods
+  onGalleriaIndexChange(index: number): void {
+    this.currentVideoIndex = index;
+  }
+
+  onThumbnailLoaded(event: Event): void {
+    // Seek to 1 second to show a frame from the video
+    const videoElement = event.target as HTMLVideoElement;
+    if (videoElement) {
+      videoElement.currentTime = 1;
     }
   }
 
-  previousVideo(): void {
-    if (this.currentVideoIndex > 0) {
-      this.currentVideoIndex--;
-      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+  // Initialize video gallery dynamically - all videos except dark-particles
+  initializeVideoGallery(): void {
+    // Add all numbered videos (video1.mp4, video2.mp4, video3.mp4, etc.)
+    // You can increase this number as you add more videos
+    for (let i = 1; i <= 10; i++) {
+      this.carouselVideos.push(`assets/videos/video${i}.mp4`);
     }
+
+    // Initialize gallery items
+    this.videoGalleryItems = this.carouselVideos.map(video => ({
+      videoUrl: video,
+      thumbnailUrl: video
+    }));
+
+    console.log('Initialized video gallery with:', this.carouselVideos);
   }
 
   onPanelClick(event: MouseEvent) {

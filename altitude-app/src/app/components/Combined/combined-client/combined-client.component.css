@@ -3,6 +3,15 @@
   background-color: #09040e !important;
   border-radius: 9999px !important;
 }
+::ng-deep .p-galleria-thumbnails {
+  margin-top: 20px !important;
+}
+::ng-deep .p-galleria-thumbnails-content {
+  background: transparent;
+}
+::ng-deep .p-tablist-active-bar {
+  background-color: #09040e !important;
+}
 .combined-container {
   margin: 2% 5% 0 5%;
 }
@@ -80,4 +89,101 @@
 
 .fade-in {
   animation: fadeIn 0.5s ease-out;
+}
+
+/* PrimeNG Galleria Styling */
+::ng-deep .p-galleria {
+  background-color: transparent !important;
+  margin-top: 2rem !important;
+}
+
+::ng-deep .p-galleria .p-galleria-thumbnail-container {
+  background-color: transparent !important;
+  padding: 1rem 0 !important;
+  margin-top: 1.5rem !important;
+}
+
+::ng-deep .video-galleria .p-galleria-thumbnail-container {
+  width: 100% !important;
+}
+
+::ng-deep .video-galleria .p-galleria-thumbnails-content {
+  max-width: 520px !important;
+  margin: 0 auto !important;
+}
+
+::ng-deep .video-galleria .p-galleria-thumbnails-wrapper {
+  display: flex !important;
+  justify-content: center !important;
+}
+
+::ng-deep .p-galleria .p-galleria-thumbnail-item {
+  width: 160px !important;
+  height: 160px !important;
+  min-width: 160px !important;
+  min-height: 160px !important;
+  max-width: 160px !important;
+  max-height: 160px !important;
+  margin: 0 0.5rem !important;
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+  transition: transform 0.3s ease !important;
+  flex-shrink: 0 !important;
+}
+
+::ng-deep .p-galleria .p-galleria-thumbnail-item:hover {
+  transform: scale(1.1) !important;
+}
+
+::ng-deep .p-galleria .p-galleria-thumbnail-item-content {
+  width: 160px !important;
+  height: 160px !important;
+  min-width: 160px !important;
+  min-height: 160px !important;
+  max-width: 160px !important;
+  max-height: 160px !important;
+}
+
+.video-thumbnail-galleria {
+  width: 160px !important;
+  height: 160px !important;
+  min-width: 160px !important;
+  min-height: 160px !important;
+  max-width: 160px !important;
+  max-height: 160px !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.video-thumbnail-galleria video {
+  width: 160px !important;
+  height: 160px !important;
+  min-width: 160px !important;
+  min-height: 160px !important;
+  max-width: 160px !important;
+  max-height: 160px !important;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+::ng-deep .p-galleria .p-galleria-item-nav {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  color: white !important;
+  border-radius: 50% !important;
+  width: 3rem !important;
+  height: 3rem !important;
+  transition: background-color 0.3s ease !important;
+}
+
+::ng-deep .p-galleria .p-galleria-item-nav:hover {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+::ng-deep .p-galleria .p-galleria-item-nav .p-icon {
+  font-size: 1.5rem !important;
+}
+
+::ng-deep .p-galleria .p-galleria-item {
+  background-color: transparent !important;
 }

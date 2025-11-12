@@ -29,6 +29,7 @@ import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { CarouselModule } from 'primeng/carousel';
+import { GalleriaModule } from 'primeng/galleria';
 
 @Component({
   selector: 'app-combined-review',
@@ -54,6 +55,7 @@ import { CarouselModule } from 'primeng/carousel';
     ToastModule,
     ProgressSpinnerModule,
     CarouselModule,
+    GalleriaModule,
   ],
   providers: [MessageService],
   templateUrl: './combined-review.component.html',
@@ -81,6 +83,7 @@ export class CombinedReviewComponent implements OnDestroy {
   posts: any[] = [];
   video: any = null;
   errorMessage: string | null = null;
+  activeTabValue: string = '0'; // Default to Email tab
 
   plagiarismCount: string | undefined;
   plagrismCheck: any;
@@ -169,14 +172,30 @@ export class CombinedReviewComponent implements OnDestroy {
   editorContentSocialMedia2: any;
   videoUrl: string | null = null;
 
-  // Carousel for AI Video tab (hardcoded videos)
-  carouselVideos: string[] = [
-    'assets/videos/4380323-hd_1080_1920_30fps.mp4',
-    'assets/videos/8533110-uhd_3840_2160_25fps.mp4',
-    'assets/videos/854008-hd_1920_1080_30fps.mp4'
-  ];
+  // Gallery for AI Video tab - Dynamic videos (will be loaded based on available files)
+  carouselVideos: string[] = [];
   currentVideoIndex: number = 0;
-  currentCarouselVideo: string = this.carouselVideos[0];
+
+  // Galleria configuration
+  videoGalleryItems: any[] = [];
+  galleriaResponsiveOptions: any[] = [
+    {
+      breakpoint: '1024px',
+      numVisible: 3
+    },
+    {
+      breakpoint: '768px',
+      numVisible: 2
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1
+    }
+  ];
+
+  // Regeneration fields for Video tab
+  videoFeedback: string = '';
+  isRegeneratingVideo: boolean = false;
 
   // Regeneration fields for Email tab
   emailContentFeedback: string = '';
@@ -228,6 +247,10 @@ export class CombinedReviewComponent implements OnDestroy {
     this.imageUrl = null;
     this.loading = true;
     this.editorContentEmail = [];
+
+    // Initialize dynamic video gallery (limit to 3 videos)
+    this.initializeVideoGallery();
+
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
       console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
@@ -1648,19 +1671,99 @@ Output the entire blog in HTML format, followed by:
     }
   }
 
-  // Carousel navigation methods for AI Video tab
-  nextVideo(): void {
-    if (this.currentVideoIndex < this.carouselVideos.length - 1) {
-      this.currentVideoIndex++;
-      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+  // Galleria event handler for AI Video tab
+  onGalleriaIndexChange(index: number): void {
+    this.currentVideoIndex = index;
+  }
+
+  onThumbnailLoaded(event: Event): void {
+    // Seek to 1 second to show a frame from the video
+    const videoElement = event.target as HTMLVideoElement;
+    if (videoElement) {
+      videoElement.currentTime = 1;
     }
   }
 
-  previousVideo(): void {
-    if (this.currentVideoIndex > 0) {
-      this.currentVideoIndex--;
-      this.currentCarouselVideo = this.carouselVideos[this.currentVideoIndex];
+  // Initialize video gallery dynamically - all videos except dark-particles
+  initializeVideoGallery(): void {
+    // Add all numbered videos (video1.mp4, video2.mp4, video3.mp4, etc.)
+    // You can increase this number as you add more videos
+    for (let i = 1; i <= 10; i++) {
+      this.carouselVideos.push(`assets/videos/video${i}.mp4`);
     }
+
+    // Initialize gallery items
+    this.videoGalleryItems = this.carouselVideos.map(video => ({
+      videoUrl: video,
+      thumbnailUrl: video
+    }));
+
+    console.log('Initialized video gallery with:', this.carouselVideos);
+  }
+
+  // Regenerate video functionality
+  regenerateVideo(): void {
+    if (!this.videoFeedback || this.videoFeedback.trim() === '') {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'Please enter video feedback to regenerate',
+        life: 3000
+      });
+      return;
+    }
+
+    console.log('Regenerating video with feedback:', this.videoFeedback);
+
+    // Create FormData for multipart form data
+    const videoFormData = new FormData();
+    videoFormData.append('brief', this.videoFeedback);
+
+    this.isRegeneratingVideo = true;
+
+    this.aiContentGenerationService.generateVoeVideo(videoFormData).subscribe({
+      next: (response: any) => {
+        console.log('Video regenerated:', response);
+
+        if (response?.video_url) {
+          // Add new video to the beginning of the array
+          this.carouselVideos.unshift(response.video_url);
+
+          // Update gallery items (no limit on total videos)
+          this.videoGalleryItems = this.carouselVideos.map(video => ({
+            videoUrl: video,
+            thumbnailUrl: video
+          }));
+
+          // Set current index to show new video
+          this.currentVideoIndex = 0;
+
+          // Update the stored image/video URL
+          this.aiContentGenerationService.setImage(response.video_url);
+        }
+
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Video regenerated successfully',
+          life: 3000
+        });
+
+        // Clear feedback input
+        this.videoFeedback = '';
+        this.isRegeneratingVideo = false;
+      },
+      error: (error) => {
+        console.error('Error regenerating video:', error);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Failed to regenerate video. Please try again.',
+          life: 3000
+        });
+        this.isRegeneratingVideo = false;
+      }
+    });
   }
 
   ngOnDestroy(): void {

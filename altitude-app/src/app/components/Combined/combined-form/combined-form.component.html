@@ -60,9 +60,10 @@
             <div>
                 <label class="block text-gray-300 mb-1">Platform Campaign*</label>
                 <p-multiselect [options]="socialCampaignData" formControlName="campaign2" placeholder="Select platforms"
-                    class="w-full" [panelStyle]="{ padding: '10px !important' }"
+                    class="w-full" panelStyleClass="custom-multiselect-panel"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"
-                    [selectAll]="true" selectAllLabel="All"></p-multiselect>
+                    [selectAll]="true" [showToggleAll]="true" display="chip">
+                </p-multiselect>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Word Limit</label>
