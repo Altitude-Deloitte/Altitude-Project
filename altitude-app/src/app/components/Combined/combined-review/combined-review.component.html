@@ -16,11 +16,11 @@
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center gap-2">
                         <a routerLink="/generate-request" class="text-2xl cursor-pointer"><i
-                                class="pi pi-angle-left mr-1"></i>Combined<i class="pi pi-pencil ml-1"></i></a>
+                                class="pi pi-angle-left mr-1"></i>Combined Campaign<i class="pi pi-pencil ml-1"></i></a>
                     </div>
                     <div class="flex items-center gap-2">
                         <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2"><img
-                                src="assets/images/cube.svg">Combined</a>
+                                src="assets/images/cube.svg">Combined Campaign</a>
                         <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April
                             16,
                             2025</a>
@@ -70,7 +70,7 @@
                         <div class="flex-1 min-w-0">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
                                             class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
@@ -220,11 +220,13 @@
                                                         <td [style.height]="imageContainerHeight"
                                                             [style.width]="imageContainerWidth" align="center"
                                                             class="image-width"
-                                                            style="font-size: 1px;line-height: 1px;">
-                                                            <div class="mktoImg" id="Banner2ef" mktolockimgsize="true">
+                                                            style="font-size: 1px;line-height: 1px; overflow: hidden;">
+                                                            <div class="mktoImg" id="Banner2ef" mktolockimgsize="true"
+                                                                style="width: 100%; height: 100%; overflow: hidden;">
                                                                 <img [style.height]="imageContainerHeight"
                                                                     [style.width]="imageContainerWidth" border="0"
-                                                                    alt="Banner Image" src="assets/images/nike.jpg" />
+                                                                    alt="Banner Image" src="assets/images/nike-ice.png"
+                                                                    style="object-fit: cover; object-position: center;" />
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -268,9 +270,7 @@
                                                                 streets, or simply making a statement, the CryoShot
                                                                 Mercurial R90 brings the heat—and the ice. It's more
                                                                 than a sneaker. It's a mindset.
-                                                                <br><br>
-                                                                Step into evolution.
-                                                                <br>Step into CryoShot.
+
                                                                 <br><br>
                                                                 <strong>Team Nike</strong>
                                                             </div>
@@ -391,14 +391,15 @@
                         <div class="flex-1 min-w-0">
                             <div class="">
 
-                                <p-accordion value="0" class="bg-[#1A1A1A]">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 border-b-0 p-4 rounded-t-xl border-[#363636]">
+                                            class="bg-[#121212] border-1 border-b-0 p-4 rounded-t-xl border-[#363636]">
                                             Task Details
                                         </p-accordion-header>
 
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
                                                 <!-- Social Media Tab Task Details -->
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
@@ -547,39 +548,23 @@
                                                                     </div>
 
                                                                     <!-- Nike Shoe Image -->
-                                                                    <div class="w-full px-4">
-                                                                        <img src="assets/images/nike-shoe.png"
-                                                                            alt="Nike Shoe"
-                                                                            class="w-full h-auto object-cover" />
-                                                                    </div>
+
 
                                                                     <!-- Facebook Content -->
                                                                     <div class="mb-3 px-4">
                                                                         <p
                                                                             class="text-[#050505] text-[15px] leading-5 whitespace-pre-line">
-                                                                            🏃‍♂️ BREAK YOUR LIMITS WITH THE NEW NIKE
-                                                                            RUN SERIES 🏃‍♀️
-
-                                                                            Meet the next evolution of speed, comfort,
-                                                                            and style — the all-new Nike Run Series.
-                                                                            Engineered with cutting-edge cushioning and
-                                                                            a lightweight mesh design, these shoes are
-                                                                            built to keep you moving — whether you're
-                                                                            chasing a personal best or your morning run.
-
-                                                                            🔥 Unmatched Comfort — Every stride feels
-                                                                            effortless.
-                                                                            💨 Maximum Breathability — Stay cool mile
-                                                                            after mile.
-                                                                            ⚡ Performance Ready — Designed to go the
-                                                                            distance.
-
-                                                                            Step into the future of running.
-                                                                            👉 Available now in stores and online: [link
-                                                                            to product]
-
-                                                                            #Nike #JustDoIt #NikeRunning #RunWithNike
-                                                                            #PerformanceReimagined</p>
+                                                                            Fast. Precise. Legendary.
+                                                                            The Mercurial defines speed. The Tiempo
+                                                                            defines touch. Together, they define
+                                                                            football. 🔴 The future drops at the
+                                                                            CryoShot Show. #NikeFootball #Mercurial
+                                                                            #Tiempo #CryoShot</p>
+                                                                    </div>
+                                                                    <div class="w-full px-4">
+                                                                        <img src="assets/images/nike-insta.png"
+                                                                            alt="Nike Shoe"
+                                                                            class="w-full h-auto object-cover" />
                                                                     </div>
 
                                                                     <!-- Facebook Reactions Summary -->
@@ -808,15 +793,16 @@
                         <div class="flex-1 min-w-0">
                             <div class="">
 
-                                <p-accordion value="0" class="bg-[#1A1A1A]">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 border-b-0 p-4 rounded-t-xl border-[#363636]">
+                                            class="bg-[#121212] border-1 border-b-0 p-4 rounded-t-xl border-[#363636]">
                                             Task Details
                                         </p-accordion-header>
 
 
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
                                                 <!-- Blog Tab Task Details -->
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
@@ -1075,13 +1061,14 @@
                     <div class="flex mt-5 gap-4 w-full items-start">
                         <div class="flex-1 min-w-0">
                             <div class="">
-                                <p-accordion value="0" class="bg-[#1A1A1A]">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                            class="bg-[#121212] border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
                                             Video Details
                                         </p-accordion-header>
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
