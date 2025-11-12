@@ -14,7 +14,7 @@
                         <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2"><img
                                 src="assets/images/InstagramLogo.svg">Social Media Campaign</a>
                         <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April
-                           {{ currentsDate }}</a>
+                            {{ currentsDate }}</a>
                     </div>
                 </div>
                 <div class="flex justify-center items-center gap-3">
@@ -148,22 +148,22 @@
                                             <h4 class="text-[#9b9b9b]">Client Name</h4>
                                             <p>{{this.brand}}</p>
                                             <h4 class="text-[#9b9b9b]">Purpose</h4>
-                                            <p>{{this.formData?.purpose}}</p>
-                                            <h4 class="text-[#9b9b9b]">Due Date</h4>
-                                            <p>{{this.formData?.dueDate}}</p>
+                                            <p>{{this.formData?.purpose2}}</p>
+                                            <h4 class="text-[#9b9b9b]">Topic</h4>
+                                            <p>{{this.formData?.topic || ''}}</p>
                                             <h4 class="text-[#9b9b9b]">Word Limit</h4>
-                                            <p>{{this.formData?.wordLimit || ''}}</p>
-                                            <h4 class="text-[#9b9b9b]">Additional Details</h4>
-                                            <p>{{this.formData?.Additional || ''}}</p>
-                                            <h4 class="text-[#9b9b9b]">Image Description</h4>
-                                            <p>{{this.formData?.image || ''}}</p>
+                                            <p>{{this.formData?.wordLimit2 || ''}}</p>
+                                            <h4 class="text-[#9b9b9b]">Image Option</h4>
+                                            <p>{{this.formData?.imageOpt || ''}}</p>
 
                                         </div>
                                         <div class="flex flex-col gap-3">
-                                            <h4 class="text-[#9b9b9b]">Topic</h4>
-                                            <p>{{this.formData?.topic || ''}}</p>
                                             <h4 class="text-[#9b9b9b]">Platform Campaign</h4>
-                                            <p>{{this.formData?.campaign || ''}}</p>
+                                            <p>{{this.formData?.campaign2 || ''}}</p>
+                                            <h4 class="text-[#9b9b9b]">Image Description</h4>
+                                            <p>{{this.formData?.imgDesc || ''}}</p>
+                                            <h4 class="text-[#9b9b9b]">Additional Details</h4>
+                                            <p>{{this.formData?.additional || ''}}</p>
                                         </div>
 
 

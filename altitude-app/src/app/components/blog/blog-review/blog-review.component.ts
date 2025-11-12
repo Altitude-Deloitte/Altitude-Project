@@ -113,8 +113,14 @@ export class BlogReviewComponent implements OnDestroy {
   formData: any;
   blog_title: any;
   private dataLoaded = false; // Track if data is already loaded from shared content
+  private sessionId: string = ''; // Unique session ID for this component instance
 
   ngOnInit(): void {
+    // Generate and set unique session ID for this review session
+    this.sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Blog review session started:', this.sessionId);
+
     // Clear previous blog data to prevent state retention
     this.aiContentGenerationService.clearBlogData();
 
@@ -783,6 +789,10 @@ export class BlogReviewComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Clear session ID to stop receiving socket messages
+    this.socketConnection.clearSessionId();
+    console.log('🧹 Blog review session ended:', this.sessionId);
+
     // Unsubscribe from observables to prevent memory leaks
     this.blogContentSubscription?.unsubscribe();
   }

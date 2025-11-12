@@ -127,6 +127,9 @@ export class CombinedReviewComponent implements OnDestroy {
   translateIsLoading = false;
   private dataLoadedCount = 0;
   private totalDataToLoad = 3; // email, social, blog
+  private socketDisconnectTimeout: any; // Timeout for socket disconnection
+  private socketCheckInterval: any; // Interval to check socket completion
+  private allApisCompleted = false; // Flag to track if all APIs completed
   brandLinks: any[] = [];
   brandlogo: any;
   seoTitle: string = '';
@@ -198,18 +201,100 @@ export class CombinedReviewComponent implements OnDestroy {
     this.dataLoadedCount++;
     console.log(`Data loaded count: ${this.dataLoadedCount}/${this.totalDataToLoad}`);
     if (this.dataLoadedCount >= this.totalDataToLoad) {
-      this.loading = false;
-      console.log('All data loaded, hiding loader');
+      this.allApisCompleted = true;
+      console.log('All 3 API calls completed, monitoring socket messages...');
 
-      // Disconnect socket after all content is loaded
-      this.socketConnection.disconnect();
-
-      this.chnge.detectChanges();
+      // Start monitoring socket messages to detect when workflow completes
+      this.startSocketCompletionMonitoring();
     }
   }
 
+  private startSocketCompletionMonitoring(): void {
+    // Clear any existing interval/timeout
+    if (this.socketCheckInterval) {
+      clearInterval(this.socketCheckInterval);
+    }
+    if (this.socketDisconnectTimeout) {
+      clearTimeout(this.socketDisconnectTimeout);
+    }
+
+    let lastSocketDataString = '';
+    let stableCount = 0;
+    const STABLE_THRESHOLD = 3; // Need 3 consecutive stable checks (1.8 seconds total)
+
+    // Check socket data every 600ms to see if workflow is complete
+    this.socketCheckInterval = setInterval(() => {
+      const socketData = this.socketConnection.dataSignal();
+      const currentSocketDataString = JSON.stringify(socketData);
+
+      console.log('Socket monitoring check:', {
+        agentCount: Object.keys(socketData).length,
+        agents: Object.keys(socketData),
+        allCompleted: this.areAllAgentsCompleted(socketData)
+      });
+
+      // Check if socket data has stabilized (no new messages)
+      if (currentSocketDataString === lastSocketDataString) {
+        stableCount++;
+        console.log(`Socket data stable count: ${stableCount}/${STABLE_THRESHOLD}`);
+      } else {
+        stableCount = 0; // Reset if data changed
+        lastSocketDataString = currentSocketDataString;
+      }
+
+      // If we have agents and all are completed and data is stable, hide loader
+      if (Object.keys(socketData).length > 0 &&
+        this.areAllAgentsCompleted(socketData) &&
+        stableCount >= STABLE_THRESHOLD) {
+
+        console.log('All socket agents completed and stable, hiding loader');
+        this.hideLoaderAndDisconnect();
+      }
+    }, 600); // Check every 600ms (matches socket processing interval)
+
+    // Fallback timeout: if socket monitoring takes too long (20 seconds), force hide loader
+    this.socketDisconnectTimeout = setTimeout(() => {
+      console.warn('Socket monitoring timeout reached (20s), forcing loader hide');
+      this.hideLoaderAndDisconnect();
+    }, 20000);
+  }
+
+  private areAllAgentsCompleted(socketData: any): boolean {
+    const agents = Object.values(socketData) as any[];
+    if (agents.length === 0) return false;
+
+    // All agents must have COMPLETED status
+    const allCompleted = agents.every(agent => agent.status === 'COMPLETED');
+    return allCompleted;
+  }
+
+  private hideLoaderAndDisconnect(): void {
+    // Clear monitoring interval and timeout
+    if (this.socketCheckInterval) {
+      clearInterval(this.socketCheckInterval);
+      this.socketCheckInterval = null;
+    }
+    if (this.socketDisconnectTimeout) {
+      clearTimeout(this.socketDisconnectTimeout);
+      this.socketDisconnectTimeout = null;
+    }
+
+    // Hide loader and disconnect socket
+    this.loading = false;
+    console.log('Loader hidden, disconnecting socket');
+    this.socketConnection.disconnect();
+    this.chnge.detectChanges();
+  }
+
   formData: any;
+  private sessionId: string = ''; // Unique session ID for this component instance
+
   ngOnInit(): void {
+    // Generate and set unique session ID for this review session
+    this.sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Combined review session started:', this.sessionId);
+
     // Reset data loaded counter for fresh page load
     this.dataLoadedCount = 0;
 
@@ -1223,20 +1308,27 @@ Output the entire blog in HTML format, followed by:
     if (!this.formData) return;
 
     this.socialPayload = new FormData();
-    const useCase = this.formData?.use_case || 'Social Media Content';
-    this.socialPayload.append('use_case', useCase);
-    this.socialPayload.append('brand', this.formData?.brand || '');
-    this.socialPayload.append('platform', this.formData?.campaign2 || '');
-    this.socialPayload.append('topic', this.formData?.topic || '');
+    this.socialPayload.append('use_case', 'Social Media Posting');
     this.socialPayload.append('purpose', this.formData?.purpose2 || '');
-    this.socialPayload.append('tone', this.formData?.Type || '');
+    this.socialPayload.append('brand', this.formData?.brand || '');
+
+    // Handle platform_campaign - use campaign2 field
+    const platformCampaign = this.formData?.campaign2 || '';
+    this.socialPayload.append('platform_campaign', platformCampaign);
+
+    this.socialPayload.append('topic', this.formData?.topic || '');
     this.socialPayload.append('word_limit', this.formData?.wordLimit2 || '');
-    this.socialPayload.append('target_reader', this.formData?.readers2 || '');
     this.socialPayload.append('image_details', this.formData?.imageOpt || '');
 
     if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
       this.socialPayload.append('image_description', this.formData?.imgDesc);
     }
+
+    if (this.formData?.additional && this.formData?.additional.trim() !== '') {
+      this.socialPayload.append('additional_details', this.formData?.additional);
+    }
+
+    console.log('Social Media Payload initialized in combined-review');
   }
 
   // Blog Payload Initialization
@@ -1244,22 +1336,26 @@ Output the entire blog in HTML format, followed by:
     if (!this.formData) return;
 
     this.blogPayload = new FormData();
-    const useCase = this.formData?.use_case || 'Website Blog';
-    this.blogPayload.append('use_case', useCase);
-    this.blogPayload.append('brand', this.formData?.brand || '');
-    this.blogPayload.append('format', this.formData?.format || '');
-    this.blogPayload.append('topic', this.formData?.topic || '');
+    this.blogPayload.append('use_case', 'Blog Generation');
     this.blogPayload.append('purpose', this.formData?.purpose3 || '');
-    this.blogPayload.append('tone', this.formData?.Type3 || '');
+    this.blogPayload.append('outline', this.formData?.topic || '');
+    this.blogPayload.append('format', this.formData?.format || '');
+    this.blogPayload.append('primary_keywords', this.formData?.keywords || '');
     this.blogPayload.append('word_limit', this.formData?.wordLimit3 || '');
-    this.blogPayload.append('target_reader', this.formData?.readers3 || '');
-    this.blogPayload.append('keywords', this.formData?.keywords || '');
-    this.blogPayload.append('outline', this.formData?.outline || '');
+    this.blogPayload.append('target_reader', this.formData?.target3 || '');
+    this.blogPayload.append('tone', this.formData?.Type3 || '');
     this.blogPayload.append('image_details', this.formData?.imageOpt || '');
+    this.blogPayload.append('brand', this.formData?.brand || '');
 
     if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
       this.blogPayload.append('image_description', this.formData?.imgDesc);
     }
+
+    if (this.formData?.additional && this.formData?.additional.trim() !== '') {
+      this.blogPayload.append('additional_details', this.formData?.additional);
+    }
+
+    console.log('Blog Payload initialized in combined-review');
   }
 
   // Validate content feedback (word limit check)
@@ -1632,6 +1728,20 @@ Output the entire blog in HTML format, followed by:
   }
 
   ngOnDestroy(): void {
+    // Clear socket monitoring interval and timeout
+    if (this.socketCheckInterval) {
+      clearInterval(this.socketCheckInterval);
+      this.socketCheckInterval = null;
+    }
+    if (this.socketDisconnectTimeout) {
+      clearTimeout(this.socketDisconnectTimeout);
+      this.socketDisconnectTimeout = null;
+    }
+
+    // Clear session ID to stop receiving socket messages
+    this.socketConnection.clearSessionId();
+    console.log('🧹 Combined review session ended:', this.sessionId);
+
     // Unsubscribe from observables to prevent memory leaks
     this.socialContentSubscription?.unsubscribe();
     this.blogContentSubscription?.unsubscribe();

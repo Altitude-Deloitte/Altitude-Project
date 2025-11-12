@@ -153,8 +153,15 @@ export class SocialReviewComponent implements OnDestroy {
     });
   }
 
+  private sessionId: string = ''; // Unique session ID for this component instance
+
   ngOnInit(): void {
     console.log('ngOnInit - Initial loading state:', this.loading);
+
+    // Generate and set unique session ID for this review session
+    this.sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Social media review session started:', this.sessionId);
 
     // Clear previous social data to prevent state retention
     this.aiContentGenerationService.clearSocialData();
@@ -1003,6 +1010,10 @@ export class SocialReviewComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
+    // Clear session ID to stop receiving socket messages
+    this.socketConnection.clearSessionId();
+    console.log('🧹 Social media review session ended:', this.sessionId);
+
     // Unsubscribe from observables to prevent memory leaks
     this.socialContentSubscription?.unsubscribe();
     this.socialContent1Subscription?.unsubscribe();

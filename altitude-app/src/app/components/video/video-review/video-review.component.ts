@@ -74,7 +74,14 @@ export class VideoReviewComponent {
     });
   }
 
+  private sessionId: string = ''; // Unique session ID for this component instance
+
   ngOnInit(): void {
+    // Generate and set unique session ID for this review session
+    this.sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Video review session started:', this.sessionId);
+
     // Clear socket data before starting to prevent old messages from showing
     this.socketConnection.clearAgentData();
 
@@ -357,5 +364,11 @@ export class VideoReviewComponent {
   //     }
   //   });
   // }
+
+  ngOnDestroy(): void {
+    // Clear session ID to stop receiving socket messages
+    this.socketConnection.clearSessionId();
+    console.log('🧹 Video review session ended:', this.sessionId);
+  }
 }
 

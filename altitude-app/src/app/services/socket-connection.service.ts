@@ -7,12 +7,30 @@ import { io, Socket } from 'socket.io-client';
 export class SocketConnectionService {
   socket: any;
   public dataSignal = signal<Record<string, { name: string; status: string; updatedAt: string; message?: string; description?: string; order: number }>>({});
-  private messageQueue: { name: string; status: string; message?: string; description?: string }[] = [];
+  private messageQueue: { name: string; status: string; message?: string; description?: string; sessionId?: string }[] = [];
   private processingInterval: any;
   private agentOrderCounter = 0; // Track the order agents are received
+  private currentSessionId: string | null = null; // Current active session ID
 
   connection = false;
   constructor() { this.connect(); this.startProcessingQueue(); }
+
+  // Generate a unique session ID
+  generateSessionId(): string {
+    return `session_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
+  }
+
+  // Set the current session ID for filtering
+  setSessionId(sessionId: string): void {
+    this.currentSessionId = sessionId;
+    console.log('📌 Socket session ID set:', sessionId);
+  }
+
+  // Get the current session ID
+  getSessionId(): string | null {
+    return this.currentSessionId;
+  }
+
   private connect() {
     try {
       this.socket = io("https://campaign-content-creation-backend-392853354701.asia-south1.run.app/", {
@@ -53,8 +71,14 @@ export class SocketConnectionService {
       //   this.connection = false;
       // });
 
-      this.socket.on('status', (message: { name: string; status: string; message?: string; description?: string }) => {
-        this.messageQueue.push(message);
+      this.socket.on('status', (message: { name: string; status: string; message?: string; description?: string; sessionId?: string }) => {
+        // Only queue messages that match the current session ID or have no session ID (backward compatibility)
+        if (!message.sessionId || message.sessionId === this.currentSessionId) {
+          console.log('✅ Socket message accepted for session:', this.currentSessionId, message);
+          this.messageQueue.push(message);
+        } else {
+          console.log('🚫 Socket message rejected (different session):', message.sessionId, 'Current:', this.currentSessionId);
+        }
       });
     } catch (error) {
       console.error('❌ Failed to initialize socket connection:', error);
@@ -120,5 +144,13 @@ export class SocketConnectionService {
   clearAgentData() {
     this.dataSignal.set({});
     this.agentOrderCounter = 0;
+    this.messageQueue = []; // Also clear message queue
+    console.log('🧹 Socket data cleared for session:', this.currentSessionId);
+  }
+
+  // Clear session ID (called when leaving a component)
+  clearSessionId() {
+    console.log('🧹 Clearing session ID:', this.currentSessionId);
+    this.currentSessionId = null;
   }
 }

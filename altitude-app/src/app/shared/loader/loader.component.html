@@ -77,18 +77,20 @@
 
                             <!-- Agent name -->
                             <text x="30" y="22" fill="#fff" font-size="14" font-weight="600">
-                                {{ agent.name | titlecase }}
+                                <tspan>{{ agent.name.length > 25 ? (agent.name | titlecase | slice:0:25) + '...' :
+                                    (agent.name | titlecase) }}</tspan>
                             </text>
 
-                            <!-- Dynamic message from socket -->
+                            <!-- Dynamic message from socket (wrapped and truncated) -->
                             <text x="30" y="37" [attr.fill]="getStatusTextColor(agent.status)" font-size="11"
                                 font-style="italic">
-                                {{ getAgentMessage(agent) }}
+                                <tspan>{{ getAgentMessage(agent).length > 35 ? getAgentMessage(agent).slice(0, 35) +
+                                    '...' : getAgentMessage(agent) }}</tspan>
                             </text>
 
                             <!-- Status badge and time -->
                             <text x="30" y="50" fill="#9ca3af" font-size="9">
-                                {{ agent.status }} • {{ agent.updatedAt }}
+                                <tspan>{{ agent.status }} • {{ agent.updatedAt }}</tspan>
                             </text>
                         </g>
                     </ng-container>

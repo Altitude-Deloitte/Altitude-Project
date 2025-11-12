@@ -213,7 +213,14 @@ export class EmailReviewComponent implements OnDestroy {
     });
   }
 
+  private sessionId: string = ''; // Unique session ID for this component instance
+
   ngOnInit() {
+    // Generate and set unique session ID for this review session
+    this.sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Email review session started:', this.sessionId);
+
     // Clear previous email data to prevent state retention
     this.aiContentGenerationService.clearEmailData();
 
@@ -964,6 +971,10 @@ The html tags are separate and it should not be part of word count.`;
   }
 
   ngOnDestroy(): void {
+    // Clear session ID to stop receiving socket messages
+    this.socketConnection.clearSessionId();
+    console.log('🧹 Email review session ended:', this.sessionId);
+
     // Unsubscribe from observables to prevent memory leaks
     this.emailContentSubscription?.unsubscribe();
     this.socialContentSubscription?.unsubscribe();

@@ -11,7 +11,7 @@
 
 
         <div
-            class="max-w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
+            class="w-[90%] my-8 mx-auto p-8 border-2 border-[#B66DFF] rounded-2xl flex flex-col justify-center items-center">
             <div class="flex w-full flex-wrap justify-between items-center mb-5">
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center gap-2">
@@ -63,19 +63,19 @@
                 </div>
             </div>
 
-            <p-tabpanels class="bg-[#09040e]">
+            <p-tabpanels class="bg-[#09040e] flex flex-col w-full ">
                 <p-tabpanel value="0">
                     <div class="flex flex-wrap mt-5 gap-4 w-full">
                         <div class="md:flex-1">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                            class="border-1 p-4 bg-[#121212] border-b-0 rounded-t-xl border-[#363636]">
                                             Brand Guidelines & Assets
                                         </p-accordion-header>
-                                        <p-accordion-content class="p-4 border-1 border-[#363636]">
+                                        <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
                                             <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
                                             <div class="flex justify-center gap-4 items-center">
                                                 <div
@@ -106,17 +106,21 @@
 
                                 <p-accordion value="1">
                                     <p-accordion-panel value="1">
-                                        <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
+                                        <p-accordion-header
+                                            class="bg-[#121212] border-s-1 border-e-1 rounded-none p-4 border-[#363636]">
                                             Task Details
                                         </p-accordion-header>
 
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
-                                                <!-- Email Tab Task Details -->
+
+
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Client Name</span>
-                                                        <span class="font-semibold">{{this.formData?.brand ||
+                                                        <span class="font-semibold">{{this.formData?.brand || this.brand
+                                                            ||
                                                             '-'}}</span>
                                                     </div>
                                                     <div class="flex flex-col">
@@ -142,7 +146,7 @@
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Word Limit</span>
                                                         <span class="font-semibold">{{this.formData?.wordLimit ||
-                                                            '-'}}</span>
+                                                            this.formData?.word_limit || '-'}}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Target Audience</span>
@@ -159,7 +163,15 @@
                                                         <span class="font-semibold">{{this.formData?.imgDesc ||
                                                             '-'}}</span>
                                                     </div>
+                                                    <div class="flex flex-col col-span-2">
+                                                        <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                                        <span class="font-semibold">{{this.formData?.additional ||
+                                                            '-'}}</span>
+                                                    </div>
                                                 </div>
+
+
+
                                             </div>
 
                                         </p-accordion-content>
@@ -383,13 +395,13 @@
                         <div class="md:flex-1">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                            class="border-1 p-4 bg-[#121212] border-b-0 rounded-t-xl border-[#363636]">
                                             Brand Guidelines & Assets
                                         </p-accordion-header>
-                                        <p-accordion-content class="p-4 border-1 border-[#363636]">
+                                        <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
                                             <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
                                             <div class="flex justify-center gap-4 items-center">
                                                 <div
@@ -413,74 +425,61 @@
                                                     <p>Accent</p>
                                                 </div>
                                             </div>
-
                                         </p-accordion-content>
                                     </p-accordion-panel>
                                 </p-accordion>
 
                                 <p-accordion value="1">
                                     <p-accordion-panel value="1">
-                                        <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
+                                        <p-accordion-header
+                                            class="bg-[#121212] border-s-1 border-e-1 rounded-none p-4 border-[#363636]">
                                             Task Details
                                         </p-accordion-header>
-
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
-                                                <!-- Social Media Tab Task Details -->
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Client Name</span>
-                                                        <span class="font-semibold">{{this.formData?.brand ||
-                                                            '-'}}</span>
+                                                        <span class="font-semibold">{{ formData?.brand || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Purpose</span>
-                                                        <span class="font-semibold">{{this.formData?.purpose2 ||
-                                                            '-'}}</span>
+                                                        <span class="font-semibold">{{ formData?.purpose2 || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Topic</span>
-                                                        <span class="font-semibold">{{this.formData?.topic ||
-                                                            '-'}}</span>
+                                                        <span class="font-semibold">{{ formData?.topic || '-' }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Due Date</span>
-                                                        <span class="font-semibold">{{this.formData?.dueDate ||
-                                                            '-'}}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Tone</span>
-                                                        <span class="font-semibold">{{this.formData?.Type ||
-                                                            '-'}}</span>
+                                                        <span class="text-[#9b9b9b] text-sm">Platform Campaign</span>
+                                                        <span class="font-semibold">{{ formData?.campaign2 || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Word Limit</span>
-                                                        <span class="font-semibold">{{this.formData?.wordLimit2 ||
-                                                            '-'}}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Target Audience</span>
-                                                        <span class="font-semibold">{{this.formData?.readers2 ||
-                                                            '-'}}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Platform</span>
-                                                        <span class="font-semibold">{{this.formData?.campaign2 ||
-                                                            '-'}}</span>
+                                                        <span class="font-semibold">{{ formData?.wordLimit2 || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Image Option</span>
-                                                        <span class="font-semibold">{{this.formData?.imageOpt ||
-                                                            '-'}}</span>
+                                                        <span class="font-semibold">{{ formData?.imageOpt || '-'
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col col-span-2">
                                                         <span class="text-[#9b9b9b] text-sm">Image Description</span>
-                                                        <span class="font-semibold">{{this.formData?.imgDesc ||
-                                                            '-'}}</span>
+                                                        <span class="font-semibold">{{ formData?.imgDesc || '-'
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col col-span-2">
+                                                        <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                                        <span class="font-semibold">{{ formData?.additional || '-'
+                                                            }}</span>
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </p-accordion-content>
                                     </p-accordion-panel>
                                 </p-accordion>
@@ -604,9 +603,8 @@
                                                 for
                                                 communication</button>
                                             <button (click)="appendToSocialFeedback('Use 200 words')"
-                                                class="border-1 border-white rounded-full p-3 hover:bg-[#8D4BFF] transition cursor-pointer">Make
-                                                Another
-                                                Version</button>
+                                                class="border-1 border-white rounded-full p-3 hover:bg-[#8D4BFF] transition cursor-pointer">Use
+                                                200 words</button>
                                         </div>
                                         <!-- Regenerate Social Media Content Section -->
                                         <div class="w-full mt-6 mb-6">
@@ -664,18 +662,18 @@
                         </div>
                     </div>
                 </p-tabpanel>
-                <p-tabpanel value="2">
+                <p-tabpanel value="2" class="flex flex-col w-full">
                     <div class="flex flex-wrap gap-4 w-full">
                         <div class="md:flex-1">
                             <div class="">
 
-                                <p-accordion value="0">
+                                <p-accordion value="0" class="bg-[#121212]">
                                     <p-accordion-panel value="0">
                                         <p-accordion-header
-                                            class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636]">
+                                            class="border-1 p-4 bg-[#121212] border-b-0 rounded-t-xl border-[#363636]">
                                             Brand Guidelines & Assets
                                         </p-accordion-header>
-                                        <p-accordion-content class="p-4 border-1 border-[#363636]">
+                                        <p-accordion-content class="p-4 bg-[#121212] border-1 border-[#363636]">
                                             <h4 class="text-[#9B9B9B] mb-2">Edit Brand Colors</h4>
                                             <div class="flex justify-center gap-4 items-center">
                                                 <div
@@ -699,75 +697,78 @@
                                                     <p>Accent</p>
                                                 </div>
                                             </div>
-
                                         </p-accordion-content>
                                     </p-accordion-panel>
                                 </p-accordion>
-
-                                <p-accordion value="1">
-                                    <p-accordion-panel value="1">
-                                        <p-accordion-header class="border-1 border-t-0 p-4 border-[#363636]">
+                                <p-accordion value="2">
+                                    <p-accordion-panel value="2">
+                                        <p-accordion-header
+                                            class="bg-[#121212] border-s-1 border-e-1 rounded-none p-4 border-[#363636]">
                                             Task Details
                                         </p-accordion-header>
 
-                                        <p-accordion-content class="p-4 border-1 border-[#363636] rounded-b-xl">
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
                                             <div class="flex justify-between items-start">
-                                                <!-- Blog Tab Task Details -->
                                                 <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Client Name</span>
-                                                        <span class="font-semibold">{{ formData?.brand || '-' }}</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.brand || "-"
+                                                            }}</span>
                                                     </div>
                                                     <div class="flex flex-col">
                                                         <span class="text-[#9b9b9b] text-sm">Purpose</span>
-                                                        <span class="font-semibold">{{ formData?.purpose3 || '-'
-                                                            }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Topic</span>
-                                                        <span class="font-semibold">{{ formData?.topic || '-' }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Format</span>
-                                                        <span class="font-semibold">{{ formData?.format || '-' }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Due Date</span>
-                                                        <span class="font-semibold">{{ formData?.dueDate || '-'
-                                                            }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Tone</span>
-                                                        <span class="font-semibold">{{ formData?.Type3 || '-' }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Keywords</span>
-                                                        <span class="font-semibold">{{ formData?.keywords || '-'
-                                                            }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Word Limit</span>
-                                                        <span class="font-semibold">{{ formData?.wordLimit3 || '-'
-                                                            }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Target Audience</span>
-                                                        <span class="font-semibold">{{ formData?.readers3 || '-'
-                                                            }}</span>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <span class="text-[#9b9b9b] text-sm">Image Option</span>
-                                                        <span class="font-semibold">{{ formData?.imageOpt || '-'
+                                                        <span class="font-semibold">{{
+                                                            formData?.purpose3 || "-"
                                                             }}</span>
                                                     </div>
                                                     <div class="flex flex-col col-span-2">
                                                         <span class="text-[#9b9b9b] text-sm">Outline</span>
-                                                        <span class="font-semibold">{{ formData?.outline || '-'
+                                                        <span class="font-semibold">{{
+                                                            formData?.topic || "-"
                                                             }}</span>
                                                     </div>
-                                                    <div class="flex flex-col col-span-2">
-                                                        <span class="text-[#9b9b9b] text-sm">Image Description</span>
-                                                        <span class="font-semibold">{{ formData?.imgDesc || '-'
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Format</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.format || "-"
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Primary Keywords</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.keywords || "-"
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.wordLimit3 || "-"
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.target3 || "-"
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.Type3 || "-"
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Image Details</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.imageOpt || "-"
+                                                            }}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Brand</span>
+                                                        <span class="font-semibold">{{
+                                                            formData?.brand || "-"
                                                             }}</span>
                                                     </div>
                                                 </div>
