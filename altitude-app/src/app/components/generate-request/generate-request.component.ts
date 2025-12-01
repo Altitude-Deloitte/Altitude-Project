@@ -111,13 +111,18 @@ export class GenerateRequestComponent implements OnInit {
   ngOnInit(): void {
     // Only execute browser-specific code in the browser
     if (isPlatformBrowser(this.platformId)) {
+      // Reconnect socket when entering this page (handles return from review screens)
+      if (!this.socketConnection.connection) {
+        this.socketConnection.reconnect();
+      } else {
+        this.socketConnection.connect();
+      }
+
       this.generateTaskId();
       this.dueDate = this.currentDate.toISOString().split('T')[0];
       this.selection = this.store.campaignType();
       console.log('store: ', this.store.campaignType());
 
-      // Reconnect socket when entering this page
-      this.socketConnection.reconnect();
     } else {
       // Set default values for SSR
       this.taskID = 'EM-2203-PENDING';

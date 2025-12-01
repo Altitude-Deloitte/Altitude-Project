@@ -48,15 +48,20 @@ export class SocialClientComponent {
   imageUrlSocialmedia: any;
   imageFBUrlSocialmedia: any;
   imageInstaUrlSocialmedia: any;
+  imageXUrlSocialmedia: any;
+  imageLinkedInUrlSocialmedia: any;
   imageUrl: any;
   brand: any;
   brandlogo!: string;
+  brandlogoTop!: string;
   imageContainerHeight = '0px';
   imageContainerWidth = '0px';
   imageHeight = '0px';
   imageWidth = '0px';
   ispublisLoaderDisabled = false;
   editorContentSocialMedia1: any;
+  contentXSocialMedia: any;
+  contentLinkdInSocialMedia: any;
   audianceData1: any;
   audianceData2: any;
   clickEvent?: MouseEvent;
@@ -93,6 +98,21 @@ export class SocialClientComponent {
     this.ispublisLoaderDisabled = false;
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
+      console.log('📋 Social-client formData received:', this.formData);
+      console.log('📋 campaign field:', this.formData?.campaign);
+      console.log('📋 campaign2 field:', this.formData?.campaign2);
+      console.log('📋 platform_campaign field:', this.formData?.platform_campaign);
+
+      // If campaign data is not present, try to extract from platform_campaign or campaign2
+      if (!this.formData?.campaign && this.formData?.platform_campaign) {
+        this.formData.campaign = this.formData.platform_campaign;
+        console.log('Extracted campaign from platform_campaign:', this.formData.campaign);
+      } else if (!this.formData?.campaign && this.formData?.campaign2) {
+        this.formData.campaign = this.formData.campaign2;
+        console.log('Extracted campaign from campaign2:', this.formData.campaign);
+      }
+
+      console.log('📋 Active campaigns computed:', this.activeCampaigns);
     });
 
     this.aiContentGenerationService.getImage().subscribe((data) => {
@@ -154,7 +174,39 @@ export class SocialClientComponent {
           this.editorContentSocialMedia1 = instaData.text;
         }
 
-        console.log('Social-client content after subscription - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1);
+        // Handle X/Twitter data
+        if (data.result.twitter?.generation?.twitter) {
+          const twitterData = data.result.twitter.generation.twitter;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation?.twitter) {
+          const twitterData = data.result.generation.twitter;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation?.x) {
+          const twitterData = data.result.generation.x;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation?.X) {
+          this.contentXSocialMedia = data.result.generation.X.text;
+          this.imageXUrlSocialmedia = data.result.generation.X.image_url;
+        }
+
+        // Handle LinkedIn data
+        if (data.result.linkedin?.generation?.linkedin) {
+          const linkedinData = data.result.linkedin.generation.linkedin;
+          this.imageLinkedInUrlSocialmedia = linkedinData.image_url;
+          this.contentLinkdInSocialMedia = (linkedinData.content || linkedinData.text || '').replace(/"/g, '').trim();
+        } else if (data.result.generation?.linkedin) {
+          const linkedinData = data.result.generation.linkedin;
+          this.imageLinkedInUrlSocialmedia = linkedinData.image_url;
+          this.contentLinkdInSocialMedia = (linkedinData.content || linkedinData.text || '').replace(/"/g, '').trim();
+        } else if (data.result.generation?.LinkedIn) {
+          this.imageLinkedInUrlSocialmedia = data.result.generation.LinkedIn.image_url;
+          this.contentLinkdInSocialMedia = data.result.generation.LinkedIn.text;
+        }
+
+        console.log('Social-client content after subscription - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1, 'X:', !!this.contentXSocialMedia, 'LinkedIn:', !!this.contentLinkdInSocialMedia);
       });
 
     this.aiContentGenerationService
@@ -180,12 +232,40 @@ export class SocialClientComponent {
           this.imageInstaUrlSocialmedia = data.result.generation.Instagram.image_url;
           this.editorContentSocialMedia1 = data.result.generation.Instagram.text;
         }
+
+        // Handle X/Twitter data
+        if (data.result.generation.twitter) {
+          const twitterData = data.result.generation.twitter;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation.x) {
+          const twitterData = data.result.generation.x;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation.X) {
+          this.contentXSocialMedia = data.result.generation.X.text;
+          this.imageXUrlSocialmedia = data.result.generation.X.image_url;
+        }
+
+        // Handle LinkedIn data
+        if (data.result.generation.linkedin) {
+          const linkedinData = data.result.generation.linkedin;
+          this.imageLinkedInUrlSocialmedia = linkedinData.image_url;
+          this.contentLinkdInSocialMedia = (linkedinData.content || linkedinData.text || '').replace(/"/g, '').trim();
+        } else if (data.result.generation.LinkedIn) {
+          this.imageLinkedInUrlSocialmedia = data.result.generation.LinkedIn.image_url;
+          this.contentLinkdInSocialMedia = data.result.generation.LinkedIn.text;
+        }
       });
     this.brand = this.formData?.brand.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
     if (brandName) {
       brandName = brandName.replace(/\s+/g, '');
       this.brandlogo =
+        'https://img.logo.dev/' +
+        brandName +
+        '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+      this.brandlogoTop =
         'https://img.logo.dev/' +
         brandName +
         '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
@@ -302,4 +382,23 @@ export class SocialClientComponent {
     }
   }
   saveComment() { }
+
+  get activeCampaigns(): string[] {
+    if (!this.formData?.campaign) return [];
+
+    // Handle both array and single value
+    const campaigns = Array.isArray(this.formData.campaign)
+      ? this.formData.campaign
+      : [this.formData.campaign];
+
+    // Map lowercase platform names to proper case for display
+    return campaigns.map((platform: string) => {
+      const lowerPlatform = platform.toLowerCase();
+      if (lowerPlatform === 'facebook') return 'Facebook';
+      if (lowerPlatform === 'instagram') return 'Instagram';
+      if (lowerPlatform === 'twitter' || lowerPlatform === 'x') return 'X';
+      if (lowerPlatform === 'linkedin') return 'LinkedIn';
+      return platform; // Return original if no match
+    });
+  }
 }

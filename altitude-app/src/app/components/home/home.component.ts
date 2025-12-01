@@ -13,6 +13,7 @@ import { routeAnimations } from '../../shared/route-animations';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { SelectionStore } from '../../store/campaign.store';
+
 @Component({
   selector: 'app-home',
   imports: [HeaderComponent, SelectModule, FormsModule, CommonModule],
@@ -24,6 +25,7 @@ export class HomeComponent implements OnInit {
   // @HostBinding('@routeAnimations') routeAnimations = true;
   router = inject(Router);
   store = inject(SelectionStore);
+
   requestOptions = [
     { name: 'Email Request', code: 'email', icon: 'assets/images/email.svg' },
     {
@@ -48,7 +50,7 @@ export class HomeComponent implements OnInit {
     },
     { name: 'AI Video', code: 'video', icon: 'assets/images/Video.svg' },
     { name: 'Image Animation', code: 'image', icon: 'assets/images/icon.svg' },
-    { name: 'Combined', code: 'combined', icon: 'assets/images/cube.svg' },
+    { name: 'Combined Campaign', code: 'combined', icon: 'assets/images/cube.svg' },
     { name: 'Meme Generation', code: 'meme', icon: 'assets/images/meme.svg' },
     // Add more options as needed
   ];
@@ -67,6 +69,7 @@ export class HomeComponent implements OnInit {
     }
     console.log(this.selectedRequests);
   }
+
   generateContent() {
     if (this.selectedRequests) {
       this.store.setCampaignType(this.selectedRequests);

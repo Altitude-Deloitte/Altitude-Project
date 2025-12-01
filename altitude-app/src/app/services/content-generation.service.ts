@@ -116,6 +116,19 @@ export class ContentGenerationService {
   private emailReviewLoadingSubject = new BehaviorSubject<boolean>(false);
   public emailReviewLoading$ = this.emailReviewLoadingSubject.asObservable();
 
+  // Saved review data for instant retrieval (no waiting for processing)
+  private savedEmailReviewData = new BehaviorSubject<any>(null);
+  public savedEmailReviewData$ = this.savedEmailReviewData.asObservable();
+
+  private savedBlogReviewData = new BehaviorSubject<any>(null);
+  public savedBlogReviewData$ = this.savedBlogReviewData.asObservable();
+
+  private savedVideoReviewData = new BehaviorSubject<any>(null);
+  public savedVideoReviewData$ = this.savedVideoReviewData.asObservable();
+
+  private savedCombinedReviewData = new BehaviorSubject<any>(null);
+  public savedCombinedReviewData$ = this.savedCombinedReviewData.asObservable();
+
   constructor(private http: HttpClient) { }
 
   getTemplateId(): string {
@@ -368,6 +381,35 @@ export class ContentGenerationService {
     return this.isBack$;
   }
 
+  // Methods for saved review data (instant retrieval)
+  setSavedEmailReviewData(data: any): void {
+    this.savedEmailReviewData.next(data);
+  }
+  getSavedEmailReviewData(): Observable<any> {
+    return this.savedEmailReviewData$;
+  }
+
+  setSavedBlogReviewData(data: any): void {
+    this.savedBlogReviewData.next(data);
+  }
+  getSavedBlogReviewData(): Observable<any> {
+    return this.savedBlogReviewData$;
+  }
+
+  setSavedVideoReviewData(data: any): void {
+    this.savedVideoReviewData.next(data);
+  }
+  getSavedVideoReviewData(): Observable<any> {
+    return this.savedVideoReviewData$;
+  }
+
+  setSavedCombinedReviewData(data: any): void {
+    this.savedCombinedReviewData.next(data);
+  }
+  getSavedCombinedReviewData(): Observable<any> {
+    return this.savedCombinedReviewData$;
+  }
+
   // Method to set email response data
   setEmailResponseData(data: any): void {
     this.emailDataSubject.next(data);
@@ -457,14 +499,31 @@ export class ContentGenerationService {
       .pipe(catchError(this.handleError('generateContent', {})));
   }
   // Method to generate content
-  generateContent(formFieldData: any): Observable<any> {
-    return this.http.post<any>(this.apiUrl, formFieldData);
+  generateContent(formFieldData: any, sessionId?: string): Observable<any> {
+    const headers: any = {};
+    if (sessionId) {
+      headers['X-Session-ID'] = sessionId;
+      headers['x-session-id'] = sessionId; // Add lowercase version for compatibility
+      console.log('🔑 generateContent sending session_id in headers:', sessionId);
+      console.log('📤 Request headers:', headers);
+      console.log('📦 Request payload keys:', formFieldData instanceof FormData ? Array.from(formFieldData.keys()) : Object.keys(formFieldData));
+    } else {
+      console.warn('⚠️ generateContent called without session_id');
+    }
+    return this.http.post<any>(this.apiUrl, formFieldData, { headers });
   }
-  generateVoeVideo(formData: FormData) {
+  generateVoeVideo(formData: FormData, sessionId?: string) {
+    const headers: any = {};
+    if (sessionId) {
+      headers['X-Session-ID'] = sessionId;
+      headers['x-session-id'] = sessionId; // Add lowercase version for compatibility
+      console.log('🔑 generateVoeVideo sending session_id in headers:', sessionId);
+      console.log('📤 Request headers:', headers);
+    } else {
+      console.warn('⚠️ generateVoeVideo called without session_id');
+    }
     // Don't set Content-Type header - let the browser set it with the correct boundary
-    return this.http.post(this.videoUrl, formData, {
-      headers: {}
-    });
+    return this.http.post(this.videoUrl, formData, { headers });
   }
 
   // Method to fetch campaign data

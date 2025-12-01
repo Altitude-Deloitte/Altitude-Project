@@ -19,8 +19,8 @@ import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
-import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { DrawerModule } from 'primeng/drawer';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-social-review',
@@ -40,8 +40,8 @@ import { DrawerModule } from 'primeng/drawer';
     DialogModule,
     ProgressSpinnerModule,
     ToastModule,
-    LoaderComponent,
     DrawerModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './social-review.component.html',
@@ -74,6 +74,7 @@ export class SocialReviewComponent implements OnDestroy {
   existingContent: any;
   totalWordCount: any;
   brandlogo!: string;
+  brandlogoTop!: string;
   editorContentSocialMedia1: any;
   contentXSocialMedia: any;
   contentLinkdInSocialMedia: any;
@@ -85,7 +86,7 @@ export class SocialReviewComponent implements OnDestroy {
   brand: any;
   fbLimit: number | null | undefined;
   inLimit: number | null | undefined;
-  loading = true;
+  loading = true; // Start as true to show loader immediately on navigation, will be set to false when content loads or returning from client
   @Input() activeTabIndex = 0;
   formData: any;
   currentDate: any = new Date();
@@ -131,43 +132,76 @@ export class SocialReviewComponent implements OnDestroy {
 
     // Watch socket data to detect when all agents are completed
     effect(() => {
-      const socketData = this.socketConnection.dataSignal();
-      const agentNames = ['Extraction Agent', 'prompt generation agent', 'content generation agent', 'reviewer agent'];
+      const allCompleted = this.socketConnection.allAgentsCompleted();
 
-      // Check if all agents are completed
-      const allCompleted = agentNames.every(name =>
-        socketData[name]?.status === 'COMPLETED'
-      );
-
-      // If all agents completed and we have content, hide loader
-      if (allCompleted && (this.editorContentSocialMedia || this.editorContentSocialMedia1)) {
-        console.log('All socket agents completed, hiding loader');
+      if (allCompleted && this.loading) {
         setTimeout(() => {
           this.loading = false;
           this.contentDisabled = false;
-
-          // Disconnect socket after all agents are completed
           this.socketConnection.disconnect();
-        }, 1000); // Small delay to ensure smooth transition
+        }, 500);
       }
     });
   }
 
   private sessionId: string = ''; // Unique session ID for this component instance
+  private isReturningFromClient = false; // Flag to track if returning from client
 
   ngOnInit(): void {
+    this.socketConnection.setWorkflowType('social');
     console.log('ngOnInit - Initial loading state:', this.loading);
 
-    // Generate and set unique session ID for this review session
+    // Check if we're returning from client screen with existing data
+    // First check component properties
+    const hasExistingContentInComponent = this.editorContentSocialMedia ||
+      this.editorContentSocialMedia1 ||
+      this.contentXSocialMedia ||
+      this.contentLinkdInSocialMedia;
+
+    // Also check if service has social data (for when component is recreated)
+    let hasExistingContentInService = false;
+    this.aiContentGenerationService.getSocialResponsetData().subscribe(data => {
+      hasExistingContentInService = data && data.result && Object.keys(data.result).length > 0;
+    }).unsubscribe();
+
+    const hasExistingContent = hasExistingContentInComponent || hasExistingContentInService;
+
+    if (hasExistingContent) {
+      console.log('🔄 Returning from client screen - preserving state, NOT clearing data');
+      this.loading = false;
+      this.contentDisabled = false;
+      this.isReturningFromClient = true;
+
+      // Don't clear data, don't reinitialize socket, just reload the existing data
+      // Still need to get formData for display purposes
+      this.aiContentGenerationService.getData().subscribe((data) => {
+        this.formData = data;
+        if (!this.formData?.campaign && this.formData?.platform_campaign) {
+          this.formData.campaign = this.formData.platform_campaign;
+        }
+        this.updateActiveTab();
+        this.initializeSocialPayload();
+      });
+
+      // Reload existing content from service
+      this.reloadExistingContent();
+      return; // Don't do new generation
+    }
+
+    // NEW GENERATION - Only executed when coming from form
+    console.log('🆕 Starting NEW generation from form');
+
+    // Generate and set unique session ID for this review session BEFORE API calls
     this.sessionId = this.socketConnection.generateSessionId();
-    this.socketConnection.setSessionId(this.sessionId);
-    console.log('🎯 Social media review session started:', this.sessionId);
+    // Session ID already generated and set in form component - don't regenerate!
+    // this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Social media review session started (from form)');
 
     // Clear previous social data to prevent state retention
     this.aiContentGenerationService.clearSocialData();
 
-    // Clear socket data before starting new generation
-    this.socketConnection.clearAgentData();
+    // Socket data already cleared in form component - don't clear again!
+    // this.socketConnection.clearAgentData();
 
     this.imageUrl = null;
     this.imageFBUrlSocialmedia = null;
@@ -180,10 +214,30 @@ export class SocialReviewComponent implements OnDestroy {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
+      // Add session_id to formData for API calls
+      this.formData.session_id = this.sessionId;
+
       console.log('Form Data received:', this.formData);
       console.log('Campaign data:', this.formData?.campaign);
       console.log('Tone (Type):', this.formData?.Type);
       console.log('Target Audience (readers):', this.formData?.readers);
+
+      // Check if we have existing content - if yes, we're returning from client
+      const hasExistingContentNow = this.editorContentSocialMedia ||
+        this.editorContentSocialMedia1 ||
+        this.contentXSocialMedia ||
+        this.contentLinkdInSocialMedia;
+
+      // Only set loading to true when we receive form data AND don't have existing content
+      // This prevents loader from showing when returning from client
+      if (data && Object.keys(data).length > 0 && !hasExistingContentNow && !this.isReturningFromClient) {
+        console.log('🆕 Form data received - starting new generation, loading set to true');
+        this.loading = true;
+      } else if (hasExistingContentNow) {
+        console.log('✅ Existing content detected in getData - keeping loading false');
+        this.loading = false;
+        this.contentDisabled = false;
+      }
 
       // If campaign data is not present, try to extract from platform_campaign
       if (!this.formData?.campaign && this.formData?.platform_campaign) {
@@ -343,12 +397,17 @@ export class SocialReviewComponent implements OnDestroy {
             'https://img.logo.dev/' +
             brandName +
             '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+          this.brandlogoTop =
+            'https://img.logo.dev/' +
+            brandName +
+            '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
         }
 
-        // Content extracted, but loader will remain visible until all socket agents complete
-        console.log('Content extracted in getSocialResponsetData subscription');
+        // Content loaded - hide loader
+        console.log('✅ Content extracted in getSocialResponsetData subscription');
         console.log('Content extracted - FB:', !!this.editorContentSocialMedia, 'Instagram:', !!this.editorContentSocialMedia1);
-        console.log('Waiting for all socket agents to complete before hiding loader...');
+        this.loading = false;
+        this.contentDisabled = false;
       });
     this.socialContent1Subscription = this.aiContentGenerationService
       .getSocialResponsetData1()
@@ -385,6 +444,10 @@ export class SocialReviewComponent implements OnDestroy {
         if (brandName) {
           brandName = brandName.replace(/\s+/g, '');
           this.brandlogo =
+            'https://img.logo.dev/' +
+            brandName +
+            '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+          this.brandlogoTop =
             'https://img.logo.dev/' +
             brandName +
             '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
@@ -801,7 +864,7 @@ export class SocialReviewComponent implements OnDestroy {
     this.isRegeneratingContent = true;
     // Don't set loading = true for regeneration (keep loader hidden)
 
-    this.aiContentGenerationService.generateContent(this.socialPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.socialPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Content regenerated:', data);
 
@@ -862,7 +925,7 @@ export class SocialReviewComponent implements OnDestroy {
     this.isRegeneratingImage = true;
     // Don't set loading = true for regeneration (keep loader hidden)
 
-    this.aiContentGenerationService.generateContent(this.socialPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.socialPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Image regenerated:', data);
 
@@ -904,7 +967,7 @@ export class SocialReviewComponent implements OnDestroy {
   }
 
   // Workflow visualization methods
-  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+  getWorkflowAgents(): Array<{ name: string; status: string }> {
     const socketData = this.socketConnection.dataSignal();
 
     // Define all agents in the correct order
@@ -917,11 +980,14 @@ export class SocialReviewComponent implements OnDestroy {
 
     // Map agents with their current status from socket data or default to 'PENDING'
     return agentOrder.map(agentName => {
-      const agentData = socketData[agentName];
+      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
+      const normalizedName = agentName.toLowerCase();
+      const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
+      const agentData = matchingKey ? socketData[matchingKey] : null;
+
       return {
         name: agentName,
-        status: agentData?.status || 'PENDING',
-        updatedAt: agentData?.updatedAt || '--:--:--'
+        status: agentData?.status || 'PENDING'
       };
     });
   }
@@ -1000,6 +1066,94 @@ export class SocialReviewComponent implements OnDestroy {
   }
 
   trackByIndex(index: number): number { return index; }
+
+  // Reload existing content from service when returning from client
+  reloadExistingContent(): void {
+    console.log('🔄 Reloading existing content from service...');
+
+    // Subscribe to existing social data and populate component properties
+    this.socialContentSubscription = this.aiContentGenerationService
+      .getSocialResponsetData()
+      .subscribe((data) => {
+        if (!data || !data.result) {
+          console.log('⚠️ No existing data found in service');
+          return;
+        }
+
+        console.log('📥 Reloading existing social data:', data);
+
+        // Reuse the same processing logic as initial load
+        // CHAT-APP STRUCTURE: data.result.facebook.generation.facebook
+        if (data.result.facebook?.generation?.facebook) {
+          const fbData = data.result.facebook.generation.facebook;
+          this.editorContentSocialMedia = (fbData.content || fbData.text || '').replace(/"/g, '').trim();
+          this.imageFBUrlSocialmedia = fbData.image_url;
+        } else if (data.result.generation?.facebook) {
+          const fbData = data.result.generation.facebook;
+          this.editorContentSocialMedia = (fbData.content || fbData.text || '').replace(/"/g, '').trim();
+          this.imageFBUrlSocialmedia = fbData.image_url;
+        } else if (data.result.generation?.Facebook) {
+          const fbData = data.result.generation.Facebook;
+          this.editorContentSocialMedia = (fbData.content || fbData.text || '').replace(/"/g, '').trim();
+          this.imageFBUrlSocialmedia = fbData.image_url;
+        }
+
+        // Instagram
+        if (data.result.instagram?.generation?.instagram) {
+          const instaData = data.result.instagram.generation.instagram;
+          this.editorContentSocialMedia1 = (instaData.content || instaData.text || '').replace(/"/g, '').trim();
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+        } else if (data.result.generation?.instagram) {
+          const instaData = data.result.generation.instagram;
+          this.editorContentSocialMedia1 = (instaData.content || instaData.text || '').replace(/"/g, '').trim();
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+        } else if (data.result.generation?.Instagram) {
+          const instaData = data.result.generation.Instagram;
+          this.editorContentSocialMedia1 = (instaData.content || instaData.text || '').replace(/"/g, '').trim();
+          this.imageInstaUrlSocialmedia = instaData.image_url;
+        }
+
+        // Twitter/X
+        if (data.result.twitter?.generation?.twitter || data.result.x?.generation?.x) {
+          const twitterData = data.result.twitter?.generation?.twitter || data.result.x?.generation?.x;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation?.twitter || data.result.generation?.x) {
+          const twitterData = data.result.generation.twitter || data.result.generation.x;
+          this.contentXSocialMedia = (twitterData.content || twitterData.text || '').replace(/"/g, '').trim();
+          this.imageXUrlSocialmedia = twitterData.image_url;
+        } else if (data.result.generation?.X) {
+          this.contentXSocialMedia = data.result.generation.X.text;
+          this.imageXUrlSocialmedia = data.result.generation.X.image_url;
+        }
+
+        // LinkedIn
+        if (data.result.linkedin?.generation?.linkedin) {
+          const linkedinData = data.result.linkedin.generation.linkedin;
+          this.imageLinkedInUrlSocialmedia = linkedinData.image_url;
+          this.contentLinkdInSocialMedia = (linkedinData.content || linkedinData.text || '').replace(/"/g, '').trim();
+        } else if (data.result.generation?.linkedin) {
+          const linkedinData = data.result.generation.linkedin;
+          this.imageLinkedInUrlSocialmedia = linkedinData.image_url;
+          this.contentLinkdInSocialMedia = (linkedinData.content || linkedinData.text || '').replace(/"/g, '').trim();
+        } else if (data.result.generation?.LinkedIn) {
+          this.imageLinkedInUrlSocialmedia = data.result.generation.LinkedIn.image_url;
+          this.contentLinkdInSocialMedia = data.result.generation.LinkedIn.text;
+        }
+
+        // Set brand logo
+        let brandName = this.formData?.brand?.trim();
+        if (brandName) {
+          brandName = brandName.replace(/\s+/g, '');
+          this.brandlogo = 'https://img.logo.dev/' + brandName + '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+          this.brandlogoTop = 'https://img.logo.dev/' + brandName + '?token=pk_SYZfwlzCQgO7up6SrPOrlw';
+        }
+
+        console.log('✅ Content reloaded successfully');
+        this.loading = false;
+        this.contentDisabled = false;
+      });
+  }
 
   appendToContentFeedback(text: string): void {
     if (this.contentFeedback) {

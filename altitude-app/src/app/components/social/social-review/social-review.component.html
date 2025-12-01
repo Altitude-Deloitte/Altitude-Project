@@ -68,7 +68,8 @@
               <rect x="0" y="0" width="350" height="80" rx="10" fill="#1e3a2e" stroke="#b66dff" stroke-width="2" />
 
               <!-- Status icon -->
-              <circle [attr.cx]="20" [attr.cy]="40" r="8" fill="#22c55e" />
+              <circle [attr.cx]="20" [attr.cy]="40" r="8"
+                [attr.fill]="agent.status === 'COMPLETED' ? '#22c55e' : agent.status === 'IN_PROGRESS' ? '#eab308' : '#6b7280'" />
 
               <!-- Agent name -->
               <text x="40" y="35" fill="#fff" font-size="16" font-weight="600">
@@ -76,8 +77,10 @@
               </text>
 
               <!-- Status text -->
-              <text x="40" y="55" fill="#86efac" font-size="12">
-                Status: COMPLETED
+              <text x="40" y="55"
+                [attr.fill]="agent.status === 'COMPLETED' ? '#86efac' : agent.status === 'IN_PROGRESS' ? '#fde047' : '#9ca3af'"
+                font-size="12">
+                {{ agent.status }}
               </text>
             </g>
           </ng-container>
@@ -200,81 +203,205 @@
 
             <div class="border-t-1 border-[#686868] bg-[#363636] p-5 rounded-b-xl">
               <div class="flex my-4 flex-col justify-center items-center">
-                <div class="flex justify-center items-center relative">
-                  <!-- Loading Spinner Overlay -->
+                <div class="flex justify-center items-center py-8 relative w-full">
+                  <!-- Regeneration Spinner Overlay -->
                   <div *ngIf="isRegeneratingContent || isRegeneratingImage"
                     class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-2xl z-10">
                     <p-progressSpinner styleClass="w-16 h-16" strokeWidth="4" fill="transparent"
                       animationDuration=".8s"></p-progressSpinner>
                   </div>
 
-                  <p-tabpanels
-                    class="bg-[#F6F5EF] rounded-2xl border-4 shadow-xl max-w-3xl w-full overflow-hidden p-16">
-                    <p-tabpanel *ngFor="let campaign of activeCampaigns; let i = index" [value]="i">
+                  <p-tabpanels class="bg-transparent">
+                    <p-tabpanel *ngFor=" let campaign of activeCampaigns; let i=index" [value]="i">
                       <ng-container [ngSwitch]="campaign">
                         <!-- Facebook Panel -->
                         <div *ngSwitchCase="'Facebook'">
-                          <h3 class="post-caption text-black dark:text-black text-white">
-                            {{ editorContentSocialMedia }}
-                          </h3>
-                          <p *ngIf="hyperUrl" class="post-caption text-black">
-                            For more details, visit our website:
-                            <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                              {{ hyperUrl }}
-                            </a>
-                          </p>
-                          <img *ngIf="imageFBUrlSocialmedia" [src]="imageFBUrlSocialmedia" alt="Facebook Post"
-                            class="post-image mt-3" />
+                          <div class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                            <!-- Facebook Header -->
+                            <div class="flex items-center gap-3 p-4 border-b border-gray-200">
+                              <img *ngIf="brandlogoTop" [src]="brandlogoTop" alt="Brand Logo"
+                                class="w-10 h-10 rounded-full object-contain bg-white">
+                              <div class="flex-1 flex items-center">
+                                <h3 class="font-semibold text-gray-900 text-base">{{ formData?.brand || 'Brand Name' }}
+                                </h3>
+                              </div>
+                            </div>
+                            <!-- Facebook Content -->
+                            <div class="p-4">
+                              <p class="text-gray-900 text-sm mb-3 whitespace-pre-wrap">{{ editorContentSocialMedia }}
+                              </p>
+                              <p *ngIf="hyperUrl" class="text-sm text-blue-600 mb-3">
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                              <img *ngIf="imageFBUrlSocialmedia" [src]="imageFBUrlSocialmedia" alt="Facebook Post"
+                                class="w-full max-h-[500px] object-cover rounded-lg" />
+                            </div>
+                            <!-- Facebook Action Buttons -->
+                            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <i class="pi pi-thumbs-up text-lg"></i>
+                                <span class="text-sm font-medium">Like</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <i class="pi pi-comment text-lg"></i>
+                                <span class="text-sm font-medium">Comment</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                <i class="pi pi-share-alt text-lg"></i>
+                                <span class="text-sm font-medium">Share</span>
+                              </button>
+                            </div>
+                          </div>
                         </div>
 
                         <!-- Instagram Panel -->
                         <div *ngSwitchCase="'Instagram'">
-                          <div class="instagram-post">
-                            <img *ngIf="imageInstaUrlSocialmedia" [src]="imageInstaUrlSocialmedia" alt="Instagram Post"
-                              class="post-image" />
-                            <p class="post-caption text-black mt-3">
-                              {{ editorContentSocialMedia1 }}
-                            </p>
-                            <p *ngIf="hyperUrl" class="post-caption text-black">
-                              For more details, visit our website:
-                              <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                                {{ hyperUrl }}
-                              </a>
-                            </p>
+                          <div class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                            <!-- Instagram Header -->
+                            <div class="flex items-center gap-3 p-3 border-b border-gray-200">
+                              <img *ngIf="brandlogoTop" [src]="brandlogoTop" alt="Brand Logo"
+                                class="w-8 h-8 rounded-full object-contain bg-white">
+                              <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-sm">{{ formData?.brand || 'Brand Name' }}
+                                </h3>
+                              </div>
+                            </div>
+                            <!-- Instagram Image -->
+                            <div *ngIf="imageInstaUrlSocialmedia">
+                              <img [src]="imageInstaUrlSocialmedia" alt="Instagram Post"
+                                class="w-full max-h-[600px] object-cover" />
+                            </div>
+                            <!-- Instagram Content -->
+                            <div class="p-4">
+                              <!-- Instagram Action Buttons -->
+                              <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-4">
+                                  <button class="text-gray-900 hover:text-gray-600 transition-colors">
+                                    <i class="pi pi-heart text-2xl"></i>
+                                  </button>
+                                  <button class="text-gray-900 hover:text-gray-600 transition-colors">
+                                    <i class="pi pi-comment text-2xl"></i>
+                                  </button>
+                                  <button class="text-gray-900 hover:text-gray-600 transition-colors">
+                                    <i class="pi pi-send text-2xl"></i>
+                                  </button>
+                                </div>
+                                <button class="text-gray-900 hover:text-gray-600 transition-colors">
+                                  <i class="pi pi-bookmark text-2xl"></i>
+                                </button>
+                              </div>
+                              <p class="text-gray-900 text-sm"><span class="font-semibold">{{ formData?.brand || 'Brand
+                                  Name' }}</span> {{ editorContentSocialMedia1 }}</p>
+                              <p *ngIf="hyperUrl" class="text-sm text-blue-900 mt-2">
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                            </div>
                           </div>
                         </div>
 
                         <!-- X Panel -->
                         <div *ngSwitchCase="'X'">
-                          <div class="instagram-post">
-                            <img *ngIf="imageXUrlSocialmedia" [src]="imageXUrlSocialmedia" alt="Instagram Post"
-                              class="post-image" />
-                            <p class="post-caption text-black mt-3">
-                              {{ contentXSocialMedia }}
-                            </p>
-                            <p *ngIf="hyperUrl" class="post-caption text-black">
-                              For more details, visit our website:
-                              <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                                {{ hyperUrl }}
-                              </a>
-                            </p>
+                          <div class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                            <!-- Twitter/X Header -->
+                            <div class="flex items-center gap-3 p-4 border-b border-gray-200">
+                              <img *ngIf="brandlogoTop" [src]="brandlogoTop" alt="Brand Logo"
+                                class="w-10 h-10 rounded-full object-contain bg-white">
+                              <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-base">{{ formData?.brand || 'Brand Name' }}
+                                </h3>
+                              </div>
+                            </div>
+                            <!-- Twitter/X Content -->
+                            <div class="p-4">
+                              <p class="text-gray-900 text-sm mb-3 whitespace-pre-wrap">{{ contentXSocialMedia }}</p>
+                              <p *ngIf="hyperUrl" class="text-sm text-blue-500 mb-3">
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                              <img *ngIf="imageXUrlSocialmedia" [src]="imageXUrlSocialmedia" alt="X Post"
+                                class="w-full max-h-[500px] object-cover rounded-2xl border border-gray-200" />
+                            </div>
+                            <!-- X/Twitter Action Buttons -->
+                            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                                <i class="pi pi-comment text-lg"></i>
+                                <span class="text-sm">Reply</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-green-500 transition-colors">
+                                <i class="pi pi-refresh text-lg"></i>
+                                <span class="text-sm">Repost</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-pink-500 transition-colors">
+                                <i class="pi pi-heart text-lg"></i>
+                                <span class="text-sm">Like</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-500 transition-colors">
+                                <i class="pi pi-share-alt text-lg"></i>
+                                <span class="text-sm">Share</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
 
                         <!-- LinkedIn Panel -->
                         <div *ngSwitchCase="'LinkedIn'">
-                          <div class="instagram-post">
-                            <img *ngIf="imageLinkedInUrlSocialmedia" [src]="imageLinkedInUrlSocialmedia"
-                              alt="Instagram Post" class="post-image" />
-                            <p class="post-caption text-black mt-3">
-                              {{ contentLinkdInSocialMedia }}
-                            </p>
-                            <p *ngIf="hyperUrl" class="post-caption text-black">
-                              For more details, visit our website:
-                              <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff">
-                                {{ hyperUrl }}
-                              </a>
-                            </p>
+                          <div class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                            <!-- LinkedIn Header -->
+                            <div class="flex items-center gap-3 p-4 border-b border-gray-200">
+                              <img *ngIf="brandlogoTop" [src]="brandlogoTop" alt="Brand Logo"
+                                class="w-12 h-12 rounded object-contain bg-white">
+                              <div class="flex-1">
+                                <h3 class="font-semibold text-gray-900 text-base">{{ formData?.brand || 'Brand Name' }}
+                                </h3>
+                              </div>
+                            </div>
+                            <!-- LinkedIn Content -->
+                            <div class="p-4">
+                              <p class="text-gray-900 text-sm mb-3 whitespace-pre-wrap">{{ contentLinkdInSocialMedia }}
+                              </p>
+                              <p *ngIf="hyperUrl" class="text-sm text-blue-700 mb-3">
+                                <a [href]="hyperUrl" target="_blank" rel="noopener noreferrer" class="hover:underline">
+                                  {{ hyperUrl }}
+                                </a>
+                              </p>
+                              <img *ngIf="imageLinkedInUrlSocialmedia" [src]="imageLinkedInUrlSocialmedia"
+                                alt="LinkedIn Post" class="w-full max-h-[500px] object-cover" />
+                            </div>
+                            <!-- LinkedIn Action Buttons -->
+                            <div class="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition-colors">
+                                <i class="pi pi-thumbs-up text-lg"></i>
+                                <span class="text-sm font-medium">Like</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition-colors">
+                                <i class="pi pi-comment text-lg"></i>
+                                <span class="text-sm font-medium">Comment</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition-colors">
+                                <i class="pi pi-refresh text-lg"></i>
+                                <span class="text-sm font-medium">Repost</span>
+                              </button>
+                              <button
+                                class="flex items-center gap-2 text-gray-600 hover:text-blue-700 transition-colors">
+                                <i class="pi pi-send text-lg"></i>
+                                <span class="text-sm font-medium">Send</span>
+                              </button>
+                            </div>
                           </div>
                         </div>
 

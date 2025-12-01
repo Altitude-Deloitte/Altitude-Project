@@ -27,9 +27,9 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 import { DrawerModule } from 'primeng/drawer';
-import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
 @Component({
   selector: 'app-email-review',
   imports: [
@@ -47,8 +47,8 @@ import { MessageService } from 'primeng/api';
     DialogModule,
     ProgressSpinnerModule,
     DrawerModule,
-    LoaderComponent,
     ToastModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './email-review.component.html',
@@ -78,7 +78,7 @@ export class EmailReviewComponent implements OnDestroy {
   imageContainerWidth = '640px';
   imageHeight = '440px';
   imageWidth = '640px';
-  loading = true;
+  loading = true; // Start as true to show loader immediately on navigation, service will update this value
   editorContentEmail: any;
   editorContentSocialMedia: any;
   existingEmailContent: any;
@@ -196,10 +196,11 @@ export class EmailReviewComponent implements OnDestroy {
   isRegeneratingContent: boolean = false;
   isRegeneratingImage: boolean = false;
   emailPayload: FormData | null = null;
+  clientBack = false;
 
   constructor(
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService, // private dialog: MatDialog,
+    private aiContentGenerationService: ContentGenerationService,
     public socketConnection: SocketConnectionService,
     private dialog: MatDialog,
     private messageService: MessageService
@@ -211,65 +212,115 @@ export class EmailReviewComponent implements OnDestroy {
         this.processChatResponse(chatResponse.result.generation);
       }
     });
+
+    // Watch for socket completion using workflow-aware computed signal
+    effect(() => {
+      const allCompleted = this.socketConnection.allAgentsCompleted();
+      const expected = this.socketConnection.expectedAgentCount();
+      const received = this.socketConnection.receivedAgentCount();
+      const completed = this.socketConnection.completedAgentCount();
+
+      // Only hide loading when all expected agents are completed
+      if (allCompleted && this.loading) {
+        console.log(`✅ All ${expected} agents completed (${completed}/${received})`);
+        setTimeout(() => {
+          this.loading = false;
+          this.aiContentGenerationService.setEmailReviewLoading(false);
+          this.socketConnection.disconnect();
+        }, 500);
+      }
+    });
   }
 
   private sessionId: string = ''; // Unique session ID for this component instance
 
   ngOnInit() {
-    // Generate and set unique session ID for this review session
-    this.sessionId = this.socketConnection.generateSessionId();
-    this.socketConnection.setSessionId(this.sessionId);
-    console.log('🎯 Email review session started:', this.sessionId);
+    // Set workflow type for proper agent count tracking
+    this.socketConnection.setWorkflowType('email');
 
-    // Clear previous email data to prevent state retention
-    this.aiContentGenerationService.clearEmailData();
+    console.log('ngOnInit - Initial loading state:', this.loading);
 
-    // Clear socket data before starting new generation
-    this.socketConnection.clearAgentData();
-
-    this.imageUrl = null;
-    this.editorContentEmail = [];
-
-    // Subscribe to loading state from service
-    this.aiContentGenerationService.getEmailReviewLoading().subscribe((isLoading) => {
+    // Subscribe to loading state from service (set by form component)
+    this.aiContentGenerationService.getEmailReviewLoading().subscribe(isLoading => {
       this.loading = isLoading;
+      console.log('📊 Email review loading state updated from service:', isLoading);
     });
 
-    // Set initial loading state to true
-    this.loading = true;
+    // Check if user is returning from client screen
 
+    this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+      this.clientBack = isBack;
+      if (isBack) {
+        console.log('🔄 Returning from client - loading saved data instantly');
+        this.loading = false;
+
+        // Reset isBack flag immediately
+        // this.aiContentGenerationService.setIsBack(false);
+
+        // Load saved review data instantly (no waiting for getData)
+        this.aiContentGenerationService.getSavedEmailReviewData().subscribe(savedData => {
+          if (savedData) {
+            console.log('📥 Restoring saved email review data:', savedData);
+            this.emailHeader = savedData.emailHeader;
+            this.imageUrl = savedData.imageUrl;
+            this.subjctEmail = savedData.subjctEmail;
+            this.editorContentEmail = savedData.editorContentEmail;
+            this.existingEmailContent = savedData.existingEmailContent;
+            this.totalWordCount = savedData.totalWordCount;
+            this.formData = savedData.formData;
+            this.brand = savedData.brand;
+            this.showMore = savedData.showMore;
+            this.brandlogoTop = savedData.brandlogoTop;
+            this.imageOfferUrl = savedData.imageOfferUrl;
+            this.imageEventUrl = savedData.imageEventUrl;
+            this.contentDisabled = false;
+            this.isEMailPromptDisabled = false;
+            this.isImageRegenrateDisabled = false;
+            this.isImageRefineDisabled = false;
+
+            // Initialize payload with saved form data
+            this.initializeEmailPayload();
+
+            // Force change detection to show content
+
+            this.contentDisabled = false;
+
+          }
+        }).unsubscribe();
+
+        return; // Exit early, don't run rest of ngOnInit
+      }
+    }).unsubscribe();
+
+    // NEW GENERATION - Only executed when coming from form
+    console.log('🆕 Starting NEW generation from form');
+
+    // Clear socket data before starting new generation - NO, already cleared in form component!
+    // this.socketConnection.clearAgentData(); // Don't call here - already called in form before API
+
+    // Set loading for new generation
+
+    // Get form data from service
     this.aiContentGenerationService.getData().subscribe((data) => {
+
       this.formData = data;
+      // Add session_id to formData for API calls
+      // this.formData.session_id = this.sessionId;
+
+      if (this.clientBack) {
+        console.log('🔄 Returning from client - loading saved data instantly');
+        this.loading = false;
+      } else {
+        this.loading = true;
+
+      }
+
       console.log("form data", this.formData);
 
       // Initialize email payload from form data
       this.initializeEmailPayload();
     });
 
-    // console.log(this.brand);
-    //generate image
-    // this.aiContentGenerationService.getImage().subscribe((data) => {
-    //   // console.log('getImagegetImage', data);
-    //   if (data) {
-    //     this.imageUrl = data;
-    //   }
-    // });
-
-    //event image
-    this.aiContentGenerationService.getOfferImage().subscribe((data) => {
-      // console.log('getOfferImagegetImage', data);
-      if (data) {
-        this.imageOfferUrl = data;
-      }
-    });
-
-    //offer image
-    this.aiContentGenerationService.getEventImage().subscribe((data) => {
-      // console.log('getEventImagegetImage', data);
-      if (data) {
-        this.imageEventUrl = data;
-      }
-    });
     // Normalize brand name once - single source of truth
     let brandName = this.formData?.brand?.trim();
     if (brandName) {
@@ -296,15 +347,28 @@ export class EmailReviewComponent implements OnDestroy {
     console.log('Brand logo URL:', this.brandlogoTop);
     console.log('Show more URL:', this.showMore);
 
-    this.emailHeader = null;
-    this.imageUrl = null;
-    this.subjctEmail = null;
+    //event image
+    this.aiContentGenerationService.getOfferImage().subscribe((data) => {
+      if (data) {
+        this.imageOfferUrl = data;
+      }
+    });
+
+    //offer image
+    this.aiContentGenerationService.getEventImage().subscribe((data) => {
+      if (data) {
+        this.imageEventUrl = data;
+      }
+    });
+
+    // Subscribe to email head response data (new generation and regeneration)
     this.contentDisabled = true;
     this.isLoading = true;
     this.aiContentGenerationService
       .getEmailHeadResponsetData()
       .subscribe((data) => {
-        setTimeout(() => {
+        if (data && data.result && data.result.generation) {
+
           this.contentDisabled = false;
           this.emailHeader = data.result.generation.email_header;
           this.imageUrl = data.result.generation.image_url;
@@ -327,19 +391,24 @@ export class EmailReviewComponent implements OnDestroy {
 
             this.totalWordCount = countWords(this.editorContentEmail);
 
-            this.loading = false;
-            // Update loading state in service
-            this.aiContentGenerationService.setEmailReviewLoading(false);
+            // Don't set loading to false here - wait for socket completion signal
+            // this.loading = false;
+            // this.aiContentGenerationService.setEmailReviewLoading(false);
+
             this.isEMailPromptDisabled = false;
             this.commonPromptIsLoading = false;
             this.translateIsLoading = false;
             this.isImageRegenrateDisabled = false;
             this.isImageRefineDisabled = false;
 
-            // Disconnect socket after content is loaded
-            this.socketConnection.disconnect();
+            // SAVE DATA IMMEDIATELY for instant retrieval when navigating back
+            this.saveCurrentEmailReviewData();
+
+            // Don't disconnect socket yet - wait for all agents to complete
+            // Disconnect will happen when completion signal triggers
+            // this.socketConnection.disconnect();
           }
-        }, 8000);
+        }
       });
 
     this.emailContentSubscription = this.aiContentGenerationService
@@ -520,7 +589,11 @@ The html tags are separate and it should not be part of word count.`;
     this.aiContentGenerationService.imageGeneration(topicPropmt).subscribe({
       next: (data) => {
         this.aiContentGenerationService.setImage(data[0].url);
+        this.imageUrl = data[0].url; // Update local variable
         this.isImageRegenrateDisabled = false;
+
+        // SAVE DATA IMMEDIATELY after image regeneration
+        this.saveCurrentEmailReviewData();
       },
       error: (err) => {
         console.error('Error generating image:', err);
@@ -633,11 +706,11 @@ The html tags are separate and it should not be part of word count.`;
       this.totalWordCount = countWords(this.editorContentEmail);
 
       // Update editor content
-      setTimeout(() => {
-        if (this.editorComponent) {
-          this.editorComponent.editor.setContent(this.editorContentEmail);
-        }
-      }, 100);
+
+      if (this.editorComponent) {
+        this.editorComponent.editor.setContent(this.editorContentEmail);
+      }
+
     }
 
     // Set loading states
@@ -652,6 +725,9 @@ The html tags are separate and it should not be part of word count.`;
     this.isImageRegenrateDisabled = false;
     this.isImageRefineDisabled = false;
 
+    // SAVE DATA IMMEDIATELY after regeneration
+    this.saveCurrentEmailReviewData();
+
     // Share email content with client-remark screen
     this.aiContentGenerationService.setEmailContent({
       imageUrl: this.imageUrl,
@@ -665,11 +741,11 @@ The html tags are separate and it should not be part of word count.`;
     // Clear chat response after processing
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
-    }, 1000);
+    }, 500);
   }
 
   // Agentic Workflow Helper Methods
-  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+  getWorkflowAgents(): Array<{ name: string; status: string }> {
     const socketData = this.socketConnection.dataSignal();
 
     // Define all agents in the correct order
@@ -682,16 +758,17 @@ The html tags are separate and it should not be part of word count.`;
 
     // Map agents with their current status from socket data or default to 'PENDING'
     return agentOrder.map(agentName => {
-      const agentData = socketData[agentName];
+      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
+      const normalizedName = agentName.toLowerCase();
+      const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
+      const agentData = matchingKey ? socketData[matchingKey] : null;
+
       return {
         name: agentName,
-        status: agentData?.status || 'PENDING',
-        updatedAt: agentData?.updatedAt || '--:--:--'
+        status: agentData?.status || 'PENDING'
       };
     });
-  }
-
-  getLineColor(status: string): string {
+  } getLineColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
         return '#22c55e'; // Green
@@ -780,7 +857,7 @@ The html tags are separate and it should not be part of word count.`;
     const targetReader = this.formData?.target_reader || this.formData?.readers || '';
     const imageDetails = this.formData?.image_details || this.formData?.imageOpt || '';
     const imageDescription = this.formData?.image_description || this.formData?.imgDesc || '';
-
+    const platform = this.formData?.campaign || '';
     this.emailPayload.append('use_case', useCase);
     this.emailPayload.append('purpose', purpose);
     this.emailPayload.append('brand', brand);
@@ -789,6 +866,7 @@ The html tags are separate and it should not be part of word count.`;
     this.emailPayload.append('word_limit', wordLimit);
     this.emailPayload.append('target_reader', targetReader);
     this.emailPayload.append('image_details', imageDetails);
+    this.emailPayload.append('platform_campaign', platform)
 
     if (imageDescription && imageDescription.trim() !== '') {
       this.emailPayload.append('image_description', imageDescription);
@@ -857,7 +935,7 @@ The html tags are separate and it should not be part of word count.`;
     this.isRegeneratingContent = true;
     // Don't set loading = true for regeneration (keep loader hidden)
 
-    this.aiContentGenerationService.generateContent(this.emailPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.emailPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Content regenerated:', data);
         this.aiContentGenerationService.setEmailResponseData(data);
@@ -921,7 +999,7 @@ The html tags are separate and it should not be part of word count.`;
     this.isRegeneratingImage = true;
     // Don't set loading = true for regeneration (keep loader hidden)
 
-    this.aiContentGenerationService.generateContent(this.emailPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.emailPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Image regenerated:', data);
 
@@ -968,6 +1046,82 @@ The html tags are separate and it should not be part of word count.`;
     } else {
       this.contentFeedback = text;
     }
+  }
+
+  // Reload existing content from service when returning from client
+  reloadExistingEmailContent(): void {
+    console.log('🔄 Reloading existing email content from service...');
+
+    this.emailContentSubscription = this.aiContentGenerationService
+      .getEmailResponsetData()
+      .subscribe((data) => {
+        if (!data || !data.result) {
+          console.log('⚠️ No existing email data found in service');
+          return;
+        }
+
+        console.log('📥 Reloading existing email data:', data);
+
+        // Process the email content
+        if (data.result.generation) {
+          let emailContent = '';
+          if (typeof data.result.generation.html === 'string') {
+            emailContent = data.result.generation.html;
+          } else if (typeof data.result.generation.content === 'string') {
+            emailContent = data.result.generation.content;
+          } else if (typeof data.result.generation.email === 'string') {
+            emailContent = data.result.generation.email;
+          } else if (typeof data.result.generation === 'string') {
+            emailContent = data.result.generation;
+          }
+
+          if (emailContent) {
+            this.editorContentEmail = emailContent.replace(/\\n\\n/g, '');
+            this.existingEmailContent = this.editorContentEmail;
+
+            const countWords = (content: any) => {
+              if (!content) return 0;
+              return content.trim().replace(/\s+/g, ' ').split(' ').length;
+            };
+            this.totalWordCount = countWords(this.editorContentEmail);
+          }
+
+          // Handle image URLs
+          if (data.result.generation.image_url) {
+            this.imageUrl = data.result.generation.image_url;
+          }
+          if (data.result.generation.offer_image_url) {
+            this.imageOfferUrl = data.result.generation.offer_image_url;
+          }
+          if (data.result.generation.event_image_url) {
+            this.imageEventUrl = data.result.generation.event_image_url;
+          }
+        }
+
+        console.log('✅ Email content reloaded successfully');
+        this.loading = false;
+      });
+  }
+
+  // Save current email review data for instant retrieval
+  saveCurrentEmailReviewData(): void {
+    const savedData = {
+      emailHeader: this.emailHeader,
+      imageUrl: this.imageUrl,
+      subjctEmail: this.subjctEmail,
+      editorContentEmail: this.editorContentEmail,
+      existingEmailContent: this.existingEmailContent,
+      totalWordCount: this.totalWordCount,
+      formData: this.formData,
+      brand: this.brand,
+      showMore: this.showMore,
+      brandlogoTop: this.brandlogoTop,
+      imageOfferUrl: this.imageOfferUrl,
+      imageEventUrl: this.imageEventUrl
+    };
+
+    this.aiContentGenerationService.setSavedEmailReviewData(savedData);
+    console.log('💾 Email review data saved for instant retrieval');
   }
 
   ngOnDestroy(): void {

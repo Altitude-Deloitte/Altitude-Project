@@ -44,7 +44,7 @@ export class VideoClientComponent {
   currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
 
-  constructor(private aiContentGenerationService: ContentGenerationService) {
+  constructor(private aiContentGenerationService: ContentGenerationService, private route: Router) {
     // Watch for chat response from AI chat
     effect(() => {
       const chatResponse = this.aiContentGenerationService.chatResponse();
@@ -108,4 +108,9 @@ export class VideoClientComponent {
     }
   }
   saveComment() { }
+
+  navigateBack(): void {
+    this.aiContentGenerationService.setIsBack(true);
+    this.route.navigateByUrl('/video-review');
+  }
 }

@@ -151,6 +151,7 @@ export class CombinedClientComponent {
   imageUrl: any;
   imageOfferUrl: any;
   imageEventUrl: any;
+  hyperUrl: any; // URL for social media posts
   subjctEmail: any;
   theme: any;
   brandColor: any[] = [];
@@ -231,6 +232,9 @@ export class CombinedClientComponent {
 
     // Use normalized brandName for all variables
     this.showMore = 'https://www.' + brandName;
+
+    // Set hyperUrl - prioritize formData.Hashtags (user-provided URL), fallback to brand website
+    this.hyperUrl = this.formData?.Hashtags || this.showMore;
 
     // Set brandlogoTop using normalized brandName
     this.brandlogoTop = brandName !== 'babycheramy.lk'
@@ -421,6 +425,15 @@ export class CombinedClientComponent {
         if (!this.imageUrl && data?.result?.generation?.image_url) {
           this.imageUrl = data.result.generation.image_url;
           console.log('Image URL from social media response:', this.imageUrl);
+        }
+
+        // Extract hyperlink URL from social media response
+        if (data?.result?.generation?.url) {
+          this.hyperUrl = data.result.generation.url;
+          console.log('Hyperlink URL from social media response:', this.hyperUrl);
+        } else if (data?.result?.generation?.link) {
+          this.hyperUrl = data.result.generation.link;
+          console.log('Hyperlink from social media response:', this.hyperUrl);
         }
 
         //refine content
@@ -1203,6 +1216,9 @@ The html tags are separate and it should not be part of word count`;
   }
 
   navigateToReview(): void {
+    // Set isBack flag to indicate returning from client
+    this.aiContentGenerationService.setIsBack(true);
+
     // Ensure formData is set before navigating
     if (this.formData) {
       this.aiContentGenerationService.setData(this.formData);

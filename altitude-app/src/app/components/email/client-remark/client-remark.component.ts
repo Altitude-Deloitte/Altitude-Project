@@ -29,7 +29,6 @@ import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
     ButtonModule,
     CommonModule,
     SelectModule,
-    RouterLink,
     OverlayPanelModule,
     TextareaModule,
     FormsModule,
@@ -631,6 +630,12 @@ http://18.116.64.253:3434/send-email?to=masoomithakar@gmail.com,mthakar@deloitte
         console.error('Navigation error:', error);
       });
   }
+
+  navigateBack(): void {
+    this.aiContentGenerationService.setIsBack(true);
+    this.route.navigateByUrl('/email-review');
+  }
+
   // Process chat response data
   processChatResponse(generationData: any) {
     console.log('Processing chat response in client:', generationData);

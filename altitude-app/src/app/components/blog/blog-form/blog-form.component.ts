@@ -138,6 +138,13 @@ export class BlogFormComponent {
 
     // Create FormData instead of object
     this.blogPayload = new FormData();
+
+    // Generate session_id and connect socket BEFORE any API calls
+    const sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.clearAgentData(); // Reset all tracking including completion signal
+    this.socketConnection.setSessionId(sessionId); // Connect socket with this session
+    console.log('🎯 Blog form generated session_id:', sessionId);
+
     this.blogPayload.append('use_case', 'Blog Generation');
     this.blogPayload.append('purpose', formValues?.purpose || '');
     this.blogPayload.append('outline', formValues?.outline || '');
@@ -157,7 +164,7 @@ export class BlogFormComponent {
       this.blogPayload.append('additional_details', formValues?.additional);
     }
     this.aiContentGenerationService.setData(formValues);
-    this.aiContentGeneration(formValues, 'Blog Generation');
+    this.aiContentGeneration(formValues, 'Blog Generation', sessionId);
     this.navigateToForm();
     // if (this.uploadedImages.length == 0 && !this.urlImage) {
     //   console.log('image option :', formValues.imageOpt);
@@ -208,9 +215,9 @@ export class BlogFormComponent {
     this.route.navigateByUrl('blog-review');
   }
 
-  aiContentGeneration(prompt: string, type: string): void {
+  aiContentGeneration(prompt: string, type: string, sessionId: string): void {
     this.aiContentGenerationService
-      .generateContent(this.blogPayload)
+      .generateContent(this.blogPayload, sessionId)
       .subscribe({
         next: (data) => {
           if (type == 'Blog Generation') {

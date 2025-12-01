@@ -69,7 +69,8 @@
                                 stroke-width="2" />
 
                             <!-- Status icon -->
-                            <circle [attr.cx]="20" [attr.cy]="40" r="8" fill="#22c55e" />
+                            <circle [attr.cx]="20" [attr.cy]="40" r="8"
+                                [attr.fill]="agent.status === 'COMPLETED' ? '#22c55e' : agent.status === 'IN_PROGRESS' ? '#eab308' : '#6b7280'" />
 
                             <!-- Agent name -->
                             <text x="40" y="35" fill="#fff" font-size="16" font-weight="600">
@@ -77,8 +78,10 @@
                             </text>
 
                             <!-- Status text -->
-                            <text x="40" y="55" fill="#86efac" font-size="12">
-                                Status: COMPLETED
+                            <text x="40" y="55"
+                                [attr.fill]="agent.status === 'COMPLETED' ? '#86efac' : agent.status === 'IN_PROGRESS' ? '#fde047' : '#9ca3af'"
+                                font-size="12">
+                                {{ agent.status }}
                             </text>
                         </g>
                     </ng-container>

@@ -266,7 +266,7 @@ export class VirtualReviewComponent {
   }
 
   // Workflow visualization methods
-  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+  getWorkflowAgents(): Array<{ name: string; status: string }> {
     const socketData = this.socketConnection.dataSignal();
 
     // Define all agents in the correct order
@@ -279,16 +279,17 @@ export class VirtualReviewComponent {
 
     // Map agents with their current status from socket data or default to 'PENDING'
     return agentOrder.map(agentName => {
-      const agentData = socketData[agentName];
+      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
+      const normalizedName = agentName.toLowerCase();
+      const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
+      const agentData = matchingKey ? socketData[matchingKey] : null;
+
       return {
         name: agentName,
-        status: agentData?.status || 'PENDING',
-        updatedAt: agentData?.updatedAt || '--:--:--'
+        status: agentData?.status || 'PENDING'
       };
     });
-  }
-
-  getLineColor(status: string): string {
+  } getLineColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
         return '#22c55e'; // Green

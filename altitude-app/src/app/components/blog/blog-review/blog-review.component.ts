@@ -14,8 +14,8 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
-import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { DrawerModule } from 'primeng/drawer';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-blog-review',
@@ -29,8 +29,8 @@ import { DrawerModule } from 'primeng/drawer';
     ToastModule,
     FormsModule,
     InputTextModule,
-    LoaderComponent,
     DrawerModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './blog-review.component.html',
@@ -92,6 +92,7 @@ export class BlogReviewComponent implements OnDestroy {
   isRegeneratingContent: boolean = false;
   isRegeneratingImage: boolean = false;
   blogPayload: FormData | null = null;
+  clientBack = false;
 
   constructor(
     private route: Router,
@@ -108,6 +109,19 @@ export class BlogReviewComponent implements OnDestroy {
         this.processChatResponse(chatResponse.result.generation);
       }
     });
+
+    // Watch for socket completion signal
+    effect(() => {
+      const allCompleted = this.socketConnection.allAgentsCompleted();
+
+      if (allCompleted && this.loading) {
+        setTimeout(() => {
+          this.loading = false;
+          this.contentDisabled = false;
+          this.socketConnection.disconnect();
+        }, 500);
+      }
+    });
   }
 
   formData: any;
@@ -116,131 +130,156 @@ export class BlogReviewComponent implements OnDestroy {
   private sessionId: string = ''; // Unique session ID for this component instance
 
   ngOnInit(): void {
-    // Generate and set unique session ID for this review session
-    this.sessionId = this.socketConnection.generateSessionId();
-    this.socketConnection.setSessionId(this.sessionId);
-    console.log('🎯 Blog review session started:', this.sessionId);
+    this.socketConnection.setWorkflowType('blog');
+    console.log('ngOnInit - Initial loading state:', this.loading);
 
-    // Clear previous blog data to prevent state retention
-    this.aiContentGenerationService.clearBlogData();
+    // Check if user is returning from client screen
+    this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+      if (isBack) {
+        this.clientBack = isBack;
+        console.log('🔄 Returning from client - loading saved data instantly');
+        this.loading = false;
+        this.aiContentGenerationService.setIsBack(false);
 
-    // Clear socket data before starting new generation
-    this.socketConnection.clearAgentData();
+        // Load saved review data instantly
+        this.aiContentGenerationService.getSavedBlogReviewData().subscribe(savedData => {
+          if (savedData) {
+            console.log('📥 Restoring saved blog review data:', savedData);
+            this.editorContentSocialMedia = savedData.editorContentSocialMedia;
+            this.imageUrl = savedData.imageUrl;
+            this.blog_title = savedData.blog_title;
+            this.blogTitle = savedData.blogTitle;
+            this.blogContent = savedData.blogContent;
+            this.seoTitle = savedData.seoTitle;
+            this.seoDescription = savedData.seoDescription;
+            this.totalWordCount = savedData.totalWordCount;
+            this.existingContent = savedData.existingContent;
+            this.formData = savedData.formData;
+            this.contentDisabled = false;
+            this.isEMailPromptDisabled = false;
+            this.isImageRegenrateDisabled = false;
+            this.isImageRefineDisabled = false;
 
+            // Initialize payload with saved form data
+            this.initializeBlogPayload();
+
+            // Force change detection to show content
+            setTimeout(() => {
+              this.contentDisabled = false;
+            }, 100);
+          }
+        }).unsubscribe();
+
+        return; // Exit early, don't run rest of ngOnInit
+      }
+    }).unsubscribe();
+
+    // NEW GENERATION - Only executed when coming from form
+    console.log('🆕 Starting NEW generation from form');
     this.loading = true;
+
+    // Session ID already generated and set in form component - don't regenerate!
+    // this.sessionId = this.socketConnection.generateSessionId();
+    // this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Blog review session started (from form)');
+
+    // Socket data already cleared in form component - don't clear again!
+    // this.socketConnection.clearAgentData();
+
     this.dataLoaded = false; // Reset flag
 
+    // Get form data from service
     this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data;
 
-      // Initialize payload for regeneration
+      this.formData = data;
+      // Add session_id to formData for API calls
+      this.formData.session_id = this.sessionId;
+
+      if (this.clientBack) {
+        console.log('🔄 Returning from client - loading saved data instantly');
+        this.loading = false;
+      } else {
+        this.loading = true;
+
+      }
+
+      console.log("form data", this.formData);
+
+      // Initialize email payload from form data
       this.initializeBlogPayload();
     });
 
-    this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data; // Use the data received from the service
-    });
-
-    // Check if we already have blog content shared (when coming back from client)
-    this.aiContentGenerationService.getBlogContent().subscribe((blogData) => {
-      if (blogData && blogData.blogContent) {
-        console.log('Using existing shared blog content:', blogData);
-
-        // Clear the blog response data to prevent old data from showing
-        this.aiContentGenerationService.clearBlogData();
-
-        // Restore from shared data
-        this.imageUrl = blogData.imageUrl;
-        this.blogContent = blogData.blogContent;
-        this.blog_title = blogData.blog_title;
-        this.blogTitle = blogData.blogTitle;
-        this.metaDescription = blogData.metaDescription;
-        this.seoTitle = blogData.seoTitle;
-        this.seoDescription = blogData.seoDescription;
-        this.totalWordCount = blogData.totalWordCount;
-        this.editorContentSocialMedia = blogData.blogContent;
-        this.existingContent = blogData.blogContent;
-
-        // Set loading to false since we have data
-        this.loading = false;
-        this.contentDisabled = false;
-        this.dataLoaded = true; // Mark data as loaded
-        this.chnge.detectChanges();
-      } else {
-        // No existing data, initialize as null
-        this.contentDisabled = true;
-        this.editorContentSocialMedia = null;
-        this.imageUrl = null;
-        this.blog_title = null;
-        this.blogContent = null;
-      }
-    });
-
+    // Subscribe to audience data
     this.aiContentGenerationService
       .getAudianceResponseData()
       .subscribe((data) => {
         this.audianceData = data?.content;
         this.chnge.detectChanges();
       });
+
+    // Subscribe to blog response data (persists across navigation and regeneration)
     this.blogContentSubscription = this.aiContentGenerationService.getBlogResponsetData().subscribe((data) => {
-      // Only process if data exists AND data hasn't been loaded from shared content
-      if (data?.result?.generation && !this.dataLoaded) {
-        setTimeout(() => {
-          this.editorContentSocialMedia = data?.result?.generation.html;
-          this.imageUrl = data?.result?.generation.image_url;
-          this.blog_title = data?.result?.generation?.blog_title;
-          const cleanedString = this.editorContentSocialMedia
-            .replace(/^```html/, '')
-            .replace(/```$/, '');
+      // Process data from service (works for both new generation and returning from client)
+      if (data?.result?.generation) {
 
-          this.editorContentSocialMedia = cleanedString.replace(/"/g, '').trim();
+        this.editorContentSocialMedia = data?.result?.generation.html;
+        this.imageUrl = data?.result?.generation.image_url;
+        this.blog_title = data?.result?.generation?.blog_title;
+        const cleanedString = this.editorContentSocialMedia
+          .replace(/^```html/, '')
+          .replace(/```$/, '');
 
-          const titlePattern =
-            /(?:<p><b>SEO Title:\s*<\/b>|<b>SEO Title:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
-          const descriptionPattern =
-            /(?:<p><b>SEO Description:\s*<\/b>|<b>SEO Description:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
+        this.editorContentSocialMedia = cleanedString.replace(/"/g, '').trim();
 
-          const titleMatch = this.editorContentSocialMedia.match(titlePattern);
-          const descriptionMatch =
-            this.editorContentSocialMedia.match(descriptionPattern);
+        const titlePattern =
+          /(?:<p><b>SEO Title:\s*<\/b>|<b>SEO Title:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
+        const descriptionPattern =
+          /(?:<p><b>SEO Description:\s*<\/b>|<b>SEO Description:\s*<\/b>)(.*?)(?=<\/b>|<\/p>|\n|$)/;
 
-          if (titleMatch) {
-            this.seoTitle = titleMatch[1].trim();
-          }
+        const titleMatch = this.editorContentSocialMedia.match(titlePattern);
+        const descriptionMatch =
+          this.editorContentSocialMedia.match(descriptionPattern);
 
-          if (descriptionMatch) {
-            this.seoDescription = descriptionMatch[1].trim();
-          }
+        if (titleMatch) {
+          this.seoTitle = titleMatch[1].trim();
+        }
 
-          this.blogContent = this.editorContentSocialMedia
-            .replace(/<title>.*?<\/title>/s, '')
-            .replace(titlePattern, '')
-            .replace(descriptionPattern, '')
-            .trim();
+        if (descriptionMatch) {
+          this.seoDescription = descriptionMatch[1].trim();
+        }
 
-          this.loading = false;
-          this.existingContent = this.editorContentSocialMedia;
-          this.contentDisabled = false;
+        this.blogContent = this.editorContentSocialMedia
+          .replace(/<title>.*?<\/title>/s, '')
+          .replace(titlePattern, '')
+          .replace(descriptionPattern, '')
+          .trim();
 
-          // Disconnect socket after content is loaded
-          this.socketConnection.disconnect();
+        this.loading = false;
+        this.existingContent = this.editorContentSocialMedia;
+        this.contentDisabled = false;
 
-          const countWords = (content: string) => {
-            if (!content) return 0;
-            return content.trim().replace(/\s+/g, ' ').split(' ').length;
-          };
+        // Disconnect socket after content is loaded
+        this.socketConnection.disconnect();
 
-          this.totalWordCount = countWords(this.editorContentSocialMedia);
+        const countWords = (content: string) => {
+          if (!content) return 0;
+          return content.trim().replace(/\s+/g, ' ').split(' ').length;
+        };
 
-          this.isEMailPromptDisabled = false;
-          this.commonPromptIsLoading = false;
-          this.isImageRegenrateDisabled = false;
-          this.isImageRefineDisabled = false;
+        this.totalWordCount = countWords(this.editorContentSocialMedia);
 
-          console.log('Total word count:', this.totalWordCount);
+        this.isEMailPromptDisabled = false;
+        this.commonPromptIsLoading = false;
+        this.isImageRegenrateDisabled = false;
+        this.isImageRefineDisabled = false;
 
-          this.chnge.detectChanges(); // Trigger view update
-        }, 8000);
+        console.log('Total word count:', this.totalWordCount);
+
+        // SAVE DATA IMMEDIATELY for instant retrieval when navigating back
+        this.saveCurrentBlogReviewData();
+
+        this.chnge.detectChanges();
+        // Delay for new generation
       }
     });
 
@@ -465,6 +504,9 @@ export class BlogReviewComponent implements OnDestroy {
     this.isImageRegenrateDisabled = false;
     this.isImageRefineDisabled = false;
 
+    // SAVE DATA IMMEDIATELY after regeneration
+    this.saveCurrentBlogReviewData();
+
     // Share blog content with blog-client screen
     this.aiContentGenerationService.setBlogContent({
       imageUrl: this.imageUrl,
@@ -483,7 +525,7 @@ export class BlogReviewComponent implements OnDestroy {
     // Clear chat response after processing - Don't clear, just reset the flag
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
-    }, 1000);
+    }, 500);
   }
 
   // Initialize blog payload from form data
@@ -575,7 +617,7 @@ export class BlogReviewComponent implements OnDestroy {
     // Don't set loading = true for regeneration (keep loader hidden)
     this.contentDisabled = true;
 
-    this.aiContentGenerationService.generateContent(this.blogPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.blogPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Content regenerated:', data);
 
@@ -639,7 +681,7 @@ export class BlogReviewComponent implements OnDestroy {
     // Don't set loading = true for regeneration (keep loader hidden)
     this.contentDisabled = true;
 
-    this.aiContentGenerationService.generateContent(this.blogPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.blogPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Image regenerated:', data);
 
@@ -681,7 +723,7 @@ export class BlogReviewComponent implements OnDestroy {
   }
 
   // Workflow visualization methods
-  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+  getWorkflowAgents(): Array<{ name: string; status: string }> {
     const socketData = this.socketConnection.dataSignal();
 
     // Define all agents in the correct order
@@ -694,16 +736,17 @@ export class BlogReviewComponent implements OnDestroy {
 
     // Map agents with their current status from socket data or default to 'PENDING'
     return agentOrder.map(agentName => {
-      const agentData = socketData[agentName];
+      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
+      const normalizedName = agentName.toLowerCase();
+      const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
+      const agentData = matchingKey ? socketData[matchingKey] : null;
+
       return {
         name: agentName,
-        status: agentData?.status || 'PENDING',
-        updatedAt: agentData?.updatedAt || '--:--:--'
+        status: agentData?.status || 'PENDING'
       };
     });
-  }
-
-  getLineColor(status: string): string {
+  } getLineColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
         return '#22c55e'; // Green
@@ -786,6 +829,24 @@ export class BlogReviewComponent implements OnDestroy {
     } else {
       this.contentFeedback = text;
     }
+  }
+
+  saveCurrentBlogReviewData(): void {
+    const savedData = {
+      editorContentSocialMedia: this.editorContentSocialMedia,
+      imageUrl: this.imageUrl,
+      blog_title: this.blog_title,
+      blogTitle: this.blogTitle,
+      blogContent: this.blogContent,
+      seoTitle: this.seoTitle,
+      seoDescription: this.seoDescription,
+      totalWordCount: this.totalWordCount,
+      existingContent: this.existingContent,
+      formData: this.formData
+    };
+
+    this.aiContentGenerationService.setSavedBlogReviewData(savedData);
+    console.log('💾 Blog review data saved for instant retrieval');
   }
 
   ngOnDestroy(): void {

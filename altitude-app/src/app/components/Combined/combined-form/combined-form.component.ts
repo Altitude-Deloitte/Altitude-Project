@@ -9,6 +9,7 @@ import { ButtonModule } from 'primeng/button';
 import { SelectModule } from 'primeng/select';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ContentGenerationService } from '../../../services/content-generation.service';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { Router } from '@angular/router';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -138,7 +139,8 @@ export class CombinedFormComponent {
     private fb: FormBuilder,
 
     private route: Router,
-    private aiContentGenerationService: ContentGenerationService
+    private aiContentGenerationService: ContentGenerationService,
+    private socketConnection: SocketConnectionService
   ) { }
 
   imageOption: string = '';
@@ -193,6 +195,12 @@ export class CombinedFormComponent {
     const { topic, imgDesc } = formValues;
 
     console.log('Combined Form - Email wordLimit value:', formValues?.wordLimit);
+
+    // Generate single session_id for all three payloads (email, social, blog)
+    const sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.clearAgentData(); // Reset all tracking including completion signal
+    this.socketConnection.setSessionId(sessionId); // Connect socket with this session
+    console.log('🎯 Combined form generated session_id:', sessionId);
 
     // ========== CREATE EMAIL PAYLOAD ==========
     this.emailPayload = new FormData();
@@ -313,7 +321,7 @@ export class CombinedFormComponent {
 
       // ========== EMAIL CONTENT GENERATION ==========
       // Single API call returns: email_header, image_url, email_subjects, and html content
-      this.aiContentGenerationService.generateContent(this.emailPayload).subscribe({
+      this.aiContentGenerationService.generateContent(this.emailPayload, sessionId).subscribe({
         next: (data) => {
           console.log('Email complete response:', data);
           // Store the complete email response which includes header, subjects, and body
@@ -329,7 +337,7 @@ export class CombinedFormComponent {
       // ========== SOCIAL MEDIA CONTENT GENERATION ==========
       // Single API call returns content for all selected platforms (Facebook, Instagram, etc.)
       this.aiContentGenerationService
-        .generateContent(this.socialMediaPayload)
+        .generateContent(this.socialMediaPayload, sessionId)
         .subscribe({
           next: (data) => {
             console.log(`Social media content response:`, data);
@@ -342,7 +350,7 @@ export class CombinedFormComponent {
         });
 
       // ========== BLOG CONTENT GENERATION ==========
-      this.aiContentGenerationService.generateContent(this.blogPayload).subscribe({
+      this.aiContentGenerationService.generateContent(this.blogPayload, sessionId).subscribe({
         next: (data) => {
           console.log('Blog content response:', data);
           this.aiContentGenerationService.setBlogResponseData(data);

@@ -149,11 +149,19 @@ export class EmailFormComponent {
 
     // Create FormData instead of object
     this.emailPayload = new FormData();
+
+    // Generate session_id and connect socket BEFORE any API calls
+    const sessionId = this.socketConnection.generateSessionId();
+    this.socketConnection.clearAgentData(); // Reset all tracking including completion signal
+    this.socketConnection.setSessionId(sessionId); // Connect socket with this session
+    console.log('🎯 Email form generated session_id:', sessionId);
+
     this.emailPayload.append('use_case', 'Email Campaign');
     this.emailPayload.append('purpose', formValues?.purpose || '');
     this.emailPayload.append('brand', formValues?.brand || '');
     this.emailPayload.append('tone', formValues?.Type || '');
     this.emailPayload.append('topic', formValues?.topic || '');
+    this.emailPayload.append('platform_campaign', formValues?.campaign || '');
     this.emailPayload.append('word_limit', formValues?.wordLimit || '');
     this.emailPayload.append('target_reader', formValues?.readers || '');
     this.emailPayload.append('image_details', formValues?.imageOpt || '');
@@ -220,7 +228,7 @@ export class EmailFormComponent {
 
     var offerImage = `Create an "${formValues.brand}" brand offer/quote heading for a "${formValues.topic}" with an attractive, short, and brand-aligned title in an <h1> tag and a subtitle in an <h2> tag. Ensure the output includes only the <h1> and <h2> tags with the content. Avoid adding extra HTML or markdown. The font style and color should align with Nike's branding.`;
     this.aiContentGenerationService
-      .generateContent(this.emailPayload)
+      .generateContent(this.emailPayload, sessionId)
       .subscribe({
         next: (data) => {
           this.aiContentGenerationService.setEmailHeadResponseData(data);

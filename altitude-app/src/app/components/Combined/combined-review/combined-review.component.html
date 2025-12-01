@@ -16,11 +16,11 @@
                 <div class="flex flex-col justify-center gap-2">
                     <div class="flex items-center gap-2">
                         <a routerLink="/generate-request" class="text-2xl cursor-pointer"><i
-                                class="pi pi-angle-left mr-1"></i>Combined<i class="pi pi-pencil ml-1"></i></a>
+                                class="pi pi-angle-left mr-1"></i>Combined Campaign<i class="pi pi-pencil ml-1"></i></a>
                     </div>
                     <div class="flex items-center gap-2">
                         <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2"><img
-                                src="assets/images/cube.svg">Combined</a>
+                                src="assets/images/cube.svg">Combined Campaign</a>
                         <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April
                             16,
                             2025</a>
@@ -37,31 +37,88 @@
 
                 </p-tablist>
                 <div class="flex items-center gap-4">
+                    <button (click)="showAgenticWorkflow = true"
+                        class="border border-2 border-[#BB93FF] text-[#BB93FF] px-5 py-3 rounded-full">
+                        Agentic Workflow
+                    </button>
 
                     <button class="border border-2 border-[#BB93FF] px-5 py-3 rounded-full">
                         View All Comments
                     </button>
-
-                    <!-- <p-dialog [(visible)]="showComments" [modal]="true" [closable]="true" [dismissableMask]="true"
-                    [style]="{width: '500px', borderRadius: '12px', overflow: 'hidden'}"
-                    contentStyleClass="p-4 bg-[#181B22]" header="Comments ({{commentsList.length}})" [showHeader]="true"
-                    [closeOnEscape]="true">
-                    <div class="p-0 bg-[#181B22]">
-                        <div *ngFor="let comment of commentsList"
-                            class="bg-[#23262E] rounded-lg p-3 mb-3 flex gap-3 items-start">
-                            <img [src]="comment.avatar" alt="avatar" class="w-8 h-8 rounded-full object-cover mt-1" />
-                            <div class="flex-1">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="font-semibold text-white text-sm">{{ comment.name }}</span>
-                                    <span class="text-xs text-gray-400">{{ comment.time }}</span>
-                                </div>
-                                <div class="text-xs text-gray-300">{{ comment.text }}</div>
-                            </div>
-                        </div>x
-                    </div>
-                </p-dialog> -> -->
                 </div>
             </div>
+
+            <!-- Agentic Workflow Drawer -->
+            <p-drawer [(visible)]="showAgenticWorkflow" position="right" [style]="{width: '600px'}" [modal]="true"
+                header="Agentic Workflow">
+                <div class="workflow-container p-4">
+                    <svg class="workflow-svg" width="100%" height="600" viewBox="0 0 550 600">
+                        <defs>
+                            <!-- Arrow markers - smaller size -->
+                            <marker id="arrowGreen" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                                markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L6,3 z" fill="#22c55e" />
+                            </marker>
+                            <marker id="arrowYellow" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                                markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L6,3 z" fill="#eab308" />
+                            </marker>
+                            <marker id="arrowGray" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"
+                                markerUnits="strokeWidth">
+                                <path d="M0,0 L0,6 L6,3 z" fill="#6b7280" />
+                            </marker>
+                        </defs>
+
+                        <!-- Workflow nodes and connections -->
+                        <ng-container *ngFor="let agent of getWorkflowAgents(); let i = index">
+                            <!-- Connection line from previous node -->
+                            <ng-container *ngIf="i > 0">
+                                <line [attr.x1]="275" [attr.y1]="70 + (i - 1) * 120 + 80" [attr.x2]="275"
+                                    [attr.y2]="70 + i * 120" stroke="#22c55e" stroke-width="2"
+                                    marker-end="url(#arrowGreen)" />
+                            </ng-container>
+
+                            <!-- Agent node -->
+                            <g [attr.transform]="'translate(100, ' + (70 + i * 120) + ')'">
+                                <rect x="0" y="0" width="350" height="80" rx="10" fill="#1e3a2e" stroke="#b66dff"
+                                    stroke-width="2" />
+
+                                <!-- Status icon -->
+                                <circle [attr.cx]="20" [attr.cy]="40" r="8" fill="#22c55e" />
+
+                                <!-- Agent name -->
+                                <text x="40" y="35" fill="#fff" font-size="16" font-weight="600">
+                                    {{ agent.name | titlecase }}
+                                </text>
+
+                                <!-- Status text -->
+                                <text x="40" y="55" fill="#86efac" font-size="12">
+                                    Status: COMPLETED
+                                </text>
+                            </g>
+                        </ng-container>
+                    </svg>
+                </div>
+            </p-drawer>
+
+            <!-- <p-dialog [(visible)]="showComments" [modal]="true" [closable]="true" [dismissableMask]="true"
+            [style]="{width: '500px', borderRadius: '12px', overflow: 'hidden'}"
+            contentStyleClass="p-4 bg-[#181B22]" header="Comments ({{commentsList.length}})" [showHeader]="true"
+            [closeOnEscape]="true">
+            <div class="p-0 bg-[#181B22]">
+                <div *ngFor="let comment of commentsList"
+                    class="bg-[#23262E] rounded-lg p-3 mb-3 flex gap-3 items-start">
+                    <img [src]="comment.avatar" alt="avatar" class="w-8 h-8 rounded-full object-cover mt-1" />
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-semibold text-white text-sm">{{ comment.name }}</span>
+                            <span class="text-xs text-gray-400">{{ comment.time }}</span>
+                        </div>
+                        <div class="text-xs text-gray-300">{{ comment.text }}</div>
+                    </div>
+                </div>x
+            </div>
+        </p-dialog> -->
 
             <p-tabpanels class="bg-[#09040e] flex flex-col w-full ">
                 <p-tabpanel value="0">
@@ -209,9 +266,9 @@
                                 <div class="border-t-1 border-[#686868] bg-[#363636] p-5 rounded-b-xl">
                                     <div class="flex my-4 flex-col justify-center items-center">
 
-                                        <!-- Content Display Area with Spinner Overlay -->
+                                        <!-- Content Display Area with Regeneration Spinner -->
                                         <div class="relative w-full">
-                                            <!-- Loading Spinner Overlay -->
+                                            <!-- Regeneration Spinner Overlay -->
                                             <div *ngIf="isRegeneratingEmailContent || isRegeneratingImage"
                                                 class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-2xl z-10">
                                                 <p-progressSpinner styleClass="w-16 h-16" strokeWidth="4"
@@ -522,9 +579,9 @@
                                     </div>
                                     <div class="border-t-1 border-[#686868] bg-[#363636] p-5 rounded-b-xl">
                                         <div class="flex my-4 flex-col justify-center items-center">
-                                            <!-- Content Display Area with Spinner Overlay -->
+                                            <!-- Content Display Area with Regeneration Spinner -->
                                             <div class="relative w-full">
-                                                <!-- Loading Spinner Overlay -->
+                                                <!-- Regeneration Spinner Overlay -->
                                                 <div *ngIf="isRegeneratingSocialContent || isRegeneratingImage"
                                                     class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-2xl z-10">
                                                     <p-progressSpinner styleClass="w-16 h-16" strokeWidth="4"
@@ -532,53 +589,129 @@
                                                 </div>
 
                                                 <div class="flex justify-center items-center min-h-screen py-8">
-                                                    <p-tabpanels
-                                                        class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
+                                                    <p-tabpanels class="bg-transparent">
 
 
                                                         <p-tabpanel
                                                             *ngFor="let platform of selectedSocialPlatforms; let i = index"
                                                             [value]="i.toString()">
                                                             <ng-container *ngIf="platform === 'Facebook'">
-                                                                <p class="post-caption text-black">
-                                                                    {{ this.editorContentSocialMedia1 }}
-                                                                </p>
-                                                                @if (hyperUrl) {
-                                                                <p class="post-caption text-black">For more details,
-                                                                    visit
-                                                                    our
-                                                                    website:
-                                                                    <a [href]="this.hyperUrl" target="_blank"
-                                                                        rel="noopener noreferrer"
-                                                                        style="color: #0866ff;">
-                                                                        {{this.hyperUrl}}
-                                                                    </a>
-                                                                </p>
-                                                                }
-                                                                @if (imageUrl) {
-                                                                <img [src]="imageUrl" alt="Facebook Post"
-                                                                    class="post-image" />
-                                                                }
+                                                                <div
+                                                                    class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                                                                    <!-- Facebook Header -->
+                                                                    <div
+                                                                        class="flex items-center gap-3 p-4 border-b border-gray-200">
+                                                                        <img *ngIf="brandlogoTop" [src]="brandlogoTop"
+                                                                            alt="Brand Logo"
+                                                                            class="w-10 h-10 rounded-full object-contain bg-white">
+                                                                        <div class="flex-1 flex items-center">
+                                                                            <h3
+                                                                                class="font-semibold text-gray-900 text-base">
+                                                                                {{ formData?.brand || brand || 'Brand
+                                                                                Name' }}</h3>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Facebook Content -->
+                                                                    <div class="p-4">
+                                                                        <p
+                                                                            class="text-gray-900 text-sm mb-3 whitespace-pre-wrap">
+                                                                            {{ this.editorContentSocialMedia1 }}</p>
+                                                                        <p *ngIf="hyperUrl"
+                                                                            class="text-sm text-blue-600 mb-3">
+                                                                            <a [href]="hyperUrl" target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                class="hover:underline">
+                                                                                {{ hyperUrl }}
+                                                                            </a>
+                                                                        </p>
+                                                                        <img *ngIf="imageUrl" [src]="imageUrl"
+                                                                            alt="Facebook Post"
+                                                                            class="w-full max-h-[500px] object-cover rounded-lg" />
+                                                                    </div>
+                                                                    <!-- Facebook Action Buttons -->
+                                                                    <div
+                                                                        class="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+                                                                        <button
+                                                                            class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                                                            <i class="pi pi-thumbs-up text-lg"></i>
+                                                                            <span
+                                                                                class="text-sm font-medium">Like</span>
+                                                                        </button>
+                                                                        <button
+                                                                            class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                                                            <i class="pi pi-comment text-lg"></i>
+                                                                            <span
+                                                                                class="text-sm font-medium">Comment</span>
+                                                                        </button>
+                                                                        <button
+                                                                            class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                                                            <i class="pi pi-share-alt text-lg"></i>
+                                                                            <span
+                                                                                class="text-sm font-medium">Share</span>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
                                                             </ng-container>
 
                                                             <ng-container *ngIf="platform === 'Instagram'">
-                                                                <div class="instagram-post">
-                                                                    @if (imageUrl) {
-                                                                    <img [src]="imageUrl" alt="Instagram Post"
-                                                                        class="post-image" />
-                                                                    }
-                                                                    <p class="post-caption text-black">{{
-                                                                        this.editorContentSocialMedia2 }}</p>
-                                                                    <p class="post-caption text-black   ">For more
-                                                                        details,
-                                                                        visit our
-                                                                        website:
-                                                                        <a [href]="this.hyperUrl" target="_blank"
-                                                                            rel="noopener noreferrer"
-                                                                            style="color: #0866ff;">
-                                                                            {{this.hyperUrl}}
-                                                                        </a>
-                                                                    </p>
+                                                                <div
+                                                                    class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                                                                    <!-- Instagram Header -->
+                                                                    <div
+                                                                        class="flex items-center gap-3 p-3 border-b border-gray-200">
+                                                                        <img *ngIf="brandlogoTop" [src]="brandlogoTop"
+                                                                            alt="Brand Logo"
+                                                                            class="w-8 h-8 rounded-full object-contain bg-white">
+                                                                        <div class="flex-1">
+                                                                            <h3
+                                                                                class="font-semibold text-gray-900 text-sm">
+                                                                                {{ formData?.brand || brand || 'Brand
+                                                                                Name' }}</h3>
+                                                                        </div>
+                                                                    </div>
+                                                                    <!-- Instagram Image -->
+                                                                    <div *ngIf="imageUrl">
+                                                                        <img [src]="imageUrl" alt="Instagram Post"
+                                                                            class="w-full max-h-[600px] object-cover" />
+                                                                    </div>
+                                                                    <!-- Instagram Content -->
+                                                                    <div class="p-4">
+                                                                        <!-- Instagram Action Buttons -->
+                                                                        <div
+                                                                            class="flex items-center justify-between mb-3">
+                                                                            <div class="flex items-center gap-4">
+                                                                                <button
+                                                                                    class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                                    <i class="pi pi-heart text-2xl"></i>
+                                                                                </button>
+                                                                                <button
+                                                                                    class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                                    <i
+                                                                                        class="pi pi-comment text-2xl"></i>
+                                                                                </button>
+                                                                                <button
+                                                                                    class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                                    <i class="pi pi-send text-2xl"></i>
+                                                                                </button>
+                                                                            </div>
+                                                                            <button
+                                                                                class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                                <i class="pi pi-bookmark text-2xl"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                        <p class="text-gray-900 text-sm"><span
+                                                                                class="font-semibold">{{ formData?.brand
+                                                                                || brand || 'Brand Name' }}</span> {{
+                                                                            this.editorContentSocialMedia2 }}</p>
+                                                                        <p *ngIf="hyperUrl"
+                                                                            class="text-sm text-blue-900 mt-2">
+                                                                            <a [href]="hyperUrl" target="_blank"
+                                                                                rel="noopener noreferrer"
+                                                                                class="hover:underline">
+                                                                                {{ hyperUrl }}
+                                                                            </a>
+                                                                        </p>
+                                                                    </div>
                                                                 </div>
                                                             </ng-container>
 
@@ -817,7 +950,7 @@
 
                                             <div class="flex justify-center items-center min-h-screen py-8">
                                                 <div
-                                                    class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden">
+                                                    class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
                                                     <!-- Blog Title -->
                                                     @if (blog_title) {
                                                     <div
@@ -926,4 +1059,3 @@
     </div>
 </div>
 }
-<!-- } -->

@@ -25,7 +25,6 @@ import { OverlayPanelModule } from 'primeng/overlaypanel';
     ButtonModule,
     CommonModule,
     SelectModule,
-    RouterLink,
     OverlayPanelModule,
     TextareaModule,
     FormsModule,
@@ -373,5 +372,10 @@ export class BlogClientComponent {
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
     }, 1000);
+  }
+
+  navigateBack(): void {
+    this.aiContentGenerationService.setIsBack(true);
+    this.route.navigateByUrl('/blog-review');
   }
 }

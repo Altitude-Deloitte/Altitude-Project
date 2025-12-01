@@ -109,6 +109,13 @@ export class VideoFormComponent {
 
       // Create FormData for multipart form data
       const videoFormData = new FormData();
+
+      // Generate session_id and connect socket BEFORE API call
+      const sessionId = this.socketConnection.generateSessionId();
+      this.socketConnection.clearAgentData(); // Reset all tracking including completion signal
+      this.socketConnection.setSessionId(sessionId); // Connect socket with this session
+      console.log('🎯 Video form generated session_id:', sessionId);
+
       videoFormData.append('brief', prompt);
       console.log('Brief added to FormData:', prompt);
 
@@ -135,7 +142,7 @@ export class VideoFormComponent {
       });
 
       this.aiContentGenerationService
-        .generateVoeVideo(videoFormData)
+        .generateVoeVideo(videoFormData, sessionId)
         .subscribe(
           (response: any) => {
             console.log('Response background animation response:', response);

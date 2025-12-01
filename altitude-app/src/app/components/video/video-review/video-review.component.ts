@@ -39,7 +39,7 @@ export class VideoReviewComponent {
   formData: any;
   contentDisabled = false;
   isVideoFormat = false;
-  loading = true;
+  loading = true; // Start as true to show loader immediately on navigation, will be set to false when content loads
   //silder
   disabled = false;
   max = 100;
@@ -57,6 +57,7 @@ export class VideoReviewComponent {
   imageFeedback: string = '';
   isRegeneratingImage: boolean = false;
   videoPayload: FormData | null = null;
+  clientBack = false;
 
   constructor(
     private route: Router,
@@ -72,24 +73,120 @@ export class VideoReviewComponent {
         this.processChatResponse(chatResponse.result);
       }
     });
+
+    // Watch for socket completion signal
+    effect(() => {
+      const allCompleted = this.socketConnection.allAgentsCompleted();
+
+      if (allCompleted && this.loading) {
+        setTimeout(() => {
+          this.loading = false;
+          this.socketConnection.disconnect();
+        }, 500);
+      }
+    });
   }
 
   private sessionId: string = ''; // Unique session ID for this component instance
 
   ngOnInit(): void {
-    // Generate and set unique session ID for this review session
-    this.sessionId = this.socketConnection.generateSessionId();
-    this.socketConnection.setSessionId(this.sessionId);
-    console.log('🎯 Video review session started:', this.sessionId);
+    this.socketConnection.setWorkflowType('video');
+    console.log('ngOnInit - Initial loading state:', this.loading);
 
-    // Clear socket data before starting to prevent old messages from showing
-    this.socketConnection.clearAgentData();
+    // Check isBack flag from service
+    this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+      if (isBack) {
+        this.clientBack = isBack;
+        console.log('� isBack flag is true - keeping loading false');
+        this.loading = false;
+        this.contentDisabled = false;
+        // Reset the flag after checking
+
+
+        // Get formData and reload existing content
+        this.aiContentGenerationService.getData().subscribe((data) => {
+          this.formData = data;
+          if (this.clientBack) {
+            console.log('🔄 Returning from client - loading saved data instantly');
+            this.loading = false;
+          } else {
+            this.loading = true;
+
+          }
+          this.initializeVideoPayload();
+        });
+
+        this.reloadExistingVideoContent();
+        return;
+      }
+    });
+
+    // Check if we already have existing video content (returning from client)
+    const hasExistingContentInComponent = this.imageUrl && this.imageUrl.length > 0;
+
+    // Check if service has video data (for when component is recreated)
+    let hasExistingContentInService = false;
+    this.aiContentGenerationService.getImage().subscribe(data => {
+      hasExistingContentInService = !!data;
+    }).unsubscribe();
+
+    const hasExistingContent = hasExistingContentInComponent || hasExistingContentInService;
+
+    if (hasExistingContent) {
+      console.log('🔄 Returning from client screen - preserving state, NOT clearing data');
+      this.loading = false; // Ensure loading stays false
+      this.contentDisabled = false;
+
+      // Still need to get formData for display purposes
+      this.aiContentGenerationService.getData().subscribe((data) => {
+        this.formData = data;
+
+        // Check isBack flag in getData as well
+        this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+          if (isBack) {
+            this.loading = false;
+            this.aiContentGenerationService.setIsBack(false);
+          }
+        });
+
+        this.initializeVideoPayload();
+      });
+
+      // Reload existing content from service
+      this.reloadExistingVideoContent();
+      return; // Skip initialization to avoid clearing existing content
+    }
+
+    // NEW GENERATION - Only executed when coming from form
+    console.log('🆕 Starting NEW generation from form');
+
+    // Session ID already generated and set in form component - don't regenerate!
+    // this.sessionId = this.socketConnection.generateSessionId();
+    // this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Video review session started (from form)');
+
+    // Socket data already cleared in form component - don't clear again!
+    // this.socketConnection.clearAgentData();
 
     this.contentDisabled = true;
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
       console.log('Video form data received:', this.formData);
+
+      // Check isBack flag before setting loading to true
+      this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+        if (!isBack && data && Object.keys(data).length > 0) {
+          console.log('🆕 Form data received - starting new generation, loading set to true');
+          this.loading = true;
+
+        } else if (isBack) {
+          console.log('🔄 isBack flag is true in getData - keeping loading false');
+          this.loading = false;
+          this.aiContentGenerationService.setIsBack(false);
+        }
+      });
+
       this.initializeVideoPayload();
     });
 
@@ -119,7 +216,7 @@ export class VideoReviewComponent {
     this.isImageRegenrateDisabled = false;
 
     // Disconnect socket after content is loaded
-    this.socketConnection.disconnect();
+    // this.socketConnection.disconnect();
 
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
@@ -157,7 +254,7 @@ export class VideoReviewComponent {
     this.isRegeneratingImage = true;
     // Don't set loading = true for regeneration (keep main loader hidden)
 
-    this.aiContentGenerationService.generateVoeVideo(videoFormData).subscribe({
+    this.aiContentGenerationService.generateVoeVideo(videoFormData, this.sessionId).subscribe({
       next: (response: any) => {
         console.log('Video regenerated:', response);
 
@@ -204,29 +301,28 @@ export class VideoReviewComponent {
   }
 
   // Workflow visualization methods
-  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+  getWorkflowAgents(): Array<{ name: string; status: string }> {
     const socketData = this.socketConnection.dataSignal();
 
-    // Define all agents in the correct order
+    // Define all agents in the correct order (video has only 2 agents)
     const agentOrder = [
-      'Extraction Agent',
       'prompt generation agent',
-      'content generation agent',
       'reviewer agent'
     ];
 
     // Map agents with their current status from socket data or default to 'PENDING'
     return agentOrder.map(agentName => {
-      const agentData = socketData[agentName];
+      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
+      const normalizedName = agentName.toLowerCase();
+      const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
+      const agentData = matchingKey ? socketData[matchingKey] : null;
+
       return {
         name: agentName,
-        status: agentData?.status || 'PENDING',
-        updatedAt: agentData?.updatedAt || '--:--:--'
+        status: agentData?.status || 'PENDING'
       };
     });
-  }
-
-  getLineColor(status: string): string {
+  } getLineColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
         return '#22c55e'; // Green
@@ -364,6 +460,27 @@ export class VideoReviewComponent {
   //     }
   //   });
   // }
+
+  // Reload existing content from service when returning from client
+  reloadExistingVideoContent(): void {
+    console.log('🔄 Reloading existing video content from service...');
+
+    this.aiContentGenerationService.getImage().subscribe((data) => {
+      if (!data) {
+        console.log('⚠️ No existing video data found in service');
+        return;
+      }
+
+      console.log('📥 Reloading existing video data:', data);
+
+      this.imageUrl = data;
+      this.isVideoFormat = this.isMp4(data);
+      this.contentDisabled = false;
+
+      console.log('✅ Video content reloaded successfully');
+      this.loading = false;
+    });
+  }
 
   ngOnDestroy(): void {
     // Clear session ID to stop receiving socket messages

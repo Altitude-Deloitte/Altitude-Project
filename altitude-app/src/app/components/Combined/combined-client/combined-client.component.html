@@ -10,10 +10,10 @@
                             <i class="pi pi-angle-left"></i>
                             Back to Client Dashboard</a>
                     </div>
-                    <h3 class="text-3xl">Combined</h3>
+                    <h3 class="text-3xl">Combined Campaign</h3>
                     <div class="flex items-center gap-2">
                         <a class="text-decoration-none p-3 rounded-full border-1 border-[#363636] flex gap-2"><img
-                                src="assets/images/InstagramLogo.svg">Combined</a>
+                                src="assets/images/InstagramLogo.svg">Combined Campaign</a>
                         <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April
                             16,
                             2025</a>
@@ -249,44 +249,110 @@
                                 <div (click)="onPanelClick($event)" class="relative cursor-pointer">
                                     <div class="flex my-4 flex-col justify-center items-center">
                                         <div class="flex justify-center items-center min-h-screen py-8">
-                                            <p-tabpanels
-                                                class="bg-[#F6F5EF] rounded-2xl border-4  shadow-xl max-w-3xl w-full overflow-hidden p-16">
+                                            <p-tabpanels class="bg-transparent">
 
 
                                                 <p-tabpanel value="0">
-                                                    <div>
-                                                        <p class="post-caption text-black"
-                                                            style="color: var(--app-bg-color);">
-                                                            {{
-                                                            this.editorContentSocialMedia1 }}</p>
-                                                        <!-- @if (hyperUrl) {
-                                                            <p class="post-caption text-black">For more details, visit our website:
-                                                                <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
-                                                                    {{this.hyperUrl}}
+                                                    <div
+                                                        class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                                                        <!-- Facebook Header -->
+                                                        <div
+                                                            class="flex items-center gap-3 p-4 border-b border-gray-200">
+                                                            <img *ngIf="brandlogoTop" [src]="brandlogoTop"
+                                                                alt="Brand Logo"
+                                                                class="w-10 h-10 rounded-full object-contain bg-white">
+                                                            <div class="flex-1 flex items-center">
+                                                                <h3 class="font-semibold text-gray-900 text-base">{{
+                                                                    formData?.brand || brand || 'Brand Name' }}</h3>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Facebook Content -->
+                                                        <div class="p-4">
+                                                            <p class="text-gray-900 text-sm mb-3 whitespace-pre-wrap">{{
+                                                                this.editorContentSocialMedia1 }}</p>
+                                                            <p *ngIf="hyperUrl" class="text-sm text-blue-600 mb-3">
+                                                                <a [href]="hyperUrl" target="_blank"
+                                                                    rel="noopener noreferrer" class="hover:underline">
+                                                                    {{ hyperUrl }}
                                                                 </a>
                                                             </p>
-                                                            } -->
-
-                                                        <!--<p *ngIf="formData?.Hashtags"> <b>Link : </b><a [href]="formData?.Hashtags" style="text-decoration: underline; color: #1717c5 !important;outline: none;" target="_blank"  > {{formData?.Hashtags}}</a></p>-->
-                                                        @if (imageUrl) {
-                                                        <img [src]="imageUrl" alt="Facebook Post" class="post-image" />
-                                                        }
-
+                                                            <img *ngIf="imageUrl" [src]="imageUrl" alt="Facebook Post"
+                                                                class="w-full max-h-[500px] object-cover rounded-lg" />
+                                                        </div>
+                                                        <!-- Facebook Action Buttons -->
+                                                        <div
+                                                            class="flex items-center justify-between px-4 py-3 border-t border-gray-200">
+                                                            <button
+                                                                class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                                                <i class="pi pi-thumbs-up text-lg"></i>
+                                                                <span class="text-sm font-medium">Like</span>
+                                                            </button>
+                                                            <button
+                                                                class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                                                <i class="pi pi-comment text-lg"></i>
+                                                                <span class="text-sm font-medium">Comment</span>
+                                                            </button>
+                                                            <button
+                                                                class="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                                                                <i class="pi pi-share-alt text-lg"></i>
+                                                                <span class="text-sm font-medium">Share</span>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </p-tabpanel>
                                                 <p-tabpanel value="1">
-                                                    <div class="instagram-post">
-                                                        @if (imageUrl) {
-                                                        <img [src]="imageUrl" alt="Instagram Post" class="post-image" />
-                                                        }
-                                                        <p class="post-caption text-black">{{
-                                                            this.editorContentSocialMedia2 }}</p>
-                                                        <!-- <p class="post-caption text-black   ">For more details, visit our
-                                                                website:
-                                                                <a [href]="this.hyperUrl" target="_blank" rel="noopener noreferrer" style="color: #0866ff;">
-                                                                    {{this.hyperUrl}}
+                                                    <div
+                                                        class="bg-white rounded-xl max-w-2xl mx-auto shadow-lg overflow-hidden">
+                                                        <!-- Instagram Header -->
+                                                        <div
+                                                            class="flex items-center gap-3 p-3 border-b border-gray-200">
+                                                            <img *ngIf="brandlogoTop" [src]="brandlogoTop"
+                                                                alt="Brand Logo"
+                                                                class="w-8 h-8 rounded-full object-contain bg-white">
+                                                            <div class="flex-1">
+                                                                <h3 class="font-semibold text-gray-900 text-sm">{{
+                                                                    formData?.brand || brand || 'Brand Name' }}</h3>
+                                                            </div>
+                                                        </div>
+                                                        <!-- Instagram Image -->
+                                                        <div *ngIf="imageUrl">
+                                                            <img [src]="imageUrl" alt="Instagram Post"
+                                                                class="w-full max-h-[600px] object-cover" />
+                                                        </div>
+                                                        <!-- Instagram Content -->
+                                                        <div class="p-4">
+                                                            <!-- Instagram Action Buttons -->
+                                                            <div class="flex items-center justify-between mb-3">
+                                                                <div class="flex items-center gap-4">
+                                                                    <button
+                                                                        class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                        <i class="pi pi-heart text-2xl"></i>
+                                                                    </button>
+                                                                    <button
+                                                                        class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                        <i class="pi pi-comment text-2xl"></i>
+                                                                    </button>
+                                                                    <button
+                                                                        class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                        <i class="pi pi-send text-2xl"></i>
+                                                                    </button>
+                                                                </div>
+                                                                <button
+                                                                    class="text-gray-900 hover:text-gray-600 transition-colors">
+                                                                    <i class="pi pi-bookmark text-2xl"></i>
+                                                                </button>
+                                                            </div>
+                                                            <p class="text-gray-900 text-sm"><span
+                                                                    class="font-semibold">{{ formData?.brand || brand ||
+                                                                    'Brand Name' }}</span> {{
+                                                                this.editorContentSocialMedia2 }}</p>
+                                                            <p *ngIf="hyperUrl" class="text-sm text-blue-900 mt-2">
+                                                                <a [href]="hyperUrl" target="_blank"
+                                                                    rel="noopener noreferrer" class="hover:underline">
+                                                                    {{ hyperUrl }}
                                                                 </a>
-                                                            </p> -->
+                                                            </p>
+                                                        </div>
                                                     </div>
                                                 </p-tabpanel>
                                             </p-tabpanels>

@@ -6,6 +6,7 @@ import {
   input,
   ViewChild,
   OnDestroy,
+  effect,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -21,13 +22,14 @@ import { EditorComponent, EditorModule } from '@tinymce/tinymce-angular';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { MenuModule } from 'primeng/menu';
 import { DialogModule } from 'primeng/dialog';
-import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { DialogSuccessComponent } from '../../dialog-success/dialog-success.component';
 import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { DrawerModule } from 'primeng/drawer';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
 
 @Component({
   selector: 'app-combined-review',
@@ -49,9 +51,10 @@ import { SocketConnectionService } from '../../../services/socket-connection.ser
     RouterLink,
     MenuModule,
     DialogModule,
-    LoaderComponent,
     ToastModule,
     ProgressSpinnerModule,
+    DrawerModule,
+    LoaderComponent,
   ],
   providers: [MessageService],
   templateUrl: './combined-review.component.html',
@@ -127,9 +130,7 @@ export class CombinedReviewComponent implements OnDestroy {
   translateIsLoading = false;
   private dataLoadedCount = 0;
   private totalDataToLoad = 3; // email, social, blog
-  private socketDisconnectTimeout: any; // Timeout for socket disconnection
-  private socketCheckInterval: any; // Interval to check socket completion
-  private allApisCompleted = false; // Flag to track if all APIs completed
+  showAgenticWorkflow = false;
   brandLinks: any[] = [];
   brandlogo: any;
   seoTitle: string = '';
@@ -187,6 +188,7 @@ export class CombinedReviewComponent implements OnDestroy {
   // Image Regeneration fields (shared across tabs)
   imageFeedback: string = '';
   isRegeneratingImage: boolean = false;
+  clientBack = false;
 
   constructor(
     private route: Router,
@@ -195,119 +197,128 @@ export class CombinedReviewComponent implements OnDestroy {
     private chnge: ChangeDetectorRef,
     public socketConnection: SocketConnectionService,
     private messageService: MessageService
-  ) { }
+  ) {
+    // Watch for socket completion signal
+    effect(() => {
+      const allCompleted = this.socketConnection.allAgentsCompleted();
+
+      if (allCompleted && this.loading) {
+        setTimeout(() => {
+          this.loading = false;
+          this.socketConnection.disconnect();
+        }, 500);
+      }
+    });
+  }
 
   private checkAllDataLoaded(): void {
     this.dataLoadedCount++;
     console.log(`Data loaded count: ${this.dataLoadedCount}/${this.totalDataToLoad}`);
     if (this.dataLoadedCount >= this.totalDataToLoad) {
-      this.allApisCompleted = true;
-      console.log('All 3 API calls completed, monitoring socket messages...');
+      console.log('✅ All 3 API calls completed, socket monitoring via effect() will handle completion');
 
-      // Start monitoring socket messages to detect when workflow completes
-      this.startSocketCompletionMonitoring();
+      // Save the data for instant retrieval when navigating back
+      this.saveCurrentCombinedReviewData();
+
+      // Note: Socket completion is automatically monitored by effect() watching allAgentsCompleted()
+      // No need for manual interval-based monitoring
     }
-  }
-
-  private startSocketCompletionMonitoring(): void {
-    // Clear any existing interval/timeout
-    if (this.socketCheckInterval) {
-      clearInterval(this.socketCheckInterval);
-    }
-    if (this.socketDisconnectTimeout) {
-      clearTimeout(this.socketDisconnectTimeout);
-    }
-
-    let lastSocketDataString = '';
-    let stableCount = 0;
-    const STABLE_THRESHOLD = 3; // Need 3 consecutive stable checks (1.8 seconds total)
-
-    // Check socket data every 600ms to see if workflow is complete
-    this.socketCheckInterval = setInterval(() => {
-      const socketData = this.socketConnection.dataSignal();
-      const currentSocketDataString = JSON.stringify(socketData);
-
-      console.log('Socket monitoring check:', {
-        agentCount: Object.keys(socketData).length,
-        agents: Object.keys(socketData),
-        allCompleted: this.areAllAgentsCompleted(socketData)
-      });
-
-      // Check if socket data has stabilized (no new messages)
-      if (currentSocketDataString === lastSocketDataString) {
-        stableCount++;
-        console.log(`Socket data stable count: ${stableCount}/${STABLE_THRESHOLD}`);
-      } else {
-        stableCount = 0; // Reset if data changed
-        lastSocketDataString = currentSocketDataString;
-      }
-
-      // If we have agents and all are completed and data is stable, hide loader
-      if (Object.keys(socketData).length > 0 &&
-        this.areAllAgentsCompleted(socketData) &&
-        stableCount >= STABLE_THRESHOLD) {
-
-        console.log('All socket agents completed and stable, hiding loader');
-        this.hideLoaderAndDisconnect();
-      }
-    }, 600); // Check every 600ms (matches socket processing interval)
-
-    // Fallback timeout: if socket monitoring takes too long (20 seconds), force hide loader
-    this.socketDisconnectTimeout = setTimeout(() => {
-      console.warn('Socket monitoring timeout reached (20s), forcing loader hide');
-      this.hideLoaderAndDisconnect();
-    }, 20000);
-  }
-
-  private areAllAgentsCompleted(socketData: any): boolean {
-    const agents = Object.values(socketData) as any[];
-    if (agents.length === 0) return false;
-
-    // All agents must have COMPLETED status
-    const allCompleted = agents.every(agent => agent.status === 'COMPLETED');
-    return allCompleted;
-  }
-
-  private hideLoaderAndDisconnect(): void {
-    // Clear monitoring interval and timeout
-    if (this.socketCheckInterval) {
-      clearInterval(this.socketCheckInterval);
-      this.socketCheckInterval = null;
-    }
-    if (this.socketDisconnectTimeout) {
-      clearTimeout(this.socketDisconnectTimeout);
-      this.socketDisconnectTimeout = null;
-    }
-
-    // Hide loader and disconnect socket
-    this.loading = false;
-    console.log('Loader hidden, disconnecting socket');
-    this.socketConnection.disconnect();
-    this.chnge.detectChanges();
   }
 
   formData: any;
   private sessionId: string = ''; // Unique session ID for this component instance
 
   ngOnInit(): void {
-    // Generate and set unique session ID for this review session
-    this.sessionId = this.socketConnection.generateSessionId();
-    this.socketConnection.setSessionId(this.sessionId);
-    console.log('🎯 Combined review session started:', this.sessionId);
+    this.socketConnection.setWorkflowType('combined');
+
+    // Check if user is returning from client screen
+    this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+      if (isBack) {
+        this.clientBack = isBack;
+        console.log('🔄 Returning from client - loading saved data instantly');
+        this.loading = false;
+        this.aiContentGenerationService.setIsBack(false);
+
+        // Load saved review data instantly (no waiting for getData)
+        this.aiContentGenerationService.getSavedCombinedReviewData().subscribe(savedData => {
+          if (savedData) {
+            console.log('📥 Restoring saved combined review data:', savedData);
+            // Email data
+            this.emailHeader = savedData.emailHeader;
+            this.editorContentEmail = savedData.editorContentEmail;
+            this.existingEmailContent = savedData.existingEmailContent;
+            this.totalWordCount = savedData.totalWordCount;
+            this.subjctsEmail = savedData.subjctsEmail;
+            this.hyperUrl = savedData.hyperUrl;
+
+            // Images
+            this.imageUrl = savedData.imageUrl;
+            this.imageOfferUrl = savedData.imageOfferUrl;
+            this.imageEventUrl = savedData.imageEventUrl;
+
+            // Social media data
+            this.posts = savedData.posts || [];
+            this.selectedSocialPlatforms = savedData.selectedSocialPlatforms;
+
+            // Blog data
+            this.editorContentBlog = savedData.editorContentBlog;
+            this.blog_title = savedData.blog_title;
+
+            // Form data
+            this.formData = savedData.formData;
+            this.brand = savedData.brand;
+            this.showMore = savedData.showMore;
+
+            this.contentDisabled = false;
+            this.isEMailPromptDisabled = false;
+            this.isImageRegenrateDisabled = false;
+            this.isImageRefineDisabled = false;
+
+            // Force change detection to show content
+            setTimeout(() => {
+              this.contentDisabled = false;
+            }, 100);
+
+            // Initialize payloads with saved form data
+            this.initializeEmailPayload();
+            this.initializeSocialPayload();
+            this.initializeBlogPayload();
+          }
+        }).unsubscribe();
+
+        return; // Exit early, don't run rest of ngOnInit
+      }
+    }).unsubscribe();
+
+    // NEW GENERATION - Only executed when coming from form
+    console.log('🆕 Starting NEW generation from form');
+
+    // Generate unique session ID BEFORE API calls
+    // Session ID already generated and set in form component - don't regenerate!
+    // this.sessionId = this.socketConnection.generateSessionId();
+    // this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Combined campaign review session started (from form)');
 
     // Reset data loaded counter for fresh page load
     this.dataLoadedCount = 0;
 
-    // Clear socket data before starting (for combined, only clear once)
-    this.socketConnection.clearAgentData();
+    // Socket data already cleared in form component - don't clear again!
+    // this.socketConnection.clearAgentData();
 
-    this.imageUrl = null;
-    this.loading = true;
-    this.editorContentEmail = [];
+    // Get form data from service
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
+      // Add session_id to formData for API calls
+      this.formData.session_id = this.sessionId;
 
+      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
+      if (this.clientBack) {
+        console.log('🔄 Returning from client - loading saved data instantly');
+        this.loading = false;
+      } else {
+        this.loading = true;
+
+      }
       // Get selected social media platforms from campaign2
       if (data?.campaign2) {
         this.selectedSocialPlatforms = Array.isArray(data.campaign2)
@@ -348,6 +359,9 @@ export class CombinedReviewComponent implements OnDestroy {
     let brandName = this.formData?.brand?.trim();
     brandName = brandName.replace(/\s+/g, '');
     this.showMore = 'https://www.' + brandName;
+
+    // Set hyperUrl - prioritize formData.Hashtags (user-provided URL), fallback to brand website
+    this.hyperUrl = this.formData?.Hashtags || this.showMore;
 
     //heading and email content - now using new API format
     this.contentDisabled = true;
@@ -1295,6 +1309,7 @@ Output the entire blog in HTML format, followed by:
     this.emailPayload.append('word_limit', this.formData?.wordLimit || '');
     this.emailPayload.append('target_reader', this.formData?.readers || '');
     this.emailPayload.append('image_details', this.formData?.imageOpt || '');
+    this.emailPayload.append('platform_campaign', this.formData?.campaign)
 
     if (this.formData?.imgDesc && this.formData?.imgDesc.trim() !== '') {
       this.emailPayload.append('image_description', this.formData?.imgDesc);
@@ -1406,7 +1421,7 @@ Output the entire blog in HTML format, followed by:
     this.isRegeneratingEmailContent = true;
 
 
-    this.aiContentGenerationService.generateContent(this.emailPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.emailPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Email content regenerated:', data);
         this.aiContentGenerationService.setEmailResponseData(data);
@@ -1450,6 +1465,9 @@ Output the entire blog in HTML format, followed by:
         this.emailContentFeedback = '';
         this.initializeEmailPayload();
         this.isRegeneratingEmailContent = false;
+
+        // Save regenerated data immediately
+        this.saveCurrentCombinedReviewData();
 
         this.chnge.detectChanges();
       },
@@ -1499,7 +1517,7 @@ Output the entire blog in HTML format, followed by:
     this.isRegeneratingSocialContent = true;
     // this.loading = true;
 
-    this.aiContentGenerationService.generateContent(this.socialPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.socialPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Social content regenerated:', data);
         this.aiContentGenerationService.setSocialResponseData(data);
@@ -1541,6 +1559,10 @@ Output the entire blog in HTML format, followed by:
         this.initializeSocialPayload();
         this.isRegeneratingSocialContent = false;
         // this.loading = false;
+
+        // Save regenerated data immediately
+        this.saveCurrentCombinedReviewData();
+
         this.chnge.detectChanges();
       },
       error: (error) => {
@@ -1589,7 +1611,7 @@ Output the entire blog in HTML format, followed by:
     this.isRegeneratingBlogContent = true;
     // this.loading = true;
 
-    this.aiContentGenerationService.generateContent(this.blogPayload!).subscribe({
+    this.aiContentGenerationService.generateContent(this.blogPayload!, this.sessionId).subscribe({
       next: (data) => {
         console.log('Blog content regenerated:', data);
         this.aiContentGenerationService.setBlogResponseData(data);
@@ -1616,9 +1638,13 @@ Output the entire blog in HTML format, followed by:
         this.initializeBlogPayload();
         this.isRegeneratingBlogContent = false;
         // this.loading = false;
+
+        // Save regenerated data immediately
+        this.saveCurrentCombinedReviewData();
+
         this.chnge.detectChanges();
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error regenerating blog content:', error);
         this.messageService.add({
           severity: 'error',
@@ -1663,7 +1689,7 @@ Output the entire blog in HTML format, followed by:
     this.isRegeneratingImage = true;
     // this.loading = true;
 
-    this.aiContentGenerationService.generateContent(payload).subscribe({
+    this.aiContentGenerationService.generateContent(payload, this.sessionId).subscribe({
       next: (data) => {
         console.log('Image regenerated:', data);
 
@@ -1727,16 +1753,38 @@ Output the entire blog in HTML format, followed by:
     }
   }
 
+  // Save current combined review data for instant retrieval when navigating back
+  private saveCurrentCombinedReviewData(): void {
+    const savedData = {
+      emailHeader: this.emailHeader,
+      editorContentEmail: this.editorContentEmail,
+      existingEmailContent: this.existingEmailContent,
+      totalWordCount: this.totalWordCount,
+      subjctsEmail: this.subjctsEmail,
+      hyperUrl: this.hyperUrl,
+      imageUrl: this.imageUrl,
+      imageOfferUrl: this.imageOfferUrl,
+      imageEventUrl: this.imageEventUrl,
+      posts: this.posts,
+      selectedSocialPlatforms: this.selectedSocialPlatforms,
+      editorContentBlog: this.editorContentBlog,
+      blog_title: this.blog_title,
+      formData: this.formData,
+      brand: this.brand,
+      showMore: this.showMore
+    };
+
+    this.aiContentGenerationService.setSavedCombinedReviewData(savedData);
+    console.log('💾 Combined review data saved for instant retrieval');
+  }
+
   ngOnDestroy(): void {
-    // Clear socket monitoring interval and timeout
-    if (this.socketCheckInterval) {
-      clearInterval(this.socketCheckInterval);
-      this.socketCheckInterval = null;
-    }
-    if (this.socketDisconnectTimeout) {
-      clearTimeout(this.socketDisconnectTimeout);
-      this.socketDisconnectTimeout = null;
-    }
+    // Clear socket monitoring interval if active
+    // if (this.socketCompletionInterval) {
+    //   clearInterval(this.socketCompletionInterval);
+    //   this.socketCompletionInterval = null;
+    //   console.log('🧹 Cleared socket completion monitoring interval');
+    // }
 
     // Clear session ID to stop receiving socket messages
     this.socketConnection.clearSessionId();
@@ -1762,5 +1810,56 @@ Output the entire blog in HTML format, followed by:
     // this.aiContentGenerationService.setplagrism(null);
 
     console.log('Combined review component destroyed - data retained for client view');
+  }
+
+  // Agentic Workflow Helper Methods
+  getWorkflowAgents(): Array<{ name: string; status: string; updatedAt: string }> {
+    const socketData = this.socketConnection.dataSignal();
+
+    // Define all agents in the correct order
+    const agentOrder = [
+      'Extraction Agent',
+      'prompt generation agent',
+      'content generation agent',
+      'reviewer agent'
+    ];
+
+    // Map agents with their current status from socket data or default to 'PENDING'
+    return agentOrder.map(agentName => {
+      const agentData = socketData[agentName];
+      return {
+        name: agentName,
+        status: agentData?.status || 'PENDING',
+        updatedAt: agentData?.updatedAt || '--:--:--'
+      };
+    });
+  }
+
+  getLineColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getMarkerUrl(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return 'url(#arrowGreen)';
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return 'url(#arrowYellow)';
+      case 'PENDING':
+      default:
+        return 'url(#arrowGray)';
+    }
   }
 }
