@@ -158,6 +158,18 @@ export class CombinedFormComponent {
 
   imageOption: string = '';
   imageBox: string = '';
+
+  // BPCL: Brand-based computed properties
+  get isBPCL(): boolean {
+    const brandName = this.socialwebsite?.get('brand')?.value;
+    return brandName?.toLowerCase().trim() === 'bharatpetroleum.in';
+  }
+
+  get isNike(): boolean {
+    const brandName = this.socialwebsite?.get('brand')?.value;
+    return brandName?.toLowerCase().trim() === 'nike.com';
+  }
+
   ngOnInit(): void {
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
@@ -193,6 +205,7 @@ export class CombinedFormComponent {
       imageOpt: ['N/A'],
       imgDesc: [''],
       videoPrompt: [''], // Video generation prompt
+      additionalRequest: [null], // BPCL: Additional request radio (WhatsApp/Push Notification)
     });
     //this.fetchCampaignData();
     this.aiContentGenerationService.setImage(null);
@@ -415,6 +428,8 @@ export class CombinedFormComponent {
         formValues.campaign = formValues.campaign2;
       }
 
+      console.log('📤 Combined Form - Setting formData to service:', formValues);
+      console.log('📤 Combined Form - Brand name being sent:', formValues.brand);
       this.aiContentGenerationService.setData(formValues);
       this.navigateToReview();
     } else {

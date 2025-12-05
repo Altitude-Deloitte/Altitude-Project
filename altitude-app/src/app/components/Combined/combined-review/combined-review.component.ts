@@ -242,6 +242,31 @@ export class CombinedReviewComponent implements OnDestroy {
   formData: any;
   private isReturningFromClient = false; // Flag to track if returning from client screen
 
+  // BPCL: Brand-based computed properties with improved null safety
+  get isBPCL(): boolean {
+    const brandName = this.formData?.brand;
+    if (!brandName) {
+      console.warn('⚠️ Combined Review - brandName is undefined in formData:', this.formData);
+      return false;
+    }
+    const normalized = brandName.toLowerCase().trim();
+    const result = normalized === 'bharatpetroleum.in';
+    console.log('🔍 Combined Review - isBPCL check:', { brandName, normalized, result });
+    return result;
+  }
+
+  get isNike(): boolean {
+    const brandName = this.formData?.brand;
+    if (!brandName) {
+      console.warn('⚠️ Combined Review - brandName is undefined in formData:', this.formData);
+      return false;
+    }
+    const normalized = brandName.toLowerCase().trim();
+    const result = normalized === 'nike.com';
+    console.log('🔍 Combined Review - isNike check:', { brandName, normalized, result });
+    return result;
+  }
+
   ngOnInit(): void {
     // Check if we're returning from client screen by checking if content already exists
     this.isReturningFromClient = !!(
@@ -273,7 +298,10 @@ export class CombinedReviewComponent implements OnDestroy {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
+      console.log('📊 Combined Review - Received formData from service:', data);
+      console.log('📊 Combined Review - Brand name:', data?.brand);
+      console.log('📊 Combined Review - isBPCL:', this.isBPCL);
+      console.log('📊 Combined Review - isNike:', this.isNike);
 
       // Get selected social media platforms from campaign2
       if (data?.campaign2) {

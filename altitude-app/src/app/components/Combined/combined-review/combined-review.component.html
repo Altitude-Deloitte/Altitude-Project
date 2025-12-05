@@ -26,7 +26,8 @@
                             2025</a>
                     </div>
                 </div>
-                <p-tablist class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
+                <!-- BPCL: Conditional tab list based on brand -->
+                <p-tablist *ngIf="!isBPCL" class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
                     <div class="flex gap-4 items-center justify-center bg-[#09040e]">
                         <p-tab value="0" class="text-white"><i class="pi pi-envelope text-white"></i>Email</p-tab>
                         <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
@@ -35,8 +36,18 @@
                             Blog</p-tab>
                         <p-tab value="3" class="text-white"><i class="pi pi-video text-white"></i>AI Video</p-tab>
                     </div>
-
                 </p-tablist>
+
+                <!-- BPCL: Custom tab list for BPCL brand -->
+                <p-tablist *ngIf="isBPCL" class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
+                    <div class="flex gap-4 items-center justify-center bg-[#09040e]">
+                        <p-tab value="0" class="text-white"><i class="pi pi-whatsapp text-white"></i>WhatsApp</p-tab>
+                        <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
+                            Media</p-tab>
+                        <p-tab value="3" class="text-white"><i class="pi pi-video text-white"></i>Video</p-tab>
+                    </div>
+                </p-tablist>
+
                 <div class="flex items-center gap-4">
 
                     <button class="border border-2 border-[#BB93FF] px-5 py-3 rounded-full">
@@ -65,7 +76,8 @@
             </div>
 
             <p-tabpanels class="bg-[#09040e]" class="w-full flex flex-col">
-                <p-tabpanel value="0" class="bg-[#09040e]">
+                <!-- Email Tab (Nike/Default) -->
+                <p-tabpanel *ngIf="!isBPCL" value="0" class="bg-[#09040e]">
                     <div class="flex mt-5 gap-4 w-full items-start">
                         <div class="flex-1 min-w-0">
                             <div class="">
@@ -377,6 +389,90 @@
                         </div>
                     </div>
                 </p-tabpanel>
+
+                <!-- BPCL: WhatsApp Tab -->
+                <p-tabpanel *ngIf="isBPCL" value="0" class="bg-[#09040e]">
+                    <div class="flex mt-5 gap-4 w-full items-start">
+                        <div class="flex-1 min-w-0">
+                            <div class="">
+                                <p-accordion value="0" class="bg-[#121212]">
+                                    <p-accordion-panel value="0">
+                                        <p-accordion-header
+                                            class="bg-[#121212] border-1 border-b-0 rounded-t-xl p-4 border-[#363636]">
+                                            Task Details
+                                        </p-accordion-header>
+                                        <p-accordion-content
+                                            class="p-4 bg-[#121212] border-1 border-[#363636] rounded-b-xl">
+                                            <div class="flex justify-between items-start">
+                                                <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                                                        <span class="font-semibold">{{this.formData?.brand || this.brand
+                                                            ||
+                                                            '-'}}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                                                        <span class="font-semibold">{{this.formData?.purpose ||
+                                                            '-'}}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Topic</span>
+                                                        <span class="font-semibold">{{this.formData?.topic ||
+                                                            '-'}}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                                        <span class="font-semibold">{{this.formData?.dueDate ||
+                                                            '-'}}</span>
+                                                    </div>
+                                                    <div class="flex flex-col">
+                                                        <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                                        <span class="font-semibold">{{this.formData?.readers ||
+                                                            '-'}}</span>
+                                                    </div>
+                                                    <div class="flex flex-col col-span-2">
+                                                        <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                                        <span class="font-semibold">{{this.formData?.additional ||
+                                                            '-'}}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </p-accordion-content>
+                                    </p-accordion-panel>
+                                </p-accordion>
+                            </div>
+                        </div>
+                        <div class="flex-[3] min-w-0">
+                            <div class="flex flex-col">
+                                <div class="rounded-t-xl bg-[#363636]">
+                                    <div class="flex justify-between items-center p-4 flex-wrap">
+                                        <div class="flex items-center gap-2">
+                                            <button class="bg-[#8D4BFF] rounded-full py-4 px-5" disabled><i
+                                                    class="pi pi-sparkles"></i></button>
+                                            <h2 class="text-2xl font-bold">Generated Results</h2>
+                                        </div>
+                                        <div class="flex items-center gap-2">
+                                            <img src="assets/images/ListMagnifyingGlass.svg" alt="">
+                                            <p class="font-semibold text-lg" style="cursor: pointer;"
+                                                (click)="onCreateProject()">Check Plagiarism</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t-1 border-[#686868] bg-[#363636] p-5 rounded-b-xl">
+                                    <div class="flex my-4 flex-col justify-center items-center">
+                                        <div class="relative w-full flex justify-center">
+                                            <img src="assets/images/bpcl-whatsapp.png" alt="BPCL WhatsApp"
+                                                class="max-w-full h-auto rounded-lg" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </p-tabpanel>
+
+                <!-- Social Media Tab Panel -->
                 <p-tabpanel value="1" class="bg-[#09040e]">
                     <div class="flex mt-5 gap-4 w-full items-start">
                         <div class="flex-1 min-w-0">
@@ -509,9 +605,19 @@
                                                             [value]="i.toString()">
                                                             <!-- Facebook Post UI -->
                                                             <ng-container *ngIf="platform === 'Facebook'">
-                                                                <div class="facebook-post bg-white rounded-lg overflow-hidden"
-                                                                    style="max-width: 500px; margin: 0 auto; box-shadow: none;">
+                                                                <!-- BPCL: Show only image -->
+                                                                <div *ngIf="isBPCL"
+                                                                    class="flex justify-center items-center"
+                                                                    style="max-width: 500px; margin: 0 auto;">
+                                                                    <img src="assets/images/bpcl-facebook.png"
+                                                                        alt="BPCL Facebook"
+                                                                        class="w-full h-auto object-cover" />
+                                                                </div>
 
+                                                                <!-- Nike: Full layout -->
+                                                                <div *ngIf="!isBPCL"
+                                                                    class="facebook-post bg-white rounded-lg overflow-hidden"
+                                                                    style="max-width: 500px; margin: 0 auto; box-shadow: none;">
                                                                     <!-- Facebook Header -->
                                                                     <div class="flex items-center gap-3 mb-3 p-4 pb-0">
                                                                         <div
@@ -531,9 +637,6 @@
                                                                             <i class="pi pi-ellipsis-h"></i>
                                                                         </button>
                                                                     </div>
-
-                                                                    <!-- Nike Shoe Image -->
-
 
                                                                     <!-- Facebook Content -->
                                                                     <div class="mb-3 px-4">
@@ -593,7 +696,18 @@
 
                                                             <!-- Instagram Post UI -->
                                                             <ng-container *ngIf="platform === 'Instagram'">
-                                                                <div class="instagram-post bg-white rounded-2xl overflow-hidden border border-gray-200"
+                                                                <!-- BPCL: Show only image -->
+                                                                <div *ngIf="isBPCL"
+                                                                    class="flex justify-center items-center"
+                                                                    style="max-width: 500px; margin: 0 auto;">
+                                                                    <img src="assets/images/bpcl-insta.png"
+                                                                        alt="BPCL Instagram"
+                                                                        class="w-full h-auto object-cover" />
+                                                                </div>
+
+                                                                <!-- Nike: Full layout -->
+                                                                <div *ngIf="!isBPCL"
+                                                                    class="instagram-post bg-white rounded-2xl overflow-hidden border border-gray-200"
                                                                     style="max-width: 500px; margin: 0 auto; box-shadow: none;">
                                                                     <!-- Instagram Header -->
                                                                     <div
@@ -1098,10 +1212,19 @@
                                         animationDuration=".8s"></p-progressSpinner>
                                 </div>
 
-                                <!-- PrimeNG Galleria for Videos -->
-                                <p-galleria class="video-galleria" [value]="videoGalleryItems" [numVisible]="3"
-                                    [circular]="false" [showItemNavigators]="false" [showThumbnails]="true"
-                                    [showThumbnailNavigators]="true" [showIndicators]="false"
+                                <!-- BPCL: Simple video element -->
+                                <div *ngIf="isBPCL" class="w-full flex justify-center items-center"
+                                    style="min-height: 500px;">
+                                    <video src="assets/videos/bpcl-video.mp4" controls class="w-full rounded-lg"
+                                        style="aspect-ratio: 1/1; object-fit: cover; max-height: 600px;">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                </div>
+
+                                <!-- Nike/default: PrimeNG Galleria for Videos -->
+                                <p-galleria *ngIf="!isBPCL" class="video-galleria" [value]="videoGalleryItems"
+                                    [numVisible]="3" [circular]="false" [showItemNavigators]="false"
+                                    [showThumbnails]="true" [showThumbnailNavigators]="true" [showIndicators]="false"
                                     [activeIndex]="currentVideoIndex"
                                     (activeIndexChange)="onGalleriaIndexChange($event)"
                                     [containerStyle]="{'max-width': '100%'}"

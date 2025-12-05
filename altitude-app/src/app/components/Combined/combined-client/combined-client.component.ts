@@ -183,6 +183,32 @@ export class CombinedClientComponent {
   blogstructure: any;
   editorContentSocialMedia2: any;
   brand: any;
+
+  // BPCL: Brand detection getters with improved null safety
+  get isBPCL(): boolean {
+    const brandName = this.formData?.brand;
+    if (!brandName) {
+      console.warn('⚠️ Combined Client - brandName is undefined in formData:', this.formData);
+      return false;
+    }
+    const normalized = brandName.toLowerCase().trim();
+    const result = normalized === 'bharatpetroleum.in';
+    console.log('🔍 Combined Client - isBPCL check:', { brandName, normalized, result });
+    return result;
+  }
+
+  get isNike(): boolean {
+    const brandName = this.formData?.brand;
+    if (!brandName) {
+      console.warn('⚠️ Combined Client - brandName is undefined in formData:', this.formData);
+      return false;
+    }
+    const normalized = brandName.toLowerCase().trim();
+    const result = normalized === 'nike.com';
+    console.log('🔍 Combined Client - isNike check:', { brandName, normalized, result });
+    return result;
+  }
+
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
@@ -201,7 +227,10 @@ export class CombinedClientComponent {
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('datadatadatadatadatadatadatadatadatadatadatadata', data);
+      console.log('📊 Combined Client - Received formData from service:', data);
+      console.log('📊 Combined Client - Brand name:', data?.brand);
+      console.log('📊 Combined Client - isBPCL:', this.isBPCL);
+      console.log('📊 Combined Client - isNike:', this.isNike);
     });
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {

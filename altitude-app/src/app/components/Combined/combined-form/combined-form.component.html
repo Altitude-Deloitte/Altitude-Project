@@ -240,6 +240,24 @@
             </div>
         </div>
     </div>
+
+    <!-- Additional Request -->
+    <div>
+        <label class="block text-gray-300 mb-1">Additional Request</label>
+        <div class="flex gap-6">
+            <label class="flex items-center text-gray-300">
+                <p-radioButton name="additionalRequest" value="WhatsApp" formControlName="additionalRequest"
+                    class="mr-2"></p-radioButton>
+                WhatsApp
+            </label>
+            <label class="flex items-center text-gray-300">
+                <p-radioButton name="additionalRequest" value="Push Notification" formControlName="additionalRequest"
+                    class="mr-2"></p-radioButton>
+                Push Notification
+            </label>
+        </div>
+    </div>
+
     @switch (socialwebsite.get('imageOpt')?.value) {
     @case ('na') {
     }
