@@ -1,15 +1,11 @@
 import {
   Component,
-  ElementRef,
   inject,
-  OnInit,
   signal,
-  Signal,
-  viewChild,
 } from '@angular/core';
 
 import { RadioButtonModule } from 'primeng/radiobutton';
-import { CommonModule, DatePipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { SelectModule } from 'primeng/select';
 import {
@@ -23,18 +19,22 @@ import {
 import { ButtonModule } from 'primeng/button';
 
 import { ContentGenerationService } from '../../../services/content-generation.service';
-import { Router, RouterLink } from '@angular/router';
-import { SelectionStore } from '../../../store/campaign.store';
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { DrawerModule } from 'primeng/drawer';
+import { InputTextModule } from 'primeng/inputtext';
+
 @Component({
   selector: 'app-image-form',
   imports: [
-    SelectModule,
+    RadioButtonModule,
+    CommonModule,
     FormsModule,
     ButtonModule,
     ReactiveFormsModule,
-    CommonModule,
-    RadioButtonModule,
+    SelectModule,
+    DrawerModule,
+    InputTextModule,
   ],
   templateUrl: './image-form.component.html',
   styleUrl: './image-form.component.css',
@@ -68,36 +68,32 @@ export class ImageFormComponent {
   selectedToppings: any;
   announcer = inject(LiveAnnouncer);
   imageUrl: null | undefined;
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
+
+  // Properties for upload drawer and image handling
+  showUploadDrawer: boolean = false;
+  showImageUrlInput: boolean = false;
+  referenceImageUrl: string = '';
+  referenceImageFile: File | null = null;
+  imagePreviewUrl: string = '';
+  uploadedImagePreview: string = '';
+
   constructor(
     private fb: FormBuilder,
-
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
-    // private datePipe: DatePipe,
-    private http: HttpClient
-  ) {}
+    public socketConnection: SocketConnectionService
+  ) { }
 
   urlImage: any;
   onCreateProject(): void {
     //
     var formValues = { ...this.socialwebsite.getRawValue() };
 
-    const urlData = [
-      formValues.url1,
-      formValues.url2,
-      formValues.url3,
-      formValues.url4,
-    ].filter((url) => url && url.trim() !== '');
-    const { format } = formValues;
-    const { fps } = formValues;
-    const { position } = formValues;
+    const { prompt } = formValues;
 
     this.imageUrl = null;
-
-    // const dialogRef = this.dialog.open(ConfirmationDialogComponent, {
-    //   width: '574px',
-    //   height: '346px',
-    // });
 
     // dialogRef.afterClosed().subscribe((result) => {
     // if (result) {
@@ -105,21 +101,63 @@ export class ImageFormComponent {
       var formValues = { ...this.socialwebsite.getRawValue() };
       console.log('Form Values:', formValues);
 
+      // Set form data first so review screen can access it
+      this.aiContentGenerationService.setData(formValues);
+
+      // Create FormData for multipart form data
+      const imageFormData = new FormData();
+
+      // Generate session_id and connect socket BEFORE API call
+      const sessionId = this.socketConnection.generateSessionId();
+      this.socketConnection.clearAgentData(); // Reset all tracking including completion signal
+      this.socketConnection.setSessionId(sessionId); // Connect socket with this session
+      console.log('🎯 Image form generated session_id:', sessionId);
+
+      imageFormData.append('brief', prompt);
+      console.log('Brief added to FormData:', prompt);
+
+      // Append optional reference_image if file is uploaded
+      if (this.referenceImageFile) {
+        imageFormData.append('reference_image', this.referenceImageFile, this.referenceImageFile.name);
+        console.log('Reference image file added to payload:', this.referenceImageFile.name, 'Size:', this.referenceImageFile.size, 'Type:', this.referenceImageFile.type);
+      }
+
+      // Append optional reference_image_url if URL is provided
+      if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+        imageFormData.append('reference_image_url', this.referenceImageUrl);
+        console.log('Reference image URL added to payload:', this.referenceImageUrl);
+      }
+
+      // Log FormData contents for debugging
+      console.log('FormData entries:');
+      imageFormData.forEach((value, key) => {
+        if (value instanceof File) {
+          console.log(`${key}:`, value.name, value.size, value.type);
+        } else {
+          console.log(`${key}:`, value);
+        }
+      });
+
       this.aiContentGenerationService
-        .createAnimation(urlData, format, fps, position)
+        .generateImage(imageFormData, sessionId)
         .subscribe(
-          (response) => {
-            console.log('Response banner:', response);
-            this.imageUrl = response.s3Url;
-            console.log('banner image:', this.imageUrl);
+          (response: any) => {
+            console.log('Response image generation response:', response);
+            this.imageUrl = response?.image_url;
+            console.log('generated image:', this.imageUrl);
             this.aiContentGenerationService.setImage(this.imageUrl);
-            // Handle the response, maybe navigate to another component to display the image
+
+            // Navigate to review only after getting the response
+
           },
           (error) => {
             console.error('Error:', error);
+            console.error('Error status:', error.status);
+            console.error('Error message:', error.message);
+            console.error('Error details:', error.error);
+            // Optionally show error message to user
           }
         );
-      this.aiContentGenerationService.setData(formValues);
       this.navigateToForm();
     } else {
       console.log('Form is invalid');
@@ -134,23 +172,19 @@ export class ImageFormComponent {
     this.route.navigateByUrl('image-review');
   }
 
-  onFloatingButtonClick(): void {}
+  onFloatingButtonClick(): void { }
 
   // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
   ngOnInit(): void {
+    this.socketConnection.dataSignal.set({});
     const currentDate = new Date();
     this.socialwebsite = this.fb.group({
       taskId: [{ value: this.generateTaskId(), disabled: true }],
       dueDate: [currentDate.toISOString().split('T')[0]],
       topic: [''],
-      url1: ['', Validators.required],
-      url2: ['', Validators.required],
-      url3: [''],
-      url4: [''],
-      format: ['', Validators.required],
-      fps: ['', Validators.required],
-      position: ['', Validators.required],
+      url1: [''],
+      prompt: ['', Validators.required],
     });
 
     this.aiContentGenerationService.setImage(null);
@@ -210,26 +244,80 @@ export class ImageFormComponent {
     }
   }
 
-  oonCreateProject(): void {
-    if (this.socialwebsite.valid) {
-      const formValues = { ...this.socialwebsite.getRawValue() };
-      const urlData = formValues.urls.map((u: { url: string }) => u.url);
-      const { format, fps, position } = formValues;
+  // Trigger file upload from drawer
+  triggerFileUpload(): void {
+    this.showUploadDrawer = false;
+    setTimeout(() => {
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) {
+        fileInput.click();
+      }
+    }, 100);
+  }
 
-      this.aiContentGenerationService
-        .createAnimation(urlData, format, fps, position)
-        .subscribe(
-          (response) => {
-            console.log('Response:', response);
-            this.aiContentGenerationService.setImage(response.s3Url);
-            this.route.navigateByUrl('review');
-          },
-          (error) => {
-            console.error('Error:', error);
-          }
-        );
+  // Switch to image URL input mode
+  switchToImageUrlInput(): void {
+    this.showUploadDrawer = false;
+    this.showImageUrlInput = true;
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+  }
+
+  // Handle image file selection
+  onImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      this.referenceImageFile = input.files[0];
+      console.log('Reference image file selected:', this.referenceImageFile.name);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.uploadedImagePreview = e.target.result;
+      };
+      reader.readAsDataURL(this.referenceImageFile);
+
+      // Remove URL input mode and clear URL values when file is uploaded
+      this.showImageUrlInput = false;
+      this.referenceImageUrl = '';
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  // Handle image URL change
+  onImageUrlChange(): void {
+    if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
+      this.imagePreviewUrl = this.referenceImageUrl;
+      // Clear uploaded file when URL is provided
+      this.uploadedImagePreview = '';
+      this.referenceImageFile = null;
     } else {
-      console.log('Form is invalid');
+      this.imagePreviewUrl = '';
+    }
+  }
+
+  // Clear input
+  clearInput(): void {
+    this.showImageUrlInput = false;
+    this.referenceImageUrl = '';
+    this.imagePreviewUrl = '';
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.socialwebsite.patchValue({ prompt: '' });
+  }
+
+  // Remove reference image (both uploaded and URL)
+  removeReferenceImage(): void {
+    this.uploadedImagePreview = '';
+    this.referenceImageFile = null;
+    this.imagePreviewUrl = '';
+    this.referenceImageUrl = '';
+    this.showImageUrlInput = false;
+
+    // Reset file input to allow re-uploading the same file
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
     }
   }
 }

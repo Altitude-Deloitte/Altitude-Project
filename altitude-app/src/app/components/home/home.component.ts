@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit {
       icon: 'assets/images/CubeFocus.svg',
     },
     { name: 'AI Video', code: 'video', icon: 'assets/images/Video.svg' },
-    { name: 'Image Animation', code: 'image', icon: 'assets/images/icon.svg' },
+    { name: 'Image Generation', code: 'image', icon: 'assets/images/icon.svg' },
     { name: 'Combined Campaign', code: 'combined', icon: 'assets/images/cube.svg' },
     { name: 'Meme Generation', code: 'meme', icon: 'assets/images/meme.svg' },
     // Add more options as needed

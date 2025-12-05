@@ -15,14 +15,15 @@ interface Agent {
 }
 
 // Workflow types with their expected agent counts
-export type WorkflowType = 'email' | 'social' | 'blog' | 'combined' | 'video';
+export type WorkflowType = 'email' | 'social' | 'blog' | 'combined' | 'video' | 'image';
 
 export const EXPECTED_AGENT_COUNTS: Record<WorkflowType, number> = {
   email: 4,
   social: 4,
   blog: 4,
   combined: 4,
-  video: 2
+  video: 2,
+  image: 2,
 };
 
 @Injectable({

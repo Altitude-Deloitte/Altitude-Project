@@ -23,15 +23,15 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './image-client.component.css',
 })
 export class ImageClientComponent {
-  imageUrl: any;
-  formData: any;
-  contentDisabled = false;
-  isVideoFormat = false;
   @ViewChild('commentPanel') commentPanel!: OverlayPanel;
   commentText: string = '';
   panelStyle: any = {};
   clickEvent?: MouseEvent;
   commentBox = '';
+  imageUrl: any;
+  formData: any;
+  contentDisabled = false;
+  isVideoFormat = false;
   //silder
   disabled = false;
   max = 100;
@@ -41,10 +41,10 @@ export class ImageClientComponent {
   thumbLabel = false;
   value = 0;
   isImageRegenrateDisabled = false;
-  constructor(
-    private route: Router,
-    private aiContentGenerationService: ContentGenerationService
-  ) {
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
+
+  constructor(private aiContentGenerationService: ContentGenerationService, private route: Router) {
     // Watch for chat response from AI chat
     effect(() => {
       const chatResponse = this.aiContentGenerationService.chatResponse();
@@ -78,18 +78,15 @@ export class ImageClientComponent {
     return url.toLowerCase().endsWith('.mp4');
   }
 
-  navigateToForm(): void {
-    this.route.navigateByUrl('image-client');
-  }
-
   // Process chat response data
   processChatResponse(generationData: any) {
     console.log('Processing chat response in image client:', generationData);
 
     // Update component data based on chat response
     if (generationData.image_url) {
-      this.imageUrl = generationData.image_url;
-      this.isVideoFormat = this.isMp4(generationData.image_url);
+      const url = generationData.image_url;
+      this.imageUrl = url;
+      this.isVideoFormat = this.isMp4(url);
       this.contentDisabled = false;
     }
 
@@ -112,4 +109,9 @@ export class ImageClientComponent {
     }
   }
   saveComment() { }
+
+  navigateBack(): void {
+    this.aiContentGenerationService.setIsBack(true);
+    this.route.navigateByUrl('/image-review');
+  }
 }

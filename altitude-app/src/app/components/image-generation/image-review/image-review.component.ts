@@ -1,12 +1,13 @@
-import { ChangeDetectorRef, Component, effect } from '@angular/core';
+import { Component, effect } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
-import { CommonModule } from '@angular/common';
+import { CommonModule, KeyValue } from '@angular/common';
 import { ButtonModule } from 'primeng/button';
 import { HeaderComponent } from '../../../shared/header/header.component';
 import { AccordionModule } from 'primeng/accordion';
-import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { LoaderComponent } from '../../../shared/loader/loader.component';
 import { FormsModule } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { ToastModule } from 'primeng/toast';
@@ -22,6 +23,7 @@ import { DrawerModule } from 'primeng/drawer';
     HeaderComponent,
     AccordionModule,
     RouterLink,
+    ProgressSpinnerModule,
     LoaderComponent,
     FormsModule,
     InputTextModule,
@@ -37,7 +39,7 @@ export class ImageReviewComponent {
   formData: any;
   contentDisabled = false;
   isVideoFormat = false;
-  loading = true;
+  loading = true; // Start as true to show loader immediately on navigation, will be set to false when content loads
   //silder
   disabled = false;
   max = 100;
@@ -47,12 +49,15 @@ export class ImageReviewComponent {
   thumbLabel = false;
   value = 0;
   isImageRegenrateDisabled = false;
+  currentDate: any = new Date();
+  currentsDate: any = this.currentDate.toISOString().split('T')[0];
   showAgenticWorkflow = false;
 
-  // Regeneration properties
+  // Image regeneration properties
   imageFeedback: string = '';
   isRegeneratingImage: boolean = false;
   imagePayload: FormData | null = null;
+  clientBack = false;
 
   constructor(
     private route: Router,
@@ -68,26 +73,131 @@ export class ImageReviewComponent {
         this.processChatResponse(chatResponse.result);
       }
     });
+
+    // Watch for socket completion signal
+    effect(() => {
+      const allCompleted = this.socketConnection.allAgentsCompleted();
+
+      if (allCompleted && this.loading) {
+        setTimeout(() => {
+          this.loading = false;
+          this.socketConnection.disconnect();
+        }, 500);
+      }
+    });
   }
 
+  private sessionId: string = ''; // Unique session ID for this component instance
+
   ngOnInit(): void {
+    this.socketConnection.setWorkflowType('image');
+    console.log('ngOnInit - Initial loading state:', this.loading);
+
+    // Check isBack flag from service
+    this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+      if (isBack) {
+        this.clientBack = isBack;
+        console.log('🔄 isBack flag is true - keeping loading false');
+        this.loading = false;
+        this.contentDisabled = false;
+        // Reset the flag after checking
+
+
+        // Get formData and reload existing content
+        this.aiContentGenerationService.getData().subscribe((data) => {
+          this.formData = data;
+          if (this.clientBack) {
+            console.log('🔄 Returning from client - loading saved data instantly');
+            this.loading = false;
+          } else {
+            this.loading = true;
+
+          }
+          this.initializeImagePayload();
+        });
+
+        this.reloadExistingImageContent();
+        return;
+      }
+    });
+
+    // Check if we already have existing image content (returning from client)
+    const hasExistingContentInComponent = this.imageUrl && this.imageUrl.length > 0;
+
+    // Check if service has image data (for when component is recreated)
+    let hasExistingContentInService = false;
+    this.aiContentGenerationService.getImage().subscribe(data => {
+      hasExistingContentInService = !!data;
+    }).unsubscribe();
+
+    const hasExistingContent = hasExistingContentInComponent || hasExistingContentInService;
+
+    if (hasExistingContent) {
+      console.log('🔄 Returning from client screen - preserving state, NOT clearing data');
+      this.loading = false; // Ensure loading stays false
+      this.contentDisabled = false;
+
+      // Still need to get formData for display purposes
+      this.aiContentGenerationService.getData().subscribe((data) => {
+        this.formData = data;
+
+        // Check isBack flag in getData as well
+        this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+          if (isBack) {
+            this.loading = false;
+            this.aiContentGenerationService.setIsBack(false);
+          }
+        });
+
+        this.initializeImagePayload();
+      });
+
+      // Reload existing content from service
+      this.reloadExistingImageContent();
+      return; // Skip initialization to avoid clearing existing content
+    }
+
+    // NEW GENERATION - Only executed when coming from form
+    console.log('🆕 Starting NEW generation from form');
+
+    // Session ID already generated and set in form component - don't regenerate!
+    // this.sessionId = this.socketConnection.generateSessionId();
+    // this.socketConnection.setSessionId(this.sessionId);
+    console.log('🎯 Image review session started (from form)');
+
+    // Socket data already cleared in form component - don't clear again!
+    // this.socketConnection.clearAgentData();
+
     this.contentDisabled = true;
-    this.loading = true;
 
     this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data; // Use the data received from the service
-      console.log('Form data received:', this.formData);
+      this.formData = data;
+      console.log('Image form data received:', this.formData);
+
+      // Check isBack flag before setting loading to true
+      this.aiContentGenerationService.getIsBack().subscribe(isBack => {
+        if (!isBack && data && Object.keys(data).length > 0) {
+          console.log('🆕 Form data received - starting new generation, loading set to true');
+          this.loading = true;
+
+        } else if (isBack) {
+          console.log('🔄 isBack flag is true in getData - keeping loading false');
+          this.loading = false;
+          this.aiContentGenerationService.setIsBack(false);
+        }
+      });
+
       this.initializeImagePayload();
     });
 
     this.aiContentGenerationService.getImage().subscribe((data) => {
-      console.log('getImagegetImage', data);
       if (data) {
+        console.log('Image URL received:', data);
         this.imageUrl = data;
         this.isVideoFormat = this.isMp4(data);
+        this.contentDisabled = false;
+        this.loading = false;
       }
-      this.contentDisabled = false;
-      this.loading = false;
     });
 
     this.isImageRegenrateDisabled = false;
@@ -98,52 +208,29 @@ export class ImageReviewComponent {
 
     if (result.image_url) {
       this.imageUrl = result.image_url;
-      this.isVideoFormat = this.isMp4(result.image_url);
+      this.isVideoFormat = this.isMp4(this.imageUrl);
     }
 
     this.loading = false;
     this.contentDisabled = false;
     this.isImageRegenrateDisabled = false;
 
+    // Disconnect socket after content is loaded
+    // this.socketConnection.disconnect();
+
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
     }, 300);
   }
 
-  // Initialize image payload from form data or collected data from chat-app
   initializeImagePayload(): void {
     if (!this.formData) return;
 
+    // For image generation, we only need the prompt/brief
     this.imagePayload = new FormData();
+    this.imagePayload.append('brief', this.formData?.prompt || '');
 
-    // Use collected data structure (from chat-app) if available, otherwise use formData (from image-form)
-    const useCase = this.formData?.use_case || 'Image Generation';
-    const purpose = this.formData?.purpose || '';
-    const brand = this.formData?.brand || '';
-    const tone = this.formData?.tone || '';
-    const topic = this.formData?.topic || '';
-    const targetReader = this.formData?.target_reader || '';
-    const imageDetails = this.formData?.image_details || '';
-    const imageDescription = this.formData?.image_description || this.formData?.imageOpt || this.formData?.imgDesc || '';
-
-    this.imagePayload.append('use_case', useCase);
-    this.imagePayload.append('purpose', purpose);
-    this.imagePayload.append('brand', brand);
-    this.imagePayload.append('tone', tone);
-    this.imagePayload.append('topic', topic);
-
-    if (targetReader && targetReader.trim() !== '') {
-      this.imagePayload.append('target_reader', targetReader);
-    }
-    if (imageDetails && imageDetails.trim() !== '') {
-      this.imagePayload.append('image_details', imageDetails);
-    }
-    if (imageDescription && imageDescription.trim() !== '') {
-      this.imagePayload.append('image_description', imageDescription);
-    }
-    if (this.formData?.additional && this.formData?.additional.trim() !== '') {
-      this.imagePayload.append('additional_details', this.formData?.additional);
-    }
+    console.log('Image payload initialized with brief:', this.formData?.prompt);
   }
 
   regenerateImage(): void {
@@ -157,36 +244,36 @@ export class ImageReviewComponent {
       return;
     }
 
-    // Reinitialize payload to ensure all form data is fresh
-    this.initializeImagePayload();
+    // Use only the feedback as the brief (no combining with original prompt)
+    console.log('Regenerating image with brief:', this.imageFeedback);
 
-    // Add image feedback and regenerate flag to payload
-    this.imagePayload?.append('image_feedback', this.imageFeedback);
-    this.imagePayload?.append('regenerate', 'true');
+    // Create FormData for multipart form data
+    const imageFormData = new FormData();
+    imageFormData.append('brief', this.imageFeedback);
 
     this.isRegeneratingImage = true;
-    this.loading = true;
+    // Don't set loading = true for regeneration (keep main loader hidden)
 
-    this.aiContentGenerationService.generateContent(this.imagePayload!).subscribe({
-      next: (data) => {
-        console.log('Image regenerated:', data);
+    this.aiContentGenerationService.generateImage(imageFormData, this.sessionId).subscribe({
+      next: (response: any) => {
+        console.log('Image regenerated:', response);
 
-        // Process the regenerated response using the same handler
-        if (data?.result) {
-          this.processChatResponse(data.result);
+        if (response?.image_url) {
+          this.imageUrl = response.image_url;
+          this.isVideoFormat = this.isMp4(this.imageUrl);
+          this.aiContentGenerationService.setImage(this.imageUrl);
         }
 
         this.messageService.add({
           severity: 'success',
           summary: 'Success',
           detail: 'Image regenerated successfully',
-          life: 3000
+          life: 3000,
+          styleClass: 'custom-toast-success'
         });
 
+        // Clear feedback input
         this.imageFeedback = '';
-
-        // Reinitialize payload for next regeneration
-        this.initializeImagePayload();
       },
       error: (error) => {
         console.error('Error regenerating image:', error);
@@ -197,49 +284,152 @@ export class ImageReviewComponent {
           life: 3000
         });
         this.isRegeneratingImage = false;
-        this.loading = false;
       },
       complete: () => {
         this.isRegeneratingImage = false;
-        this.loading = false;
       }
     });
   }
   isMp4(url: string): boolean {
     return url.toLowerCase().endsWith('.mp4');
   }
-
+  keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
+    return 0; // Or implement custom sorting logic if needed
+  }
   navigateToForm(): void {
     this.route.navigateByUrl('image-client');
   }
-  navigateToSuccess(): void {
-    this.route
-      .navigate(['/success-page'])
-      .then(() => {
-        console.log('Navigation to success page completed');
-      })
-      .catch((error) => {
-        console.error('Navigation error:', error);
-      });
-  }
 
   // Workflow visualization methods
-  getWorkflowAgents() { const socketData = this.socketConnection.dataSignal(); const agentOrder = ['Extraction Agent', 'prompt generation agent', 'content generation agent', 'reviewer agent']; return agentOrder.map((agentName, index) => { const agentData = socketData[agentName]; const previousAgentName = index > 0 ? agentOrder[index - 1] : null; const previousAgentData = previousAgentName ? socketData[previousAgentName] : null; return { name: agentName, status: agentData?.status || 'COMPLETED', updatedAt: agentData?.updatedAt || '--:--:--', previousStatus: previousAgentData?.status || 'COMPLETED' }; }); }
-  getLineColor(currentStatus: string, previousStatus?: string): string { if (previousStatus === 'COMPLETED' && (currentStatus === 'IN_PROGRESS' || currentStatus === 'STARTED')) return '#eab308'; if (currentStatus === 'COMPLETED') return '#22c55e'; return 'transparent'; }
-  getMarkerUrl(currentStatus: string, previousStatus?: string): string { if (previousStatus === 'COMPLETED' && (currentStatus === 'IN_PROGRESS' || currentStatus === 'STARTED')) return 'url(#arrowYellow)'; if (currentStatus === 'COMPLETED') return 'url(#arrowGreen)'; return ''; }
-  shouldShowDashedLine(currentStatus: string, previousStatus?: string): boolean { return previousStatus === 'COMPLETED' && (currentStatus === 'IN_PROGRESS' || currentStatus === 'STARTED'); }
-  getNodeColor(): string { return '#1e1e1e'; }
-  getStatusIconColor(status: string): string { switch (status) { case 'COMPLETED': return '#22c55e'; case 'IN_PROGRESS': case 'STARTED': return 'transparent'; case 'FAILED': return '#ef4444'; default: return '#6b7280'; } }
-  getStatusTextColor(status: string): string { switch (status) { case 'COMPLETED': return '#86efac'; case 'IN_PROGRESS': case 'STARTED': return '#fde047'; case 'FAILED': return '#fca5a5'; default: return '#d1d5db'; } }
-  showStatusDot(status: string): boolean { return status === 'COMPLETED'; }
-  showBorderAnimation(status: string): boolean { return status === 'IN_PROGRESS' || status === 'STARTED'; }
+  getWorkflowAgents(): Array<{ name: string; status: string }> {
+    const socketData = this.socketConnection.dataSignal();
+
+    // Define all agents in the correct order (image has only 2 agents)
+    const agentOrder = [
+      'prompt generation agent',
+      'reviewer agent'
+    ];
+
+    // Map agents with their current status from socket data or default to 'PENDING'
+    return agentOrder.map(agentName => {
+      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
+      const normalizedName = agentName.toLowerCase();
+      const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
+      const agentData = matchingKey ? socketData[matchingKey] : null;
+
+      return {
+        name: agentName,
+        status: agentData?.status || 'PENDING'
+      };
+    });
+  } getLineColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getMarkerUrl(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return 'url(#arrowGreen)';
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return 'url(#arrowYellow)';
+      case 'PENDING':
+      default:
+        return 'url(#arrowGray)';
+    }
+  }
+
+  getNodeColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#1e3a2e'; // Dark green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#3a2e1e'; // Dark yellow/orange
+      case 'FAILED':
+        return '#3a1e1e'; // Dark red
+      case 'PENDING':
+      default:
+        return '#1e1e1e'; // Dark gray
+    }
+  }
+
+  getStatusIconColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#22c55e'; // Green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#eab308'; // Yellow
+      case 'FAILED':
+        return '#ef4444'; // Red
+      case 'PENDING':
+      default:
+        return '#6b7280'; // Gray
+    }
+  }
+
+  getStatusTextColor(status: string): string {
+    switch (status) {
+      case 'COMPLETED':
+        return '#86efac'; // Light green
+      case 'IN_PROGRESS':
+      case 'STARTED':
+        return '#fde047'; // Light yellow
+      case 'FAILED':
+        return '#fca5a5'; // Light red
+      case 'PENDING':
+      default:
+        return '#d1d5db'; // Light gray
+    }
+  }
+
   trackByIndex(index: number): number { return index; }
+
   appendToContentFeedback(text: string): void {
     if (this.imageFeedback) {
       this.imageFeedback += ' ' + text;
     } else {
       this.imageFeedback = text;
     }
+  }
+
+  // Reload existing content from service when returning from client
+  reloadExistingImageContent(): void {
+    console.log('🔄 Reloading existing image content from service...');
+
+    this.aiContentGenerationService.getImage().subscribe((data) => {
+      if (!data) {
+        console.log('⚠️ No existing image data found in service');
+        return;
+      }
+
+      console.log('📥 Reloading existing image data:', data);
+
+      this.imageUrl = data;
+      this.isVideoFormat = this.isMp4(data);
+      this.contentDisabled = false;
+
+      console.log('✅ Image content reloaded successfully');
+      this.loading = false;
+    });
+  }
+
+  ngOnDestroy(): void {
+    // Clear session ID to stop receiving socket messages
+    this.socketConnection.clearSessionId();
+    console.log('🧹 Image review session ended:', this.sessionId);
   }
 }
 

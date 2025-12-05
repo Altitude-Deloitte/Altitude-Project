@@ -10,11 +10,11 @@
             <div class="flex flex-col justify-center gap-2">
                 <div class="flex items-center gap-2">
                     <a routerLink="/generate-request" class="text-2xl cursor-pointer"><i
-                            class="pi pi-angle-left mr-1"></i>Image Animation<i class="pi pi-pencil ml-2"></i></a>
+                            class="pi pi-angle-left mr-1"></i>Image Generation<i class="pi pi-pencil ml-2"></i></a>
                 </div>
                 <div class="flex items-center gap-2">
                     <a class="text-decoration-none flex p-3 rounded-full border-1 border-[#363636] gap-2"><img
-                            src="assets/images/icon.svg" alt="">Image Animation</a>
+                            src="assets/images/icon.svg" alt="">AI Image</a>
                     <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
                         2025</a>
                 </div>
@@ -79,15 +79,8 @@
                                     <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-base text-white">
                                         <div class="flex flex-col">
                                             <span class="text-[#9b9b9b] text-sm">Topic</span>
-                                            <span class="font-semibold">{{ formData?.topic || 'Image Animation'
+                                            <span class="font-semibold">{{ formData?.topic || 'Image Generation'
                                                 }}</span>
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="text-[#9b9b9b] text-sm">Status</span>
-                                            <span
-                                                class="inline-block text-center w-28 px-4 py-3 rounded-full bg-[#E26F20] text-white font-semibold text-sm mt-1">
-                                                {{ formData?.status || 'In-Progress' }}
-                                            </span>
                                         </div>
                                         <div class="flex flex-col col-span-2">
                                             <span class="text-[#9b9b9b] text-sm">Due Date</span>

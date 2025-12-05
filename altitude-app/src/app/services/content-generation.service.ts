@@ -10,6 +10,7 @@ export class ContentGenerationService {
   private apiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-content';
   private chatApiUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/chat-generate-content';
   private videoUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-video'
+  private imageUrl = 'https://campaign-content-creation-backend-392853354701.asia-south1.run.app/generate-image'
   private baseUrl = 'http://18.116.64.253:3000/generate-content';
   private campaignUrl = 'http://18.116.64.253:3301/campaign/2676';
   private publishMarketoUrl = 'http://18.116.64.253:5000/update-email';
@@ -524,6 +525,20 @@ export class ContentGenerationService {
     }
     // Don't set Content-Type header - let the browser set it with the correct boundary
     return this.http.post(this.videoUrl, formData, { headers });
+  }
+
+  generateImage(formData: FormData, sessionId?: string) {
+    const headers: any = {};
+    if (sessionId) {
+      headers['X-Session-ID'] = sessionId;
+      headers['x-session-id'] = sessionId; // Add lowercase version for compatibility
+      console.log('🔑 generateImage sending session_id in headers:', sessionId);
+      console.log('📤 Request headers:', headers);
+    } else {
+      console.warn('⚠️ generateImage called without session_id');
+    }
+    // Don't set Content-Type header - let the browser set it with the correct boundary
+    return this.http.post(this.imageUrl, formData, { headers });
   }
 
   // Method to fetch campaign data

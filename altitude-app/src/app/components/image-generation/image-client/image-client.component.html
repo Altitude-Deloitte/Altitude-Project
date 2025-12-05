@@ -4,16 +4,18 @@
         <div class="flex justify-between items-center flex-wrap">
             <div class="flex flex-col justify-center gap-2">
                 <div class="flex items-center text-[#9B9B9B] gap-2">
-                    <a routerLink="/virtual-review">
+                    <a (click)="navigateBack()" style="cursor: pointer;">
                         <i class="pi pi-angle-left"></i>
                         Back to Client Dashboard</a>
                 </div>
-                <h3 class="text-3xl">{{formData?.prompt1}}</h3>
                 <div class="flex items-center gap-2">
-                    <a class="flex gap-2 text-decoration-none p-3 rounded-full border-1 border-[#363636]"><img
-                            src="assets/images/CubeFocus.svg" alt="">Image Animation</a>
-                    <a class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">April 16,
-                        2025</a>
+                    <a routerLink="/generate-request" class="text-2xl cursor-pointer">AI Image</a>
+                </div>
+                <div class="flex items-center gap-2">
+                    <a class="text-decoration-none flex p-3 rounded-full border-1 border-[#363636] gap-2"><img
+                            src="assets/images/CubeFocus.svg" alt="">AI Image</a>
+                    <a
+                        class="text-decoration-none p-3 text-[#9B9B9B] rounded-full border-1 border-[#363636]">{{currentsDate}}</a>
                 </div>
             </div>
             <button class="text-[#BB93FF] border-[#BB93FF] border-1 p-3 rounded-full">View All Comments</button>
@@ -78,7 +80,7 @@
                                 <div class="grid grid-cols-2 gap-y-4 gap-x-8 text-base text-white">
                                     <div class="flex flex-col">
                                         <span class="text-[#9b9b9b] text-sm">Topic</span>
-                                        <span class="font-semibold">{{ formData?.topic || 'Image Animation'
+                                        <span class="font-semibold">{{ formData?.topic || 'Image Generation'
                                             }}</span>
                                     </div>
                                     <div class="flex flex-col">

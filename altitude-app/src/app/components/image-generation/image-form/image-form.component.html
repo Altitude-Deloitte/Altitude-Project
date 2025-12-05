@@ -1,79 +1,95 @@
 <form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
-    <!-- Task Details -->
-    <h2 class="text-lg font-semibold mb-4 mt-6">Task
-        Details</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <!-- Content Details -->
+    <div>
+        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Content Details</h2>
 
-
-        <div>
-            <label class="block text-gray-300 mb-1">Image URL 1*</label>
-            <input pInputText formControlName="url1" panelStyleClass="custom-select-panel"
-                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
-        </div>
-        <div>
-            <label class="block text-gray-300 mb-1">Image URL 2*</label>
-            <input pInputText formControlName="url2" panelStyleClass="custom-select-panel"
-                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+        <!-- Type in the prompt box to start -->
+        <div class="text-center text-gray-400 text-sm mb-4">
+            Type in the prompt box to start
         </div>
 
+        <!-- Prompt Input Box (Google Veo style) -->
+        <div class="bg-[#1A1A1A] rounded-2xl border border-[#3A3A3A] mb-4">
+            <!-- Textarea for prompt or Image URL input -->
+            <div class="p-4">
+                <!-- Show uploaded image or URL image preview at the top -->
+                <div *ngIf="uploadedImagePreview || imagePreviewUrl" class="mb-4">
+                    <div class="relative inline-block">
+                        <img [src]="uploadedImagePreview || imagePreviewUrl" alt="Reference"
+                            class="max-w-full max-h-48 rounded-lg" />
+                        <button type="button" (click)="removeReferenceImage()"
+                            class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 transition">
+                            <i class="pi pi-times text-white text-sm"></i>
+                        </button>
+                    </div>
+                    <p class="text-gray-400 text-xs mt-2">Reference Image</p>
+                </div>
 
-        <!-- Content Details -->
+                <!-- Image URL Input (when in URL mode) -->
+                <div *ngIf="showImageUrlInput && !imagePreviewUrl" class="mb-4">
+                    <input pInputText [(ngModel)]="referenceImageUrl" [ngModelOptions]="{standalone: true}"
+                        (ngModelChange)="onImageUrlChange()"
+                        class="w-full bg-[#2A2A2A] border border-[#4A4A4A] text-white text-base px-4 py-3 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-[#8D4BFF] focus:border-[#8D4BFF] outline-none"
+                        placeholder="Paste image URL here" />
+                </div>
 
+                <!-- Prompt textarea - always visible -->
+                <textarea formControlName="prompt"
+                    class="w-full bg-transparent border-none text-white text-base placeholder-gray-400 focus:ring-0 focus:outline-none resize-none"
+                    rows="5" placeholder="Generate an image with text and frames..."></textarea>
+            </div>
 
+            <!-- Bottom action bar -->
+            <div class="flex items-center justify-between px-4 py-3 border-t border-[#3A3A3A]">
+                <div class="flex items-center gap-3">
+                    <button type="button" (click)="clearInput()"
+                        class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition">
+                        <i class="pi pi-times text-black text-xl"></i>
+                    </button>
 
-        <div>
-            <label class="block text-gray-300 mb-1">Image URL 3</label>
-            <input pInputText formControlName="url3" panelStyleClass="custom-select-panel"
-                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
+                    <button type="button" (click)="showUploadDrawer = true"
+                        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3A3A3A] transition">
+                        <i class="pi pi-plus text-gray-400 text-xl"></i>
+                    </button>
+                </div>
+                <button type="submit" [disabled]="socialwebsite.invalid"
+                    class="w-12 h-12 flex items-center justify-center rounded-full bg-[#8D4BFF] hover:bg-[#B66DFF] transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="pi pi-arrow-right text-white text-xl"></i>
+                </button>
+            </div>
         </div>
 
-        <div>
-            <label class="block text-gray-300 mb-1">Image URL 4</label>
-            <input pInputText formControlName="url4" panelStyleClass="custom-select-panel"
-                class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
-        </div>
-
-        <div>
-            <label class="block text-gray-300 mb-1">Format*</label>
-            <p-select [options]="formatArray" formControlName="format" placeholder="Select" class="w-full"
-                panelStyleClass="custom-select-panel"
-                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
-        </div>
-        <div>
-            <label class="block text-gray-300 mb-1">Frame Per Second*</label>
-            <p-select [options]="fpsArray" formControlName="fps" placeholder="Select" class="w-full"
-                panelStyleClass="custom-select-panel"
-                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
-        </div>
-        <div class="col-span-2">
-            <label class="block text-gray-300 mb-1">Resolution*</label>
-            <p-select [options]="positonData" formControlName="position" placeholder="Select" class="w-full"
-                panelStyleClass="custom-select-panel"
-                styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
-        </div>
-
-
-    </div>
-    <!-- Image Details -->
-    <div class="flex justify-start gap-4 items-center flex-wrap">
-        <img *ngIf="socialwebsite.get('url1')?.value && socialwebsite.get('url1')?.value.trim() !== ''"
-            [src]="socialwebsite.get('url1')?.value" class="w-64" alt="">
-        <img *ngIf="socialwebsite.get('url2')?.value && socialwebsite.get('url2')?.value.trim() !== ''"
-            [src]="socialwebsite.get('url2')?.value" class="w-64" alt="">
-        <img *ngIf="socialwebsite.get('url3')?.value && socialwebsite.get('url3')?.value.trim() !== ''"
-            [src]="socialwebsite.get('url3')?.value" class="w-64" alt="">
-        <img *ngIf="socialwebsite.get('url4')?.value && socialwebsite.get('url4')?.value.trim() !== ''"
-            [src]="socialwebsite.get('url4')?.value" class="w-64" alt="">
+        <!-- Show uploaded image preview if file is selected -->
+        <!-- Removed - now shown inside prompt box -->
     </div>
 
-    <!-- Submit Button -->
+    <!-- Upload Drawer -->
+    <p-drawer [(visible)]="showUploadDrawer" position="bottom" [style]="{height: 'auto'}" [modal]="true">
+        <!-- <ng-template pTemplate="header">
+            <h3 class="text-xl font-semibold text-white">Add Image</h3>
+        </ng-template> -->
 
-    <div class="flex justify-end items-center flex-wrap">
+        <div class="flex gap-6 justify-center py-6">
+            <!-- Upload Image Option -->
+            <div (click)="triggerFileUpload()"
+                class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
+                <i class="pi pi-upload text-5xl text-white"></i>
+                <span class="text-white font-medium text-lg">Upload Image</span>
+                <span class="text-gray-400 text-sm">.png, .jpg, .webp, .heic, .avif, .svg</span>
+            </div>
 
-        <p-button [ngClass]="{ 'opacity-70': !socialwebsite.valid }" class="px-6 py-3 rounded-full bg-[#8D4BFF]"
-            label="Submit" severity="help" rounded="true" (onClick)="onCreateProject()"
-            [disabled]="socialwebsite.invalid"></p-button>
-    </div>
+            <!-- Upload Image URL Option -->
+            <div (click)="switchToImageUrlInput()"
+                class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
+                <i class="pi pi-link text-5xl text-white"></i>
+                <span class="text-white font-medium text-lg">Upload Image URL</span>
+                <span class="text-gray-400 text-sm">Paste image link</span>
+            </div>
+        </div>
+    </p-drawer>
 
+    <!-- Hidden file input -->
+    <input type="file" #fileInput (change)="onImageSelected($event)" accept=".png,.jpg,.jpeg,.webp,.heic,.avif,.svg"
+        class="hidden" />
 
 </form>
