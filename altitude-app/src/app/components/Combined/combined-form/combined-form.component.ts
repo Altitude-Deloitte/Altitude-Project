@@ -14,8 +14,10 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { RadioButtonModule } from 'primeng/radiobutton';
+import { CheckboxModule } from 'primeng/checkbox';
 import { DrawerModule } from 'primeng/drawer';
 import { InputTextModule } from 'primeng/inputtext';
+import { SelectionStore } from '../../../store/campaign.store';
 
 @Component({
   selector: 'app-combined-form',
@@ -26,6 +28,7 @@ import { InputTextModule } from 'primeng/inputtext';
     CommonModule,
     ReactiveFormsModule,
     RadioButtonModule,
+    CheckboxModule,
     DrawerModule,
     InputTextModule,
     FormsModule,
@@ -35,6 +38,24 @@ import { InputTextModule } from 'primeng/inputtext';
 })
 export class CombinedFormComponent {
   readonly panelOpenState = signal(false);
+
+  // Multi-select form sections signal - tracks which forms are enabled via checkboxes
+  // Values: array of selected form IDs: 'email' | 'social' | 'blog' | 'video'
+  // Initial state: empty array (all form CONTENT disabled, checkboxes always enabled)
+  // When user checks a checkbox, that form CONTENT becomes enabled
+  // IMPORTANT: Checkboxes themselves are ALWAYS enabled and clickable
+  readonly selectedForms = signal<string[]>([]);
+
+  // Computed disabled states for each section CONTENT (not checkboxes)
+  // Preserve form data even when disabled - only prevent interaction with content
+  // A section's CONTENT is ENABLED only if it's included in selectedForms array
+  // Initial state: all form content disabled (selectedForms is empty)
+  // Checkboxes always enabled; only content inside toggles disabled
+  readonly isEmailDisabled = () => !this.selectedForms().includes('email');
+  readonly isSocialDisabled = () => !this.selectedForms().includes('social');
+  readonly isBlogDisabled = () => !this.selectedForms().includes('blog');
+  readonly isVideoDisabled = () => !this.selectedForms().includes('video');
+
   socialwebsite!: FormGroup;
   toneOptions: string[] = [
     'Formal',
@@ -149,6 +170,8 @@ export class CombinedFormComponent {
   uploadedImagePreview: string = '';
   videoUrl: string | null = null;
 
+  readonly brandStore = inject(SelectionStore);
+
   constructor(
     private fb: FormBuilder,
 
@@ -159,15 +182,56 @@ export class CombinedFormComponent {
   imageOption: string = '';
   imageBox: string = '';
 
-  // BPCL: Brand-based computed properties
+  // BPCL: Brand-based computed properties - using store's brandName as single source of truth
   get isBPCL(): boolean {
-    const brandName = this.socialwebsite?.get('brand')?.value;
+    const brandName = this.brandStore.brandName() || this.socialwebsite?.get('brand')?.value;
     return brandName?.toLowerCase().trim() === 'bharatpetroleum.in';
   }
 
   get isNike(): boolean {
-    const brandName = this.socialwebsite?.get('brand')?.value;
+    const brandName = this.brandStore.brandName() || this.socialwebsite?.get('brand')?.value;
     return brandName?.toLowerCase().trim() === 'nike.com';
+  }
+
+  // Method to handle checkbox selection for form sections
+  // Checkboxes always enabled; only content inside toggles disabled
+  // Initial state: all form CONTENT disabled (selectedForms is empty), checkboxes enabled
+  // Checking a checkbox enables that specific form CONTENT
+  // Unchecking a checkbox disables that specific form CONTENT
+  onSectionCheckboxChange(section: string, checked: boolean): void {
+    const currentSelections = this.selectedForms();
+
+    if (checked) {
+      // User checked this section - add to selections (enable the form content)
+      this.selectedForms.set([...currentSelections, section]);
+      console.log('Selected form sections:', this.selectedForms());
+    } else {
+      // User unchecked this section - remove from selections (disable the form content)
+      this.selectedForms.set(currentSelections.filter(s => s !== section));
+      console.log('Selected form sections:', this.selectedForms());
+    }
+  }
+
+  // Computed property to check if a section is currently selected
+  isSectionSelected(section: string): boolean {
+    return this.selectedForms().includes(section);
+  }
+
+  // Method to set selected section (legacy - kept for compatibility)
+  setSelectedSection(section: string | null): void {
+    if (section) {
+      this.selectedForms.set([section]);
+    } else {
+      this.selectedForms.set([]);
+    }
+    console.log('Selected form sections:', this.selectedForms());
+  }
+
+  // Computed property for Email heading - changes to "WhatsApp Request" when additionalRequest is WhatsApp
+  get emailHeadingText(): string {
+    return this.socialwebsite?.get('additionalRequest')?.value === 'WhatsApp'
+      ? 'WhatsApp Request'
+      : 'Email Content Details';
   }
 
   ngOnInit(): void {
@@ -204,6 +268,7 @@ export class CombinedFormComponent {
       brand: [''],
       imageOpt: ['N/A'],
       imgDesc: [''],
+      additional: [''], // Additional Details field for Task Details
       videoPrompt: [''], // Video generation prompt
       additionalRequest: [null], // BPCL: Additional request radio (WhatsApp/Push Notification)
     });
@@ -430,6 +495,18 @@ export class CombinedFormComponent {
 
       console.log('📤 Combined Form - Setting formData to service:', formValues);
       console.log('📤 Combined Form - Brand name being sent:', formValues.brand);
+
+      // Fix: Store both brandName AND taskDetails in SelectionStore as persistent single source of truth
+      if (formValues.brand) {
+        this.brandStore.setBrandName(formValues.brand);
+        console.log('🏪 Combined Form - Stored brandName in SelectionStore:', formValues.brand);
+      }
+
+      // Fix: Store complete task details in Signal Store to survive navigation
+      this.brandStore.setTaskDetails(formValues);
+      console.log('🏪 Combined Form - Stored taskDetails in SelectionStore');
+
+      // Still set in BehaviorSubject service for backward compatibility
       this.aiContentGenerationService.setData(formValues);
       this.navigateToReview();
     } else {

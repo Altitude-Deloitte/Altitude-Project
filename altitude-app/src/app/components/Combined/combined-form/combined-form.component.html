@@ -14,53 +14,79 @@
                 class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
         </div>
     </div>
+    <!-- Email / WhatsApp Section -->
+    <!-- Checkboxes always enabled; only content inside toggles disabled -->
     <div class="border-t-1 border-[#4D4D4D]">
-        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Email Content Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-center gap-3 mb-4 mt-6">
+            <!-- Checkbox always enabled and clickable -->
+            <label class="flex items-center text-gray-300 cursor-pointer">
+                <p-checkbox [binary]="true" [ngModel]="isSectionSelected('email')" [ngModelOptions]="{standalone: true}"
+                    (onChange)="onSectionCheckboxChange('email', $event.checked)" class="mr-2">
+                </p-checkbox>
+            </label>
+            <h2 class="text-lg text-white font-semibold">{{ emailHeadingText }}</h2>
+        </div>
+        <!-- Content wrapper: disabled state applied here, NOT to checkbox -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" [class.section--content-disabled]="isEmailDisabled()"
+            [attr.aria-disabled]="isEmailDisabled()">
             <div>
                 <label class="block text-gray-300 mb-1">Purpose*</label>
                 <p-select [options]="purposeArray" formControlName="purpose" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isEmailDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Platform Campaign*</label>
                 <p-select [options]="campaignData" formControlName="campaign" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isEmailDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Tone*</label>
                 <p-select [options]="toneOptions" formControlName="Type" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isEmailDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Target Readers*</label>
                 <p-select [options]="toppingList" formControlName="readers" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isEmailDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Word Limit</label>
-                <input pInputText formControlName="wordLimit"
+                <input pInputText formControlName="wordLimit" [disabled]="isEmailDisabled()"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>
         </div>
     </div>
+    <!-- Social Media Section -->
+    <!-- Checkboxes always enabled; only content inside toggles disabled -->
     <div class="border-t-1 border-[#4D4D4D]">
-        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Social Media Content Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-center gap-3 mb-4 mt-6">
+            <!-- Checkbox always enabled and clickable -->
+            <label class="flex items-center text-gray-300 cursor-pointer">
+                <p-checkbox [binary]="true" [ngModel]="isSectionSelected('social')"
+                    [ngModelOptions]="{standalone: true}" (onChange)="onSectionCheckboxChange('social', $event.checked)"
+                    class="mr-2">
+                </p-checkbox>
+            </label>
+            <h2 class="text-lg text-white font-semibold">Social Media Content Details</h2>
+        </div>
+        <!-- Content wrapper: disabled state applied here, NOT to checkbox -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" [class.section--content-disabled]="isSocialDisabled()"
+            [attr.aria-disabled]="isSocialDisabled()">
             <div>
                 <label class="block text-gray-300 mb-1">Purpose*</label>
                 <p-select [options]="socialPurposeArray" formControlName="purpose2"
                     panelStyleClass="custom-select-panel" placeholder="Select" class="w-full"
+                    [disabled]="isSocialDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Platform Campaign*</label>
                 <p-multiselect [options]="socialCampaignData" formControlName="campaign2" placeholder="Select platforms"
-                    class="w-full" panelStyleClass="custom-multiselect-panel"
+                    class="w-full" panelStyleClass="custom-multiselect-panel" [disabled]="isSocialDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"
                     [selectAll]="true" [showToggleAll]="true" display="chip">
                 </p-multiselect>
@@ -70,135 +96,160 @@
                 <div class="flex gap-6 flex-wrap">
                     <label class="flex items-center text-gray-300">
                         <p-radioButton name="wordLimit2" value="100" formControlName="wordLimit2"
-                            class="mr-2"></p-radioButton>
+                            [disabled]="isSocialDisabled()" class="mr-2"></p-radioButton>
                         100
                     </label>
                     <label class="flex items-center text-gray-300">
                         <p-radioButton name="wordLimit2" value="200" formControlName="wordLimit2"
-                            class="mr-2"></p-radioButton>
+                            [disabled]="isSocialDisabled()" class="mr-2"></p-radioButton>
                         200
                     </label>
                     <label class="flex items-center text-gray-300">
                         <p-radioButton name="wordLimit2" value="300" formControlName="wordLimit2"
-                            class="mr-2"></p-radioButton>
+                            [disabled]="isSocialDisabled()" class="mr-2"></p-radioButton>
                         300
                     </label>
                     <label class="flex items-center text-gray-300">
                         <p-radioButton name="wordLimit2" value="400" formControlName="wordLimit2"
-                            class="mr-2"></p-radioButton>
+                            [disabled]="isSocialDisabled()" class="mr-2"></p-radioButton>
                         400
                     </label>
                     <label class="flex items-center text-gray-300">
                         <p-radioButton name="wordLimit2" value="500" formControlName="wordLimit2"
-                            class="mr-2"></p-radioButton>
+                            [disabled]="isSocialDisabled()" class="mr-2"></p-radioButton>
                         500
                     </label>
                 </div>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Links</label>
-                <input pInputText formControlName="Hashtags"
+                <input pInputText formControlName="Hashtags" [disabled]="isSocialDisabled()"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>
         </div>
     </div>
+    <!-- Blog Section -->
+    <!-- Checkboxes always enabled; only content inside toggles disabled -->
     <div class="border-t-1 border-[#4D4D4D]">
-        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Blog Content Details</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="flex items-center gap-3 mb-4 mt-6">
+            <!-- Checkbox always enabled and clickable -->
+            <label class="flex items-center text-gray-300 cursor-pointer">
+                <p-checkbox [binary]="true" [ngModel]="isSectionSelected('blog')" [ngModelOptions]="{standalone: true}"
+                    (onChange)="onSectionCheckboxChange('blog', $event.checked)" class="mr-2">
+                </p-checkbox>
+            </label>
+            <h2 class="text-lg text-white font-semibold">Blog Content Details</h2>
+        </div>
+        <!-- Content wrapper: disabled state applied here, NOT to checkbox -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" [class.section--content-disabled]="isBlogDisabled()"
+            [attr.aria-disabled]="isBlogDisabled()">
             <div>
                 <label class="block text-gray-300 mb-1">Purpose*</label>
                 <p-select [options]="blogPurposeArray" formControlName="purpose3" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isBlogDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Format*</label>
                 <p-select [options]="formats" formControlName="format" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isBlogDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Keywords*</label>
-                <input pInputText formControlName="keywords"
+                <input pInputText formControlName="keywords" [disabled]="isBlogDisabled()"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Word Count*</label>
-                <input pInputText formControlName="wordLimit3"
+                <input pInputText formControlName="wordLimit3" [disabled]="isBlogDisabled()"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]" />
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Target Audience*</label>
                 <p-select [options]="toppingList" formControlName="target3" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isBlogDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
             <div>
                 <label class="block text-gray-300 mb-1">Tone*</label>
                 <p-select [options]="toneOptions" formControlName="Type3" panelStyleClass="custom-select-panel"
-                    placeholder="Select" class="w-full"
+                    placeholder="Select" class="w-full" [disabled]="isBlogDisabled()"
                     styleClass="w-full p-2 bg-transparent border border-[#363636] rounded-lg text-white"></p-select>
             </div>
         </div>
     </div>
 
     <!-- AI Video Generation Section -->
+    <!-- Checkboxes always enabled; only content inside toggles disabled -->
     <div class="border-t-1 border-[#4D4D4D]">
-        <h2 class="text-lg text-white font-semibold mb-4 mt-6">AI Video Generation</h2>
+        <div class="flex items-center gap-3 mb-4 mt-6">
+            <!-- Checkbox always enabled and clickable -->
+            <label class="flex items-center text-gray-300 cursor-pointer">
+                <p-checkbox [binary]="true" [ngModel]="isSectionSelected('video')" [ngModelOptions]="{standalone: true}"
+                    (onChange)="onSectionCheckboxChange('video', $event.checked)" class="mr-2">
+                </p-checkbox>
+            </label>
+            <h2 class="text-lg text-white font-semibold">AI Video Generation</h2>
+        </div>
 
-        <!-- Text prompt to start -->
-        <!-- <div class="text-center text-gray-400 text-sm mb-4">
-            Type in the prompt box to generate video
-        </div> -->
+        <!-- Content wrapper: disabled state applied here, NOT to checkbox -->
+        <div [class.section--content-disabled]="isVideoDisabled()" [attr.aria-disabled]="isVideoDisabled()">
+            <!-- Text prompt to start -->
+            <!-- <div class="text-center text-gray-400 text-sm mb-4">
+                Type in the prompt box to generate video
+            </div> -->
 
-        <!-- Video Prompt Input Box (Google Veo style) -->
-        <div class="bg-[#1A1A1A] rounded-2xl border border-[#3A3A3A] mb-4">
-            <!-- Textarea for prompt or Image URL input -->
-            <div class="p-4">
-                <!-- Show uploaded image or URL image preview at the top -->
-                <div *ngIf="uploadedImagePreview || imagePreviewUrl" class="mb-4">
-                    <div class="relative inline-block">
-                        <img [src]="uploadedImagePreview || imagePreviewUrl" alt="Reference"
-                            class="max-w-full max-h-48 rounded-lg" />
-                        <button type="button" (click)="removeReferenceImage()"
-                            class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 transition">
-                            <i class="pi pi-times text-white text-sm"></i>
-                        </button>
+            <!-- Video Prompt Input Box (Google Veo style) -->
+            <div class="bg-[#1A1A1A] rounded-2xl border border-[#3A3A3A] mb-4">
+                <!-- Textarea for prompt or Image URL input -->
+                <div class="p-4">
+                    <!-- Show uploaded image or URL image preview at the top -->
+                    <div *ngIf="uploadedImagePreview || imagePreviewUrl" class="mb-4">
+                        <div class="relative inline-block">
+                            <img [src]="uploadedImagePreview || imagePreviewUrl" alt="Reference"
+                                class="max-w-full max-h-48 rounded-lg" />
+                            <button type="button" (click)="removeReferenceImage()"
+                                class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 transition">
+                                <i class="pi pi-times text-white text-sm"></i>
+                            </button>
+                        </div>
+                        <p class="text-gray-400 text-xs mt-2">Reference Image</p>
                     </div>
-                    <p class="text-gray-400 text-xs mt-2">Reference Image</p>
+
+                    <!-- Image URL Input (when in URL mode) -->
+                    <div *ngIf="showImageUrlInput && !imagePreviewUrl" class="mb-4">
+                        <input pInputText [(ngModel)]="referenceImageUrl" [ngModelOptions]="{standalone: true}"
+                            (ngModelChange)="onReferenceImageUrlChange()"
+                            class="w-full bg-[#2A2A2A] border border-[#4A4A4A] text-white text-base px-4 py-3 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-[#8D4BFF] focus:border-[#8D4BFF] outline-none"
+                            placeholder="Paste image URL here" />
+                    </div>
+
+                    <!-- Video Prompt textarea - always visible -->
+                    <textarea formControlName="videoPrompt" [disabled]="isVideoDisabled()"
+                        class="w-full bg-transparent border-none text-white text-base placeholder-gray-400 focus:ring-0 focus:outline-none resize-none"
+                        rows="5" placeholder="Add a prompt..."></textarea>
                 </div>
 
-                <!-- Image URL Input (when in URL mode) -->
-                <div *ngIf="showImageUrlInput && !imagePreviewUrl" class="mb-4">
-                    <input pInputText [(ngModel)]="referenceImageUrl" [ngModelOptions]="{standalone: true}"
-                        (ngModelChange)="onReferenceImageUrlChange()"
-                        class="w-full bg-[#2A2A2A] border border-[#4A4A4A] text-white text-base px-4 py-3 rounded-lg placeholder-gray-400 focus:ring-2 focus:ring-[#8D4BFF] focus:border-[#8D4BFF] outline-none"
-                        placeholder="Paste image URL here" />
-                </div>
-
-                <!-- Video Prompt textarea - always visible -->
-                <textarea formControlName="videoPrompt"
-                    class="w-full bg-transparent border-none text-white text-base placeholder-gray-400 focus:ring-0 focus:outline-none resize-none"
-                    rows="5" placeholder="Add a prompt..."></textarea>
-            </div>
-
-            <!-- Bottom action bar -->
-            <div class="flex items-center justify-between px-4 py-3 border-t border-[#3A3A3A]">
-                <div class="flex items-center gap-3">
-                    <button type="button" (click)="clearVideoInput()"
-                        class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition">
-                        <i class="pi pi-times text-black text-xl"></i>
-                    </button>
-                    <!-- <button type="button"
+                <!-- Bottom action bar -->
+                <div class="flex items-center justify-between px-4 py-3 border-t border-[#3A3A3A]">
+                    <div class="flex items-center gap-3">
+                        <button type="button" (click)="clearVideoInput()" [disabled]="isVideoDisabled()"
+                            class="w-10 h-10 flex items-center justify-center rounded-full bg-white hover:bg-gray-200 transition">
+                            <i class="pi pi-times text-black text-xl"></i>
+                        </button>
+                        <!-- <button type="button"
                         class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3A3A3A] transition">
                         <i class="pi pi-refresh text-gray-400 text-xl"></i>
                     </button> -->
-                    <button type="button" (click)="showUploadDrawer = true"
-                        class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3A3A3A] transition">
-                        <i class="pi pi-plus text-gray-400 text-xl"></i>
-                    </button>
+                        <button type="button" (click)="showUploadDrawer = true" [disabled]="isVideoDisabled()"
+                            class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-[#3A3A3A] transition">
+                            <i class="pi pi-plus text-gray-400 text-xl"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
+            <!-- End of video content wrapper -->
         </div>
     </div>
 
@@ -206,7 +257,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="col-span-2 mt-6">
                 <label class="block text-gray-300 mb-1">Additional Details</label>
-                <input pInputText formControlName="imgDesc"
+                <input pInputText formControlName="additional"
                     class="w-full bg-transparent border border-[#363636] rounded-lg px-4 py-2 text-white focus:border-[#B66DFF] focus:ring-[#B66DFF]"
                     placeholder="Add details here..." />
             </div>

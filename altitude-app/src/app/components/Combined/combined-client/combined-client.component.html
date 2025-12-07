@@ -252,12 +252,85 @@
                 <!-- BPCL: WhatsApp Tab -->
                 <p-tabpanel *ngIf="isBPCL" value="0">
                     <div class="flex justify-center items-start gap-6 mt-8">
+                        <!-- WhatsApp Preview (Left Side) -->
                         <div class="flex-[3] rounded-xl bg-[#1A1A1A] p-6 justify-center items-center">
                             <div class="w-full flex justify-center">
-                                <img src="assets/image/bpcl-whatsapp.png" alt="BPCL WhatsApp"
+                                <img src="assets/images/bpcl-whatsapp.png" alt="BPCL WhatsApp"
                                     class="max-w-full h-auto rounded-lg" />
                             </div>
                         </div>
+
+                        <!-- Task Details Panel (Right Side) - Matching Email Tab Structure -->
+                        <div class="flex-1">
+                            <div class="w-full">
+
+                                <h2
+                                    class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636] text-xl font-bold bg-[#09040e]">
+                                    Task Details
+                                </h2>
+
+                                <div class="p-4 bg-[#09040e] border-1 border-[#363636] rounded-b-xl">
+                                    <div class="flex justify-between items-start">
+                                        <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                                                <span class="font-semibold">{{this.formData?.brand || this.brand ||
+                                                    '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                                                <span class="font-semibold">{{this.formData?.purpose || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Topic</span>
+                                                <span class="font-semibold">{{this.formData?.topic || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                                <span class="font-semibold">{{this.formData?.dueDate || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                                <span class="font-semibold">{{this.formData?.Type || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Word Limit</span>
+                                                <span class="font-semibold">{{this.formData?.wordLimit ||
+                                                    this.formData?.word_limit || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                                <span class="font-semibold">{{this.formData?.readers ||
+                                                    '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Image Option</span>
+                                                <span class="font-semibold">{{this.formData?.imageOpt ||
+                                                    '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col col-span-2">
+                                                <span class="text-[#9b9b9b] text-sm">Image Description</span>
+                                                <span class="font-semibold">{{this.formData?.imgDesc ||
+                                                    '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col col-span-2">
+                                                <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                                <span class="font-semibold">{{this.formData?.additional ||
+                                                    '-'}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+                        style="background-color:rgba(0, 0, 0, 0.5)">
+                        <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
+                            Rework</button>
+                        <button (click)="publishContent1()"
+                            class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
                     </div>
                 </p-tabpanel>
 

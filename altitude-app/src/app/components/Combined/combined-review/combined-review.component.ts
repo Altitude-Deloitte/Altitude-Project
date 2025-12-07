@@ -6,6 +6,7 @@ import {
   input,
   ViewChild,
   OnDestroy,
+  inject,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Subscription } from 'rxjs';
@@ -30,6 +31,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { SocketConnectionService } from '../../../services/socket-connection.service';
 import { CarouselModule } from 'primeng/carousel';
 import { GalleriaModule } from 'primeng/galleria';
+import { SelectionStore } from '../../../store/campaign.store';
 
 @Component({
   selector: 'app-combined-review',
@@ -216,6 +218,8 @@ export class CombinedReviewComponent implements OnDestroy {
   imageFeedback: string = '';
   isRegeneratingImage: boolean = false;
 
+  readonly brandStore = inject(SelectionStore);
+
   constructor(
     private route: Router,
     private dialog: MatDialog,
@@ -242,11 +246,11 @@ export class CombinedReviewComponent implements OnDestroy {
   formData: any;
   private isReturningFromClient = false; // Flag to track if returning from client screen
 
-  // BPCL: Brand-based computed properties with improved null safety
+  // BPCL: Brand-based computed properties - using store's brandName as single source of truth
   get isBPCL(): boolean {
-    const brandName = this.formData?.brand;
+    const brandName = this.brandStore.brandName();
     if (!brandName) {
-      console.warn('⚠️ Combined Review - brandName is undefined in formData:', this.formData);
+      // console.warn('⚠️ Combined Review - brandName is undefined in SelectionStore');
       return false;
     }
     const normalized = brandName.toLowerCase().trim();
@@ -256,9 +260,9 @@ export class CombinedReviewComponent implements OnDestroy {
   }
 
   get isNike(): boolean {
-    const brandName = this.formData?.brand;
+    const brandName = this.brandStore.brandName();
     if (!brandName) {
-      console.warn('⚠️ Combined Review - brandName is undefined in formData:', this.formData);
+      //console.warn('⚠️ Combined Review - brandName is undefined in SelectionStore');
       return false;
     }
     const normalized = brandName.toLowerCase().trim();
@@ -268,42 +272,80 @@ export class CombinedReviewComponent implements OnDestroy {
   }
 
   ngOnInit(): void {
-    // Check if we're returning from client screen by checking if content already exists
-    this.isReturningFromClient = !!(
-      this.editorContentEmail &&
-      this.editorContentEmail.length > 0 &&
-      this.formData
-    );
-
-    if (this.isReturningFromClient) {
-      console.log('🔄 Returning from client screen - preserving state');
-      // Ensure active tab is set to Email (0)
-      this.activeTabValue = '0';
-      // Don't clear data or reload - just preserve existing state
-      this.loading = false;
-      return;
-    }
-
-    console.log('🆕 Fresh load - initializing combined review');
-
-    // Clear socket data before starting (for combined, only clear once)
-    this.socketConnection.clearAgentData();
-
-    this.imageUrl = null;
-    this.loading = true;
-    this.editorContentEmail = [];
+    console.log('🔎 Combined Review - ngOnInit called');
+    console.log('🔎 Combined Review - Current brandStore.brandName():', this.brandStore.brandName());
 
     // Initialize dynamic video gallery (limit to 3 videos)
     this.initializeVideoGallery();
 
+    // Fix: Read from persistent Signal Store FIRST, then BehaviorSubject service as fallback
+    const storedTaskDetails = this.brandStore.taskDetails();
+    if (storedTaskDetails) {
+      this.formData = storedTaskDetails;
+      console.log('📊 Combined Review - Loaded formData from Signal Store:', this.formData);
+    }
+
+    // Subscribe to BehaviorSubject service (for backward compatibility)
     this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data;
+      // Fix: Only override if BehaviorSubject has data AND store didn't have it
+      if (data && !this.formData) {
+        this.formData = data;
+      }
       console.log('📊 Combined Review - Received formData from service:', data);
       console.log('📊 Combined Review - Brand name:', data?.brand);
+
+      // Check if we're returning from client screen BEFORE synchronizing brandName
+      // If brandName exists in store and formData exists, we're returning from client
+      const wasInStore = !!this.brandStore.brandName();
+
+      // CRITICAL: Ensure brandName is in store when formData arrives
+      if (data?.brand) {
+        if (data.brand !== this.brandStore.brandName()) {
+          this.brandStore.setBrandName(data.brand);
+          console.log('📊 Combined Review - Synchronized brandName to store:', data.brand);
+        }
+      } else if (!this.brandStore.brandName()) {
+        console.warn('⚠️ Combined Review - No brand in formData and no brand in store!');
+      }
+
+      // Determine if returning from client: brandName was already in store when we arrived
+      this.isReturningFromClient = wasInStore && !!this.formData;
+      console.log('🔍 Combined Review - isReturningFromClient:', this.isReturningFromClient,
+        '(wasInStore:', wasInStore, ', formData exists:', !!this.formData, ')');
+
+      if (this.isReturningFromClient) {
+        console.log('🔄 Returning from client screen - preserving state');
+        // Ensure active tab is set to first tab (0)
+        this.activeTabValue = '0';
+        // Don't clear data or reload - just preserve existing state
+        this.loading = false;
+
+        console.log('📊 Combined Review - After restore - isBPCL:', this.isBPCL);
+        console.log('📊 Combined Review - After restore - isNike:', this.isNike);
+        console.log('📊 Combined Review - Preserved editorContentEmail exists:', !!this.editorContentEmail);
+
+        // CRITICAL: Populate selectedSocialPlatforms even when returning from client
+        if (data?.campaign2) {
+          this.selectedSocialPlatforms = Array.isArray(data.campaign2)
+            ? data.campaign2
+            : data.campaign2.split(',').map((p: string) => p.trim());
+          console.log('🔄 Restored selected social platforms:', this.selectedSocialPlatforms);
+        }
+
+        // Still load images and video from service/localStorage for returning users
+        this.loadImagesAndVideo();
+
+        return;
+      } console.log('🆕 Fresh load - initializing combined review');
       console.log('📊 Combined Review - isBPCL:', this.isBPCL);
       console.log('📊 Combined Review - isNike:', this.isNike);
 
-      // Get selected social media platforms from campaign2
+      // Clear socket data before starting (for combined, only clear once)
+      this.socketConnection.clearAgentData();
+
+      this.imageUrl = null;
+      this.loading = true;
+      this.editorContentEmail = [];      // Get selected social media platforms from campaign2
       if (data?.campaign2) {
         this.selectedSocialPlatforms = Array.isArray(data.campaign2)
           ? data.campaign2
@@ -315,7 +357,46 @@ export class CombinedReviewComponent implements OnDestroy {
       this.initializeEmailPayload();
       this.initializeSocialPayload();
       this.initializeBlogPayload();
+
+      // Load all content - only for fresh loads
+      this.loadAllContent();
     });
+  }
+
+  // Helper method to load images and video (used for returning from client)
+  private loadImagesAndVideo(): void {
+    // Load images from service
+    this.aiContentGenerationService.getImage().subscribe((data) => {
+      console.log('🔄 Reloading image:', data);
+      if (data) {
+        this.imageUrl = data;
+      }
+    });
+
+    this.aiContentGenerationService.getOfferImage().subscribe((data) => {
+      console.log('🔄 Reloading offer image:', data);
+      if (data) {
+        this.imageOfferUrl = data;
+      }
+    });
+
+    this.aiContentGenerationService.getEventImage().subscribe((data) => {
+      console.log('🔄 Reloading event image:', data);
+      if (data) {
+        this.imageEventUrl = data;
+      }
+    });
+
+    // Get video URL from localStorage
+    const storedVideoUrl = localStorage.getItem('combinedVideoUrl');
+    if (storedVideoUrl) {
+      this.videoUrl = storedVideoUrl;
+      console.log('🔄 Video URL retrieved:', this.videoUrl);
+    }
+  }
+
+  // Helper method to load all content (only for fresh loads, not when returning from client)
+  private loadAllContent(): void {
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {
       console.log('getImagegetImage', data);
@@ -346,6 +427,7 @@ export class CombinedReviewComponent implements OnDestroy {
         this.imageEventUrl = data;
       }
     });
+
     this.brand = this.formData?.brand?.replace('.com', ' ');
     let brandName = this.formData?.brand?.trim();
     brandName = brandName.replace(/\s+/g, '');
@@ -1819,18 +1901,15 @@ Output the entire blog in HTML format, followed by:
     this.socialContentSubscription?.unsubscribe();
     this.blogContentSubscription?.unsubscribe();
 
-    // Clear all data when leaving the review screen to prevent retention
-    this.aiContentGenerationService.setData(null);
-    this.aiContentGenerationService.setEmailResponseData(null);
-    this.aiContentGenerationService.setEmailHeadResponseData(null);
-    this.aiContentGenerationService.setSocialResponseData(null);
-    this.aiContentGenerationService.setBlogResponseData(null);
-    this.aiContentGenerationService.setImage(null);
-    this.aiContentGenerationService.setOfferImage(null);
-    this.aiContentGenerationService.setEventImage(null);
-    this.aiContentGenerationService.setEmailSubResponseData(null);
-    this.aiContentGenerationService.setplagrism(null);
+    // Fix: DO NOT clear data when navigating to Combined Client screen
+    // The data needs to persist for the client screen to display Task Details
+    // Data is now stored in persistent Signal Store (brandStore.taskDetails)
+    // Only clear if user is navigating away from the entire Combined workflow
 
-    console.log('Combined review component destroyed - all data cleared');
+    // Removed: this.aiContentGenerationService.setData(null);
+    // Removed: this.aiContentGenerationService.setEmailResponseData(null);
+    // etc. - These were causing data loss when navigating to client screen
+
+    console.log('Combined review component destroyed - data preserved in Signal Store');
   }
 }

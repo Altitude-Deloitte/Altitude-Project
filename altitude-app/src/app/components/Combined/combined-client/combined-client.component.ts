@@ -5,6 +5,7 @@ import {
   Input,
   input,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { ContentGenerationService } from '../../../services/content-generation.service';
@@ -22,6 +23,7 @@ import { DialogModule } from 'primeng/dialog';
 import { OverlayPanel, OverlayPanelModule } from 'primeng/overlaypanel';
 import { CarouselModule } from 'primeng/carousel';
 import { GalleriaModule } from 'primeng/galleria';
+import { SelectionStore } from '../../../store/campaign.store';
 
 @Component({
   selector: 'app-combined-client',
@@ -184,11 +186,13 @@ export class CombinedClientComponent {
   editorContentSocialMedia2: any;
   brand: any;
 
-  // BPCL: Brand detection getters with improved null safety
+  readonly brandStore = inject(SelectionStore);
+
+  // BPCL: Brand-based computed properties - using store's brandName as single source of truth
   get isBPCL(): boolean {
-    const brandName = this.formData?.brand;
+    const brandName = this.brandStore.brandName();
     if (!brandName) {
-      console.warn('⚠️ Combined Client - brandName is undefined in formData:', this.formData);
+      // console.warn('⚠️ Combined Client - brandName is undefined in SelectionStore');
       return false;
     }
     const normalized = brandName.toLowerCase().trim();
@@ -198,14 +202,14 @@ export class CombinedClientComponent {
   }
 
   get isNike(): boolean {
-    const brandName = this.formData?.brand;
+    const brandName = this.brandStore.brandName();
     if (!brandName) {
-      console.warn('⚠️ Combined Client - brandName is undefined in formData:', this.formData);
+      //console.warn('⚠️ Combined Client - brandName is undefined in SelectionStore');
       return false;
     }
     const normalized = brandName.toLowerCase().trim();
     const result = normalized === 'nike.com';
-    console.log('🔍 Combined Client - isNike check:', { brandName, normalized, result });
+    //console.log('🔍 Combined Client - isNike check:', { brandName, normalized, result });
     return result;
   }
 
@@ -225,10 +229,29 @@ export class CombinedClientComponent {
     // Initialize dynamic video gallery (all videos except dark-particles)
     this.initializeVideoGallery();
 
+    // Fix: Read from persistent Signal Store FIRST, then BehaviorSubject service as fallback
+    const storedTaskDetails = this.brandStore.taskDetails();
+    if (storedTaskDetails) {
+      this.formData = storedTaskDetails;
+      console.log('📊 Combined Client - Loaded formData from Signal Store:', this.formData);
+      console.log('📊 Combined Client - Brand name from store:', this.formData?.brand);
+    }
+
+    // Subscribe to BehaviorSubject service (for backward compatibility or if data arrives later)
     this.aiContentGenerationService.getData().subscribe((data) => {
-      this.formData = data;
-      console.log('📊 Combined Client - Received formData from service:', data);
-      console.log('📊 Combined Client - Brand name:', data?.brand);
+      // Fix: Only override if BehaviorSubject has data AND store is empty
+      if (data && !this.formData) {
+        this.formData = data;
+        console.log('📊 Combined Client - Received formData from BehaviorSubject service:', data);
+        console.log('📊 Combined Client - Brand name:', data?.brand);
+
+        // CRITICAL: Ensure brandName is in store when formData arrives
+        if (data?.brand && data.brand !== this.brandStore.brandName()) {
+          this.brandStore.setBrandName(data.brand);
+          console.log('📊 Combined Client - Synchronized brandName to store:', data.brand);
+        }
+      }
+
       console.log('📊 Combined Client - isBPCL:', this.isBPCL);
       console.log('📊 Combined Client - isNike:', this.isNike);
     });
@@ -1235,6 +1258,12 @@ The html tags are separate and it should not be part of word count`;
     if (this.formData) {
       this.aiContentGenerationService.setData(this.formData);
       console.log('Setting form data before navigation:', this.formData);
+
+      // CRITICAL: Ensure brandName persists in store
+      if (this.formData.brand && this.formData.brand !== this.brandStore.brandName()) {
+        this.brandStore.setBrandName(this.formData.brand);
+        console.log('🔙 Persisted brandName to store before back navigation:', this.formData.brand);
+      }
     }
 
     this.route

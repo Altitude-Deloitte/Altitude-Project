@@ -48,6 +48,58 @@
 ::ng-deep .custom-multiselect-panel .p-multiselect-item {
   color: white !important;
   padding: 0.75rem 1rem !important;
+}
+
+/* Section disabled state styling */
+/* Applied when a different form section is selected - visually indicates disabled state */
+/* Preserve form data even when disabled - only prevent interaction */
+.section--disabled {
+  opacity: 0.5;
+  pointer-events: none; /* Prevent all mouse interactions */
+  filter: grayscale(0.3); /* Subtle grayscale effect */
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* New class for content-only disabling - checkboxes remain enabled */
+/* Applied to form content wrapper, NOT to checkbox elements */
+/* Checkboxes stay outside this wrapper and remain always interactive */
+.section--content-disabled {
+  opacity: 0.5;
+  filter: grayscale(0.3); /* Subtle grey effect */
+  transition: opacity 0.3s ease, filter 0.3s ease;
+}
+
+/* Ensure disabled section content maintains layout and doesn't collapse */
+.section--disabled * {
+  cursor: not-allowed !important;
+}
+
+/* Ensure disabled content maintains layout - checkboxes excluded */
+.section--content-disabled * {
+  cursor: not-allowed !important;
+}
+
+/* Accessibility: Ensure keyboard users cannot tab into disabled sections */
+.section--disabled input,
+.section--disabled textarea,
+.section--disabled button,
+.section--disabled select,
+.section--disabled [tabindex] {
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Accessibility: Prevent interaction with disabled content while keeping checkboxes accessible */
+.section--content-disabled input,
+.section--content-disabled textarea,
+.section--content-disabled button,
+.section--content-disabled select,
+.section--content-disabled [tabindex] {
+  pointer-events: none;
+  user-select: none;
+}
+
+::ng-deep .custom-multiselect-panel .p-multiselect-item {
   transition: background-color 0.2s !important;
 }
 
@@ -123,4 +175,58 @@
 ::ng-deep .p-multiselect-chip .p-multiselect-chip-icon {
   color: white !important;
   margin-left: 0.25rem !important;
+}
+
+/* Custom Checkbox Styling for Section Selection */
+/* Makes checkboxes clearly visible with proper borders and states */
+::ng-deep .p-checkbox {
+  display: inline-flex !important;
+  vertical-align: middle !important;
+}
+
+::ng-deep .p-checkbox .p-checkbox-box {
+  width: 20px !important;
+  height: 20px !important;
+  background-color: transparent !important;
+  border: 2px solid #cccccc !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Checkbox hover state */
+::ng-deep .p-checkbox:not(.p-disabled) .p-checkbox-box:hover {
+  border-color: #8d4bff !important;
+  background-color: rgba(141, 75, 255, 0.1) !important;
+}
+
+/* Checkbox checked state */
+::ng-deep .p-checkbox .p-checkbox-box.p-highlight {
+  background-color: #8d4bff !important;
+  border-color: #8d4bff !important;
+}
+
+/* Checkbox icon (checkmark) */
+::ng-deep .p-checkbox .p-checkbox-box .p-checkbox-icon {
+  color: white !important;
+  font-size: 14px !important;
+}
+
+/* Checkbox focus state for accessibility */
+::ng-deep .p-checkbox:not(.p-disabled) .p-checkbox-box.p-focus {
+  border-color: #8d4bff !important;
+  box-shadow: 0 0 0 0.2rem rgba(141, 75, 255, 0.25) !important;
+}
+
+/* Disabled checkbox state */
+::ng-deep .p-checkbox.p-disabled .p-checkbox-box {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
+/* Ensure checkbox is visible on dark background */
+::ng-deep .p-checkbox .p-checkbox-box {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3) !important;
 }
