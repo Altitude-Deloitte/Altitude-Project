@@ -21,7 +21,8 @@
                 </div>
                 <div class="flex justify-center items-center gap-3">
                     <!-- Nike/default: Original tabs -->
-                    <p-tablist *ngIf="!isBPCL" class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
+                    <p-tablist *ngIf="!isBPCL && !isSamsung"
+                        class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
                         <div class="flex gap-4 items-center justify-center bg-[#09040e]">
                             <p-tab value="0" class="text-white"><i class="pi pi-envelope text-white"></i>Email</p-tab>
                             <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
@@ -42,13 +43,24 @@
                             <p-tab value="3" class="text-white"><i class="pi pi-video text-white"></i>Video</p-tab>
                         </div>
                     </p-tablist>
+
+                    <!-- Samsung: Custom tabs -->
+                    <p-tablist *ngIf="isSamsung" class="p-3 border-1 border-[#4D4D4D] rounded-full items-center">
+                        <div class="flex gap-4 items-center justify-center bg-[#09040e]">
+                            <p-tab value="0" class="text-white"><i class="pi pi-envelope text-white"></i>Email</p-tab>
+                            <p-tab value="1" class="text-white"><img src="assets/images/InstagramLogo.svg" alt="">Social
+                                Media</p-tab>
+                            <p-tab value="2" class="text-white"><img src="assets/images/Browser.svg" alt="">Blog</p-tab>
+                            <p-tab value="3" class="text-white"><i class="pi pi-video text-white"></i>AI Video</p-tab>
+                        </div>
+                    </p-tablist>
                     <button class="text-[#BB93FF] border-[#BB93FF] border-1 p-3 rounded-full">View All Comments</button>
                 </div>
 
             </div>
             <p-tabpanels>
                 <!-- Email Tab (Nike/Default) -->
-                <p-tabpanel *ngIf="!isBPCL" value="0">
+                <p-tabpanel *ngIf="!isBPCL && !isSamsung" value="0">
                     <div class="flex justify-center items-start gap-6 mt-8">
                         <div class="flex-[3] rounded-xl bg-[#1A1A1A] p-6 justify-center items-center">
 
@@ -249,6 +261,130 @@
                     </div>
                 </p-tabpanel>
 
+                <!-- Samsung: Email Tab -->
+                <p-tabpanel *ngIf="isSamsung" value="0">
+                    <div class="flex justify-center items-start gap-6 mt-8">
+                        <div class="flex-[3] rounded-xl bg-[#1A1A1A] p-6 justify-center items-center">
+                            <div class="w-full text-center mb-8">
+                                <h1 class="text-3xl">{{this.selectedSubject}}</h1>
+                            </div>
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%"
+                                style="max-width: 640px; margin: 0 auto; border-collapse: collapse;">
+                                <tbody>
+                                    <tr>
+                                        <td class="rounded-t-xl"
+                                            style="background-color:#ffffff; padding: 20px;display: flex; justify-content: center;align-items: center;">
+                                            <img src="assets/images/samsung-logo.jpg" alt="Samsung Logo"
+                                                style="max-height: 40px;">
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background-color: #ffffff; padding: 0;">
+                                            <img src="assets/images/samsung-email.png" alt="Samsung Email"
+                                                style="width: 100%; height: auto; display: block;">
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td style="background-color: #ffffff; padding: 30px 20px;">
+                                            <div
+                                                style="font-family: 'Open Sans', sans-serif; color: #333333; line-height: 1.6; text-align: left;">
+                                                Hi {{ '{' }}First Name{{ '}' }},
+                                                <br><br>
+                                                Remember that feeling when you first unboxed your Samsung device? We're
+                                                chasing that magic again with the Neo QLED smart TV.
+                                                <br><br>
+                                                Imagine evenings transformed, colors bursting to life, and sound so
+                                                immersive, you're right in the scene. It's not just a TV; it's an
+                                                experience.
+                                                <br><br>
+                                                Thinking you might want an upgrade? See what you're missing out on.
+                                                <br><br>
+                                                <div style="text-align: center;">
+                                                    <a href="https://samsung.com" target="_blank"
+                                                        style="display: inline-block; padding: 12px 30px; background: #000; color: #ffffff; text-decoration: none; font-family: Arial, sans-serif; font-weight: bold; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px;">
+                                                        Read More
+                                                    </a>
+                                                </div>
+                                                <br><br>
+                                                Thank you,<br>
+                                                <strong>The Samsung Team</strong>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="rounded-b-xl"
+                                            style="background-color: #333333; padding: 30px 20px; text-align: center; color: #ffffff;">
+                                            <p
+                                                style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 14px;">
+                                                www.samsung.com | INFO&#64;samsung.com
+                                            </p>
+                                            <p
+                                                style="margin: 0 0 15px 0; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.5; color: #cccccc;">
+                                                As a valued subscriber, we greatly appreciate your time.
+                                                Thank you for your continued attention to our company news.
+                                                You may unsubscribe from our email updates at any time.
+                                            </p>
+                                            <p
+                                                style="margin: 0; font-family: Arial, sans-serif; font-size: 12px; color: #999999;">
+                                                Copyright © 2025 All Rights Reserved.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="flex flex-1">
+                            <div class="w-full">
+                                <h2
+                                    class="border-1 p-4 border-b-0 rounded-t-xl border-[#363636] text-xl font-bold bg-[#09040e]">
+                                    Task Details
+                                </h2>
+                                <div class="p-4 bg-[#09040e] border-1 border-[#363636] rounded-b-xl">
+                                    <div class="flex justify-between items-start">
+                                        <div class="grid grid-cols-2 gap-y-4 gap-x-6 text-base text-white">
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Client Name</span>
+                                                <span class="font-semibold">{{this.formData?.brand || this.brand ||
+                                                    '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Purpose</span>
+                                                <span class="font-semibold">{{this.formData?.purpose || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Topic</span>
+                                                <span class="font-semibold">{{this.formData?.topic || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Due Date</span>
+                                                <span class="font-semibold">{{this.formData?.dueDate || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col">
+                                                <span class="text-[#9b9b9b] text-sm">Target Audience</span>
+                                                <span class="font-semibold">{{this.formData?.readers || '-'}}</span>
+                                            </div>
+                                            <div class="flex flex-col col-span-2">
+                                                <span class="text-[#9b9b9b] text-sm">Additional Details</span>
+                                                <span class="font-semibold">{{this.formData?.additional || '-'}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+                        style="background-color:rgba(0, 0, 0, 0.5)">
+                        <button class="p-3 border-[#BB93FF] text-[#BB93FF] border-1 rounded-full">Send for
+                            Rework</button>
+                        <button (click)="publishContent1()"
+                            class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Publish</button>
+                    </div>
+                </p-tabpanel>
+
                 <!-- BPCL: WhatsApp Tab -->
                 <p-tabpanel *ngIf="isBPCL" value="0">
                     <div class="flex justify-center items-start gap-6 mt-8">
@@ -367,8 +503,91 @@
                                                                 class="w-full h-auto object-cover" />
                                                         </div>
 
+                                                        <!-- Samsung: Full Facebook Post UI -->
+                                                        <div *ngIf="isSamsung"
+                                                            class="facebook-post bg-white rounded-lg overflow-hidden"
+                                                            style="max-width: 500px; margin: 0 auto; box-shadow: none;">
+
+                                                            <!-- Facebook Header -->
+                                                            <div class="flex items-center gap-3 mb-3 p-4 pb-0">
+                                                                <div
+                                                                    class="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0 border border-gray-200">
+                                                                    <img src="assets/images/samsung-logo.jpg"
+                                                                        alt="Samsung" class="w-6 h-6 object-contain" />
+                                                                </div>
+                                                                <div class="flex-1 flex items-center">
+                                                                    <h4
+                                                                        class="font-semibold text-[#050505] text-[15px] leading-tight">
+                                                                        Samsung</h4>
+                                                                </div>
+                                                                <button
+                                                                    class="text-[#65676B] hover:bg-[#F2F3F5] w-9 h-9 rounded-full flex items-center justify-center">
+                                                                    <i class="pi pi-ellipsis-h"></i>
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Facebook Content -->
+                                                            <div class="mb-3 px-4">
+                                                                <p
+                                                                    class="text-[#050505] text-[15px] leading-5 whitespace-pre-line">
+                                                                    We've got something special coming your way! Stay
+                                                                    tuned for the big reveal tomorrow. 👀 Experience a
+                                                                    new era of television with Samsung Neo QLED TV.
+                                                                    Witness unparalleled picture quality powered by
+                                                                    Vision AI Smart TV. It intelligently optimizes every
+                                                                    scene for breathtaking clarity and vibrant colors,
+                                                                    making every viewing experience unforgettable. Ready
+                                                                    to upgrade your home entertainment? Discover how
+                                                                    Samsung Neo QLED TV transforms your viewing. Learn
+                                                                    more and pre-order yours today! #NeoQLED #SamsungTV
+                                                                    #VisionAI #SmartTV</p>
+                                                            </div>
+                                                            <div class="w-full px-4">
+                                                                <img src="assets/images/samsung-fb.png"
+                                                                    alt="Samsung Neo QLED"
+                                                                    class="w-full h-auto object-cover" />
+                                                            </div>
+
+                                                            <!-- Facebook Reactions Summary -->
+                                                            <div
+                                                                class="flex items-center justify-between py-2 px-4 text-[#65676B] text-[13px] border-b border-[#CED0D4]">
+                                                                <div class="flex items-center gap-1">
+                                                                    <div class="flex -space-x-1">
+                                                                        <span
+                                                                            class="w-[18px] h-[18px] bg-[#1877F2] rounded-full flex items-center justify-center text-white text-[10px]">👍</span>
+                                                                        <span
+                                                                            class="w-[18px] h-[18px] bg-[#F33E58] rounded-full flex items-center justify-center text-white text-[10px]">❤️</span>
+                                                                    </div>
+                                                                    <span class="ml-1">287</span>
+                                                                </div>
+                                                                <div class="flex gap-3">
+                                                                    <span>64 comments</span>
+                                                                    <span>23 shares</span>
+                                                                </div>
+                                                            </div>
+
+                                                            <!-- Facebook Interactions -->
+                                                            <div class="flex justify-around pt-1 px-4 pb-2">
+                                                                <button
+                                                                    class="flex-1 flex items-center justify-center gap-2 hover:bg-[#F2F3F5] py-2 rounded-md transition text-[#65676B] font-semibold text-[15px]">
+                                                                    <i class="pi pi-thumbs-up text-lg"></i>
+                                                                    <span>Like</span>
+                                                                </button>
+                                                                <button
+                                                                    class="flex-1 flex items-center justify-center gap-2 hover:bg-[#F2F3F5] py-2 rounded-md transition text-[#65676B] font-semibold text-[15px]">
+                                                                    <i class="pi pi-comment text-lg"></i>
+                                                                    <span>Comment</span>
+                                                                </button>
+                                                                <button
+                                                                    class="flex-1 flex items-center justify-center gap-2 hover:bg-[#F2F3F5] py-2 rounded-md transition text-[#65676B] font-semibold text-[15px]">
+                                                                    <i class="pi pi-share-alt text-lg"></i>
+                                                                    <span>Share</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
                                                         <!-- Nike: Full Facebook Post UI -->
-                                                        <div *ngIf="!isBPCL"
+                                                        <div *ngIf="!isBPCL && !isSamsung"
                                                             class="facebook-post bg-white rounded-lg overflow-hidden"
                                                             style="max-width: 500px; margin: 0 auto; box-shadow: none;">
 
@@ -477,8 +696,110 @@
                                                                 class="w-full h-auto object-cover" />
                                                         </div>
 
+                                                        <!-- Samsung: Full Instagram Post UI -->
+                                                        <div *ngIf="isSamsung"
+                                                            class="instagram-post bg-white rounded-2xl overflow-hidden border border-gray-200"
+                                                            style="max-width: 500px; margin: 0 auto; box-shadow: none;">
+                                                            <!-- Instagram Header -->
+                                                            <div
+                                                                class="flex items-center justify-between p-3 bg-white border-b border-gray-200">
+                                                                <div class="flex items-center gap-3">
+                                                                    <div
+                                                                        class="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-gray-200">
+                                                                        <img src="assets/images/samsung-logo.jpg"
+                                                                            alt="Samsung"
+                                                                            class="w-6 h-6 object-contain" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <h4 class="font-semibold text-black text-sm">
+                                                                            samsung</h4>
+                                                                        <p class="text-xs text-gray-600">
+                                                                            Sponsored</p>
+                                                                    </div>
+                                                                </div>
+                                                                <button class="text-black">
+                                                                    <i class="pi pi-ellipsis-h text-xl"></i>
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Instagram Image -->
+                                                            <div class="w-full bg-white">
+                                                                <img src="assets/images/samsung-insta.png"
+                                                                    alt="Instagram Post"
+                                                                    class="w-full h-auto object-cover" />
+                                                            </div>
+
+                                                            <!-- Instagram Interactions -->
+                                                            <div
+                                                                class="flex items-center gap-4 p-3 bg-white border-b border-gray-200">
+                                                                <button class="hover:opacity-50 transition">
+                                                                    <svg width="28" height="28" viewBox="0 0 24 24"
+                                                                        fill="red" stroke="red" stroke-width="2">
+                                                                        <path
+                                                                            d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </button>
+                                                                <button class="hover:opacity-50 transition">
+                                                                    <svg width="28" height="28" viewBox="0 0 24 24"
+                                                                        fill="none" class="stroke-black"
+                                                                        stroke-width="2">
+                                                                        <path
+                                                                            d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </button>
+                                                                <button class="hover:opacity-50 transition">
+                                                                    <svg width="28" height="28" viewBox="0 0 24 24"
+                                                                        fill="none" class="stroke-black"
+                                                                        stroke-width="2">
+                                                                        <line x1="22" y1="2" x2="11" y2="13">
+                                                                        </line>
+                                                                        <polygon points="22 2 15 22 11 13 2 9 22 2">
+                                                                        </polygon>
+                                                                    </svg>
+                                                                </button>
+                                                                <button class="ml-auto hover:opacity-50 transition">
+                                                                    <svg width="28" height="28" viewBox="0 0 24 24"
+                                                                        fill="none" class="stroke-black"
+                                                                        stroke-width="2">
+                                                                        <path
+                                                                            d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z">
+                                                                        </path>
+                                                                    </svg>
+                                                                </button>
+                                                            </div>
+
+                                                            <!-- Instagram Likes & Caption -->
+                                                            <div class="px-3 py-2 bg-white">
+                                                                <p class="font-semibold text-black text-sm mb-2">
+                                                                    2,456,789 likes</p>
+                                                                <p class="text-black text-sm leading-relaxed">
+                                                                    <span class="font-semibold">samsung</span>
+                                                                    <span class="ml-1">✨ Unboxing day! Watch us reveal
+                                                                        our newest product line. #Unboxing #NewDrop
+                                                                        Experience the future of television with Samsung
+                                                                        Neo QLED! 🤩 Dive into unmatched picture
+                                                                        quality, powered by vision AI. Our smart TV
+                                                                        anticipates your needs, optimizing every scene
+                                                                        for breathtaking clarity. Imagine vibrant colors
+                                                                        and infinite contrast that bring movies, games,
+                                                                        and shows to life like never before. 🤯 It's not
+                                                                        just a TV; it's an immersive experience. Ready
+                                                                        to upgrade your home entertainment? 🏡 Click the
+                                                                        link in our bio to explore the Samsung Neo QLED
+                                                                        range and find the perfect fit for your space.
+                                                                        Don't miss out! #SamsungNeoQLED #VisionAI
+                                                                        #SmartTV #HomeEntertainment #Tech #Innovation
+                                                                        #QLED #Samsung #NewRelease #TV #Upgrade
+                                                                        #MustHave</span>
+                                                                </p>
+
+                                                            </div>
+                                                        </div>
+
                                                         <!-- Nike: Full Instagram Post UI -->
-                                                        <div *ngIf="!isBPCL"
+                                                        <div *ngIf="!isBPCL && !isSamsung"
                                                             class="instagram-post bg-white rounded-2xl overflow-hidden border border-gray-200"
                                                             style="max-width: 500px; margin: 0 auto; box-shadow: none;">
                                                             <!-- Instagram Header -->
@@ -671,7 +992,108 @@
                 <p-tabpanel value="2">
                     <div class="flex justify-center items-start gap-8 mt-8">
                         <div class="flex-2 flex rounded-xl bg-[#1A1A1A] p-8 justify-center items-center">
-                            <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full overflow-hidden">
+                            <!-- Samsung: Blog Layout -->
+                            <div *ngIf="isSamsung"
+                                class="bg-white rounded-2xl shadow-xl max-w-3xl w-full overflow-hidden">
+
+                                <!-- Samsung Logo at Top -->
+                                <div class="bg-white p-6 flex justify-center items-center border-b border-gray-200">
+                                    <img src="assets/images/samsung-logo.jpg" alt="Samsung Logo" style="height: 40px;">
+                                </div>
+
+                                <!-- Hero Section with Background Image and Text Overlay -->
+                                <div class="relative w-full" style="height: 400px;">
+                                    <img src="assets/images/samsung-fb.png" alt="Samsung Neo QLED"
+                                        class="w-full h-full object-cover" />
+
+                                    <!-- Text Overlay on Image -->
+                                    <div class="absolute inset-0 flex flex-col justify-center px-12"
+                                        style="background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.5));">
+                                        <div class="border-l-4 border-blue-600 pl-6">
+                                            <h1 class="text-white text-4xl font-bold mb-4" style="line-height: 1.2;">
+                                                Samsung Neo QLED
+                                            </h1>
+                                            <p class="text-white text-lg" style="max-width: 500px;">
+                                                Experience Vision AI Smart TV technology that revolutionizes your
+                                                viewing experience.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Article Content Below Image -->
+                                <div class="px-10 py-8 bg-white">
+                                    <div class="text-black space-y-4"
+                                        style="font-family: Arial, sans-serif; font-size: 15px; line-height: 1.8;">
+                                        <p>
+                                            Imagine a television that doesn't just display images, but intelligently
+                                            optimizes them for unparalleled viewing. That's the promise of the Samsung
+                                            Neo QLED Vision AI Smart TV. For years, Samsung has been synonymous with
+                                            innovation, pushing the boundaries of what's possible in home entertainment.
+                                            Now, with Vision AI, they're not just improving picture quality, they're
+                                            revolutionizing the entire viewing experience.
+                                        </p>
+                                        <h2 class="text-2xl font-bold mt-6 mb-3">The Power of Vision AI</h2>
+                                        <p>
+                                            At the heart of this revolution lies Vision AI, Samsung's cutting-edge
+                                            artificial intelligence technology. This isn't just about making colors
+                                            brighter or contrasts sharper. Vision AI analyzes every scene, identifying
+                                            objects, textures, and even the ambient lighting in your room. It then
+                                            optimizes the picture settings in real-time, ensuring that you always get
+                                            the best possible image, regardless of the content you're watching.
+                                        </p>
+                                        <p>
+                                            For instance, watching a nature documentary? Vision AI will enhance the
+                                            details in the foliage, making the greens more vibrant and the textures more
+                                            realistic. Enjoying a fast-paced action movie? It will smooth out motion
+                                            blur and sharpen the image, ensuring that you don't miss a single moment.
+                                        </p>
+                                        <h2 class="text-2xl font-bold mt-6 mb-3">A Smart TV That's Truly Intelligent
+                                        </h2>
+                                        <p>
+                                            But the Samsung Neo QLED Vision AI Smart TV is more than just a pretty
+                                            picture. It's also incredibly smart. Powered by Samsung's Tizen operating
+                                            system, it offers a seamless and intuitive user experience. Navigate
+                                            effortlessly through your favorite streaming apps, browse the web, or even
+                                            control your smart home devices, all from the comfort of your couch.
+                                        </p>
+                                        <p>
+                                            The built-in voice assistant allows you to control the TV with simple voice
+                                            commands. Want to change the channel, adjust the volume, or search for a
+                                            specific movie? Just ask, and the TV will take care of it.
+                                        </p>
+                                        <h2 class="text-2xl font-bold mt-6 mb-3">Unmatched Picture Quality</h2>
+                                        <p>
+                                            Beyond Vision AI, the Neo QLED technology delivers stunning picture quality
+                                            with incredible brightness, contrast, and color accuracy. Quantum Dot
+                                            technology ensures a wide color gamut, displaying a billion shades of color
+                                            for a truly immersive viewing experience. The advanced Mini LED backlighting
+                                            provides precise control over brightness, resulting in deeper blacks and
+                                            brighter whites.
+                                        </p>
+                                        <h2 class="text-2xl font-bold mt-6 mb-3">A Smart Choice for the Future</h2>
+                                        <p>
+                                            The Samsung Neo QLED Vision AI Smart TV represents the pinnacle of home
+                                            entertainment technology. It's a smart, powerful, and beautiful TV that will
+                                            transform the way you watch television.
+                                        </p>
+                                        <p class="font-bold mt-6">
+                                            Bottomline: Ready to upgrade your viewing experience? Visit SAMSUNG.COM
+                                            today to learn more about the Samsung Neo QLED Vision AI Smart TV and
+                                            discover a new world of entertainment.
+                                        </p>
+                                        <p class="mt-4">
+                                            <a href="https://samsung.com" target="_blank"
+                                                class="text-blue-600 hover:underline">Read more: https://samsung.com</a>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <!-- Nike/Default: Full Blog Layout -->
+                            <div *ngIf="!isSamsung"
+                                class="bg-white rounded-2xl shadow-xl max-w-3xl w-full overflow-hidden">
 
                                 <!-- Nike Logo at Top -->
                                 <div class="bg-white p-6 flex justify-center items-center border-b border-gray-200">
@@ -846,8 +1268,17 @@
                                 </video>
                             </div>
 
+                            <!-- Samsung: Simple video element -->
+                            <div *ngIf="isSamsung" class="w-full flex justify-center items-center"
+                                style="min-height: 500px;">
+                                <video src="assets/videos/samsung-video.mp4" controls class="w-full rounded-lg"
+                                    style="aspect-ratio: 1/1; object-fit: cover; max-height: 600px;">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+
                             <!-- Nike/default: PrimeNG Galleria for Videos -->
-                            <p-galleria *ngIf="!isBPCL" class="video-galleria" [value]="videoGalleryItems"
+                            <p-galleria *ngIf="!isBPCL && !isSamsung" class="video-galleria" [value]="videoGalleryItems"
                                 [numVisible]="3" [circular]="false" [showItemNavigators]="false" [showThumbnails]="true"
                                 [showThumbnailNavigators]="true" [showIndicators]="false"
                                 [activeIndex]="currentVideoIndex" (activeIndexChange)="onGalleriaIndexChange($event)"

@@ -26,6 +26,13 @@ export const routes: Routes = [
     // component: HomeComponent,
   },
   {
+    path: 'client-brief',
+    loadComponent: () =>
+      import('./shared/client-brief/client-brief.component').then(
+        (m) => m.ClientBriefComponent
+      ),
+  },
+  {
     path: 'generate-request',
     loadComponent: () =>
       import('./components/generate-request/generate-request.component').then(

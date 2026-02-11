@@ -1,0 +1,31 @@
+<div class="client-brief-wrapper">
+    <section class="hero">
+        <h1>Upload Your <span class="highlight">Brand Guidelines</span></h1>
+        <p>Upload documents or provide a quick brief to kickstart AI-powered content creation.</p>
+    </section>
+
+    <div class="container">
+        <div class="upload-card">
+            <p class="upload-label">Upload Brand Guidelines / Campaign Brief</p>
+
+            <input #fileInput type="file" (change)="onFileSelect($event)" accept=".pdf,.doc,.docx,.txt"
+                class="hidden-input" />
+
+            <button type="button" class="upload-btn" (click)="triggerFileInput()">
+                <i class="pi pi-upload mr-2"></i>
+                {{ selectedFile() ? selectedFile()!.name : 'Select File' }}
+            </button>
+
+            <textarea pTextarea class="brief-textarea"
+                placeholder="Or paste campaign brief, objectives, audience, and constraints here..."
+                [ngModel]="briefText()" (ngModelChange)="onBriefTextChange($event)" rows="5"></textarea>
+
+            <div class="actions">
+                <button type="button" class="submit-btn" (click)="submitBrief()">
+                    <i class="pi pi-send mr-2"></i>
+                    Submit Brief
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

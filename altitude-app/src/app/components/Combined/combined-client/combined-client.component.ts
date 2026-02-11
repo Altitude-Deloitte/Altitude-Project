@@ -213,6 +213,17 @@ export class CombinedClientComponent {
     return result;
   }
 
+  get isSamsung(): boolean {
+    const brandName = this.brandStore.brandName();
+    if (!brandName) {
+      return false;
+    }
+    const normalized = brandName.toLowerCase().trim();
+    const result = normalized === 'samsung.com';
+    console.log('🔍 Combined Client - isSamsung check:', { brandName, normalized, result });
+    return result;
+  }
+
   constructor(
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
@@ -254,6 +265,18 @@ export class CombinedClientComponent {
 
       console.log('📊 Combined Client - isBPCL:', this.isBPCL);
       console.log('📊 Combined Client - isNike:', this.isNike);
+      console.log('📊 Combined Client - isSamsung:', this.isSamsung);
+
+      // Samsung: Set predefined email subjects
+      if (this.isSamsung) {
+        this.subjctsEmail = [
+          'Level up your viewing',
+          'My Neo QLED Story Remember Movie nights?',
+          'Beyond Pixels'
+        ];
+        this.selectedSubject = this.subjctsEmail[0];
+        console.log('📧 Samsung email subjects set:', this.subjctsEmail);
+      }
     });
     //generate image
     this.aiContentGenerationService.getImage().subscribe((data) => {

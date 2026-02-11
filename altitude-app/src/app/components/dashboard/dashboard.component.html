@@ -35,8 +35,8 @@
     <!-- Main Content -->
     <div class="flex flex-col items-center justify-center flex-1 relative z-10 my-16 h-[60vh] max-w-[90%] mx-auto">
         <div class="flex justify-center gap-24 items-center w-full">
-            <div *ngFor="let card of cardList; let i = index"
-                class="relative w-56 h-36 rounded-2xl bg-gradient-to-br from-[#23272F] to-[#181A1F] shadow-xl flex flex-col justify-between p-6 transition-all duration-200"
+            <div *ngFor="let card of cardList; let i = index" (click)="filterByStatus(card.filter)"
+                class="relative w-56 h-36 rounded-2xl bg-gradient-to-br from-[#23272F] to-[#181A1F] shadow-xl flex flex-col justify-between p-6 transition-all duration-200 cursor-pointer hover:scale-105"
                 [ngClass]="[
                         i === 1 ? 'ring-2 ring-[#FF8C32]/40 shadow-orange-500/20' : '',
                         i === 2 ? 'ring-2 ring-[#FFD600]/40 shadow-yellow-500/20' : '',
@@ -108,6 +108,300 @@
                 </div>
             </div>
         </div>
+
+        <!-- TASK PERFORMANCE TRACKER -->
+        <section class="card mt-6" id="taskCard">
+            <div class="card-header">
+                <h2 class="card-title">Task Performance Tracker</h2>
+                <div class="controls">
+                    <div class="pill">
+                        Channel
+                        <p-select [(ngModel)]="channelFilter" [options]="channelOptions" (onChange)="applyFilters()"
+                            styleClass="select-custom" [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+
+                    <div class="pill">
+                        Platform
+                        <p-select [(ngModel)]="platformFilter" [options]="platformOptions" (onChange)="applyFilters()"
+                            styleClass="select-custom" [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+
+                    <div class="pill">
+                        Window
+                        <p-select [(ngModel)]="windowFilter" [options]="windowOptions" styleClass="select-custom"
+                            [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+
+                    <div class="toggle">
+                        <span>Show Impact Only</span>
+                        <div class="switch" [class.on]="impactOnly" (click)="toggleImpactOnly()"
+                            (keydown.enter)="toggleImpactOnly()"
+                            (keydown.space)="toggleImpactOnly(); $event.preventDefault()" role="switch"
+                            [attr.aria-checked]="impactOnly" tabindex="0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrap">
+                <table aria-label="Task table">
+                    <thead>
+                        <tr>
+                            <th style="width:120px">Task ID</th>
+                            <th style="width:120px">Channel</th>
+                            <th>Campaign</th>
+                            <th style="width:150px">Status</th>
+                            <th style="width:110px">Version</th>
+                            <th style="width:110px">Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let task of tasks" [style.display]="task.visible ? '' : 'none'"
+                            (click)="openDrawer(task)">
+                            <td><strong>{{task.id}}</strong></td>
+                            <td>{{task.channel}}</td>
+                            <td>{{task.campaign}}</td>
+                            <td><span class="dot" [ngClass]="task.statusDot"></span>{{task.status}}</td>
+                            <td>{{task.version}}</td>
+                            <td class="impact" [class.na]="task.impact === 'NA' || task.impact === '—'">
+                                <ng-container *ngIf="task.impact !== 'NA' && task.impact !== '—'">▲
+                                    {{task.impact}}</ng-container>
+                                <ng-container *ngIf="task.impact === 'NA' || task.impact === '—'">—</ng-container>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="hint">
+                    <div>Prompt: <strong>Make the ad more compelling and emphasize benefits.</strong></div>
+                    <div>CTR: <span class="ctr">1.8%</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CAMPAIGN IMPACT OVERVIEW -->
+        <section class="card mt-6">
+            <div class="card-header">
+                <h2 class="card-title">Campaign Impact Overview</h2>
+                <div class="controls">
+                    <div class="pill">
+                        View
+                        <p-select [(ngModel)]="impactView" [options]="impactViewOptions" (onChange)="setTab(impactView)"
+                            styleClass="select-custom" [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+                    <div class="pill">
+                        Campaign
+                        <p-select [(ngModel)]="impactCampaign" [options]="impactCampaignOptions"
+                            styleClass="select-custom" [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid2">
+                <!-- LEFT: cards -->
+                <div>
+                    <div class="tabs">
+                        <div class="tab" [class.active]="activeTab === 'social'" (click)="setTab('social')">📣 Social
+                            Campaigns</div>
+                        <div class="tab" [class.active]="activeTab === 'ads'" (click)="setTab('ads')">📦 Ad Campaigns
+                        </div>
+                    </div>
+
+                    <div class="mini-card">
+                        <h3 class="mini-title">Tata EV</h3>
+                        <p class="mini-sub">Platform: {{activeTab === 'ads' ? 'Google Ads' : 'Instagram'}}</p>
+
+                        <div class="kpi-row">
+                            <div class="kpi">
+                                <div class="k">Before Regeneration</div>
+                                <div class="v">150K</div>
+                                <div class="k" style="margin-top:8px">Clicks</div>
+                                <div class="v">2,700</div>
+                            </div>
+                            <div class="kpi">
+                                <div class="k">After Regeneration</div>
+                                <div class="v">155K</div>
+                                <div class="k" style="margin-top:8px">Clicks</div>
+                                <div class="v">3,600</div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-row">
+                            <div class="kpi">
+                                <div class="k">CTR</div>
+                                <div class="v">1.8%</div>
+                                <div class="k" style="margin-top:8px">CPC</div>
+                                <div class="v">₹20</div>
+                            </div>
+                            <div class="kpi">
+                                <div class="k">CTR</div>
+                                <div class="v">2.4%</div>
+                                <div class="k" style="margin-top:8px">CPC</div>
+                                <div class="v">₹14</div>
+                            </div>
+                        </div>
+
+                        <div class="lift">▲ <span>33%</span> Overall Performance Lift</div>
+
+                        <div class="ai-insights">
+                            <h4>🧠 AI Insights</h4>
+                            <ul>
+                                <li>Headline optimized for urgency by introducing "Last chance".</li>
+                                <li>Emphasized limited-time benefits to drive clicks.</li>
+                                <li>Aligned CTA with user intent, changing "Order Now" to "Learn More".</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: quick preview / open drawer -->
+                <div class="mini-card">
+                    <h3 class="mini-title">Task Details</h3>
+                    <p class="mini-sub">Click any task row to open the side panel.</p>
+
+                    <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+                        <div class="pill" (click)="openLastTask()">Open selected task</div>
+                        <div class="pill" (click)="closeDrawer()">Close panel</div>
+                    </div>
+
+                    <div class="ai-insights" style="margin-top:14px;">
+                        <h4>✅ What this proves</h4>
+                        <ul>
+                            <li>Every content version maps to measurable results.</li>
+                            <li>Regeneration is tied to impact (CTR / Clicks / CPC).</li>
+                            <li>AI explains the "why", supporting audit & trust.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- IMPROVEMENT METRICS -->
+        <section class="card mt-6">
+            <div class="card-header">
+                <h2 class="card-title">Improvement Metrics</h2>
+                <div class="controls">
+                    <div class="pill">
+                        Channel
+                        <p-select [(ngModel)]="metricsChannel" [options]="metricsChannelOptions"
+                            styleClass="select-custom" [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+                    <div class="pill">
+                        Scope
+                        <p-select [(ngModel)]="metricsScope" [options]="metricsScopeOptions" styleClass="select-custom"
+                            [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+                    <div class="pill">
+                        Versions
+                        <p-select [(ngModel)]="metricsVersion" [options]="metricsVersionOptions"
+                            styleClass="select-custom" [style]="{'background':'transparent', 'border':'none'}">
+                        </p-select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="metrics-grid">
+                <div class="metrics" role="table" aria-label="Improvement metrics table">
+                    <div class="row head" role="row">
+                        <div>Metric</div>
+                        <div>Before</div>
+                        <div>After</div>
+                        <div>Lift</div>
+                    </div>
+
+                    <div class="row" role="row">
+                        <div>Impressions</div>
+                        <div>150K</div>
+                        <div>155K</div>
+                        <div><span class="lift-pill">▲ +3%</span></div>
+                    </div>
+
+                    <div class="row" role="row">
+                        <div>Clicks</div>
+                        <div>2,700</div>
+                        <div>3,600</div>
+                        <div><span class="lift-pill">▲ +33%</span></div>
+                    </div>
+
+                    <div class="row" role="row">
+                        <div>CTR</div>
+                        <div>1.8%</div>
+                        <div>2.4%</div>
+                        <div><span class="lift-pill">▲ +33%</span></div>
+                    </div>
+
+                    <div class="row" role="row">
+                        <div>CPC</div>
+                        <div>₹20</div>
+                        <div>₹14</div>
+                        <div><span class="lift-pill down">▼ -30%</span></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SIDE DRAWER -->
+        <aside class="drawer" [class.open]="drawerOpen" [attr.aria-hidden]="!drawerOpen">
+            <div class="drawer-head">
+                <div>
+                    <h3>Task Details{{selectedTask ? ' • ' + selectedTask.id : ''}}</h3>
+                    <div class="meta" *ngIf="selectedTask">
+                        {{selectedTask.channel}} • {{selectedTask.platform}} • {{selectedTask.campaign}} •
+                        {{selectedTask.status}} • {{selectedTask.version}}
+                    </div>
+                    <div class="meta" *ngIf="!selectedTask">Select a task to view before/after and impact.</div>
+                </div>
+                <button class="close" (click)="closeDrawer()" aria-label="Close">×</button>
+            </div>
+
+            <div class="drawer-body">
+                <div class="split">
+                    <div class="panel">
+                        <div class="tag">Before</div>
+                        <h4>{{selectedTask?.beforeTitle || '—'}}</h4>
+                        <p>{{selectedTask?.beforeBody || '—'}}</p>
+                        <div class="cta">{{selectedTask?.beforeCta || '—'}}</div>
+                    </div>
+
+                    <div class="panel">
+                        <div class="tag after">After</div>
+                        <h4>{{selectedTask?.afterTitle || '—'}}</h4>
+                        <p>{{selectedTask?.afterBody || '—'}}</p>
+                        <div class="cta orange">{{selectedTask?.afterCta || '—'}}</div>
+                    </div>
+                </div>
+
+                <div class="drawer-metrics">
+                    <div>CTR Before: <strong>{{selectedTask?.ctrBefore || '—'}}</strong></div>
+                    <div>CTR After: <strong>{{selectedTask?.ctrAfter || '—'}}</strong></div>
+                </div>
+
+                <div class="explain">
+                    <div class="icon">✨</div>
+                    <div>{{selectedTask ? getAiSummary(selectedTask) : 'Headline revised for urgency and benefits
+                        emphasized.'}}</div>
+                </div>
+
+                <details open>
+                    <summary>
+                        Details
+                        <span style="color:rgba(233,231,242,.55); font-weight:900;">⌄</span>
+                    </summary>
+                    <div class="details-body">
+                        <ul>
+                            <li *ngFor="let reason of selectedTask?.aiWhy || ['—']">{{reason}}</li>
+                        </ul>
+                    </div>
+                </details>
+            </div>
+        </aside>
+
         <!-- <div class="flex justify-center items-center gap-4">
             @for (card of cardList; track $index) {}
             <div class="card">

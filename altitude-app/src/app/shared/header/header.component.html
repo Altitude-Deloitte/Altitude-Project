@@ -23,9 +23,10 @@
                     <div class="dark-button relative ">
                         <!-- <app-theme-toggler></app-theme-toggler> -->
                     </div>
-                    <div class="profile w-[40px] rounded-full">
+                    <div class="profile w-[40px] rounded-full cursor-pointer" (click)="toggleProfileMenu($event)">
                         <img src="/assets/images/profile.png" alt="" class="rounded-full">
                     </div>
+                    <p-menu #profileMenu [model]="profileMenuItems" [popup]="true" appendTo="body"></p-menu>
                 </div>
             </div>
         </div>

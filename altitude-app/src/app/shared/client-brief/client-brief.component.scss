@@ -1,0 +1,131 @@
+// Client Brief Component Styles
+// Purple gradient theme matching Altitude design system
+
+$primary-purple: #8b5cf6;
+$dark-purple: #6d28d9;
+$bg-dark: #0b0b10;
+$bg-gradient-start: #1a0f2e;
+$card-bg: #14141c;
+$border-color: #3b2f6f;
+$text-muted: #b3b3c2;
+$input-bg: #0f0f18;
+$input-border: #26263a;
+
+.client-brief-wrapper {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, $bg-gradient-start, $bg-dark);
+  color: white;
+  font-family: Inter, system-ui, sans-serif;
+  padding-bottom: 60px;
+}
+
+.hero {
+  text-align: center;
+  padding: 70px 20px 30px;
+
+  h1 {
+    font-size: 40px;
+    margin: 0 0 16px 0;
+  }
+
+  .highlight {
+    color: $primary-purple;
+    font-style: italic;
+  }
+
+  p {
+    color: $text-muted;
+    font-size: 16px;
+    margin: 0;
+  }
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.upload-card {
+  background: $card-bg;
+  border-radius: 20px;
+  padding: 50px;
+  text-align: center;
+  border: 2px dashed $border-color;
+  box-shadow: 0 0 40px rgba($primary-purple, 0.35);
+}
+
+.upload-label {
+  color: $text-muted;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.hidden-input {
+  display: none;
+}
+
+// Shared button styles mixin
+@mixin gradient-button {
+  background: linear-gradient(135deg, $primary-purple, $dark-purple);
+  padding: 14px 26px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 20px rgba($primary-purple, 0.4);
+  border: none;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba($primary-purple, 0.6);
+  }
+}
+
+.upload-btn {
+  @include gradient-button;
+}
+
+.submit-btn {
+  @include gradient-button;
+}
+
+.brief-textarea {
+  width: 100%;
+  margin-top: 30px;
+  padding: 16px;
+  background: $input-bg !important;
+  border-radius: 14px !important;
+  border: 1px solid $input-border !important;
+  color: white !important;
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+
+  &::placeholder {
+    color: #6b6b7b;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $primary-purple !important;
+    box-shadow: 0 0 10px rgba($primary-purple, 0.3);
+  }
+}
+
+.actions {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.mr-2 {
+  margin-right: 8px;
+}

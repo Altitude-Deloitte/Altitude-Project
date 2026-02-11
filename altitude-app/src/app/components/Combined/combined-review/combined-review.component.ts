@@ -68,7 +68,7 @@ export class CombinedReviewComponent implements OnDestroy {
   private socialContentSubscription?: Subscription;
   private blogContentSubscription?: Subscription;
 
-  subjctsEmail: string[] = [];
+  subjctsEmail: { label: string; value: string }[] = [];
   selectedSubject: string = '';
   imageContainerHeight = '440px';
   imageContainerWidth = '640px';
@@ -271,9 +271,32 @@ export class CombinedReviewComponent implements OnDestroy {
     return result;
   }
 
+  get isSamsung(): boolean {
+    const brandName = this.brandStore.brandName();
+    if (!brandName) {
+      return false;
+    }
+    const normalized = brandName.toLowerCase().trim();
+    const result = normalized === 'samsung.com';
+    console.log('🔍 Combined Review - isSamsung check:', { brandName, normalized, result });
+    return result;
+  }
+
   ngOnInit(): void {
     console.log('🔎 Combined Review - ngOnInit called');
     console.log('🔎 Combined Review - Current brandStore.brandName():', this.brandStore.brandName());
+
+    // Samsung: Set predefined email subjects immediately on init
+    if (this.isSamsung) {
+      this.subjctsEmail = [
+        { label: 'Level Up Your Viewing', value: 'Level Up Your Viewing' },
+        { label: 'My Samsung Neo QLED Story Remember Movie Nights?', value: 'My Samsung Neo QLED Story Remember Movie Nights?' },
+        { label: 'Samsung Neo QLED Just Changed the Game.', value: 'Samsung Neo QLED Just Changed the Game.' },
+        { label: 'Beyond Pixels', value: 'Beyond Pixels' }
+      ];
+      this.selectedSubject = this.subjctsEmail[0].value;
+      console.log('📧 Samsung email subjects set on init:', this.subjctsEmail);
+    }
 
     // Initialize dynamic video gallery (limit to 3 videos)
     this.initializeVideoGallery();
@@ -339,6 +362,19 @@ export class CombinedReviewComponent implements OnDestroy {
       } console.log('🆕 Fresh load - initializing combined review');
       console.log('📊 Combined Review - isBPCL:', this.isBPCL);
       console.log('📊 Combined Review - isNike:', this.isNike);
+      console.log('📊 Combined Review - isSamsung:', this.isSamsung);
+
+      // Samsung: Set predefined email subjects
+      if (this.isSamsung) {
+        this.subjctsEmail = [
+          { label: 'Level Up Your Viewing', value: 'Level Up Your Viewing' },
+          { label: 'My Samsung Neo QLED Story Remember Movie Nights?', value: 'My Samsung Neo QLED Story Remember Movie Nights?' },
+          { label: 'Samsung Neo QLED Just Changed the Game.', value: 'Samsung Neo QLED Just Changed the Game.' },
+          { label: 'Beyond Pixels', value: 'Beyond Pixels' }
+        ];
+        this.selectedSubject = this.subjctsEmail[0].value;
+        console.log('📧 Samsung email subjects set:', this.subjctsEmail);
+      }
 
       // Clear socket data before starting (for combined, only clear once)
       this.socketConnection.clearAgentData();
@@ -481,7 +517,8 @@ export class CombinedReviewComponent implements OnDestroy {
 
           // Extract email subjects from new format
           if (data.result.generation.email_subjects) {
-            this.subjctsEmail = data.result.generation.email_subjects;
+            const subjects = data.result.generation.email_subjects;
+            this.subjctsEmail = subjects.map((s: string) => ({ label: s, value: s }));
             console.log('email subjects (new format):', this.subjctsEmail);
           }
 
@@ -549,10 +586,11 @@ export class CombinedReviewComponent implements OnDestroy {
         console.log('email sub 0 : ', subjects);
 
         if (subjects) {
-          this.subjctsEmail = subjects
+          const subjectsList = subjects
             .split(';')
             .map((subject: string) => subject.replace(/"/g, '').trim())
             .filter((subject: string) => subject !== '');
+          this.subjctsEmail = subjectsList.map((s: string) => ({ label: s, value: s }));
           console.log('email sub : ', this.subjctsEmail);
         }
 
@@ -1509,7 +1547,8 @@ Output the entire blog in HTML format, followed by:
 
           // Update email subjects if provided
           if (data.result.generation.email_subjects) {
-            this.subjctsEmail = data.result.generation.email_subjects;
+            const subjects = data.result.generation.email_subjects;
+            this.subjctsEmail = subjects.map((s: string) => ({ label: s, value: s }));
           }
         }
 

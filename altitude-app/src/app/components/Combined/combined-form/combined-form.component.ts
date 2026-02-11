@@ -192,6 +192,10 @@ export class CombinedFormComponent {
     const brandName = this.brandStore.brandName() || this.socialwebsite?.get('brand')?.value;
     return brandName?.toLowerCase().trim() === 'nike.com';
   }
+  get isSamsung(): boolean {
+    const brandName = this.brandStore.brandName() || this.socialwebsite?.get('brand')?.value;
+    return brandName?.toLowerCase().trim() === 'samsung.com';
+  }
 
   // Method to handle checkbox selection for form sections
   // Checkboxes always enabled; only content inside toggles disabled
