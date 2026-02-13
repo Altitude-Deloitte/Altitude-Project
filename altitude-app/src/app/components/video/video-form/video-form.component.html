@@ -1,5 +1,4 @@
 <form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
-    <!-- Brand Creative Settings -->
     <div>
         <h2 class="text-xl text-white font-semibold mb-6 mt-6 flex items-center gap-2">
             <i class="pi pi-palette text-[#8D4BFF]"></i>
@@ -7,7 +6,6 @@
         </h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-            <!-- Brand Aspect Ratio -->
             <div class="flex flex-col gap-2">
                 <label class="text-sm text-gray-400 font-medium">Brand Aspect Ratio</label>
                 <p-select [options]="aspectRatioOptions" [(ngModel)]="selectedAspectRatio"
@@ -17,7 +15,6 @@
                 </p-select>
             </div>
 
-            <!-- Brand Format Style -->
             <div class="flex flex-col gap-2">
                 <label class="text-sm text-gray-400 font-medium">Brand Format Style</label>
                 <p-select [options]="formatStyleOptions" [(ngModel)]="selectedFormatStyle"
@@ -27,7 +24,6 @@
                 </p-select>
             </div>
 
-            <!-- Brand Tone -->
             <div class="flex flex-col gap-2">
                 <label class="text-sm text-gray-400 font-medium">Brand Tone</label>
                 <p-select [options]="toneOptions" [(ngModel)]="selectedTone" [ngModelOptions]="{standalone: true}"
@@ -37,11 +33,8 @@
             </div>
         </div>
 
-        <!-- Prompt Input Box -->
         <div class="bg-[#1A1A1A] rounded-2xl border border-[#3A3A3A] mb-4">
-            <!-- Textarea for prompt or Image URL input -->
             <div class="p-4">
-                <!-- Show uploaded image or URL image preview at the top -->
                 <div *ngIf="uploadedImagePreview || imagePreviewUrl" class="mb-4">
                     <div class="relative inline-block">
                         <img [src]="uploadedImagePreview || imagePreviewUrl" alt="Reference"
@@ -54,7 +47,6 @@
                     <p class="text-gray-400 text-xs mt-2">Reference Image</p>
                 </div>
 
-                <!-- Image URL Input (when in URL mode) -->
                 <div *ngIf="showImageUrlInput && !imagePreviewUrl" class="mb-4">
                     <input pInputText [(ngModel)]="referenceImageUrl" [ngModelOptions]="{standalone: true}"
                         (ngModelChange)="onImageUrlChange()"
@@ -62,13 +54,11 @@
                         placeholder="Paste image URL here" />
                 </div>
 
-                <!-- Prompt textarea - always visible -->
                 <textarea formControlName="prompt"
                     class="w-full bg-transparent border-none text-white text-base placeholder-gray-400 focus:ring-0 focus:outline-none resize-none"
                     rows="5" placeholder="Add a prompt to generate a video..."></textarea>
             </div>
 
-            <!-- Bottom action bar -->
             <div class="flex items-center justify-between px-4 py-3 border-t border-[#3A3A3A]">
                 <div class="flex items-center gap-3">
                     <button type="button" (click)="clearInput()"
@@ -89,22 +79,16 @@
         </div>
     </div>
 
-    <!-- Upload Drawer -->
     <p-drawer [(visible)]="showUploadDrawer" position="bottom" [style]="{height: 'auto'}" [modal]="true">
-        <!-- <ng-template pTemplate="header">
-            <h3 class="text-xl font-semibold text-white">Add Image</h3>
-        </ng-template> -->
-
         <div class="flex gap-6 justify-center py-6">
-            <!-- Upload Image Option -->
             <div (click)="triggerFileUpload()"
                 class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
                 <i class="pi pi-upload text-5xl text-white"></i>
                 <span class="text-white font-medium text-lg">Upload Image</span>
-                <span class="text-gray-400 text-sm">.png, .jpg, .webp, .heic, .avif, .svg</span>
+                <span class="text-gray-400 text-sm"><span class="text-red-500">*</span> .png, <span
+                        class="text-red-500">*</span> .jpg, <span class="text-red-500">*</span> .jpeg</span>
             </div>
 
-            <!-- Upload Image URL Option -->
             <div (click)="switchToImageUrlInput()"
                 class="flex flex-col items-center justify-center gap-3 p-8 rounded-2xl border-2 border-[#4A4A4A] bg-[#2A2A2A] cursor-pointer hover:border-[#8D4BFF] transition min-w-[200px]">
                 <i class="pi pi-link text-5xl text-white"></i>
@@ -114,8 +98,6 @@
         </div>
     </p-drawer>
 
-    <!-- Hidden file input -->
-    <input type="file" #fileInput (change)="onImageSelected($event)" accept=".png,.jpg,.jpeg,.webp,.heic,.avif,.svg"
-        class="hidden" />
+    <input type="file" #fileInput (change)="onImageSelected($event)" accept=".png,.jpg,.jpeg" class="hidden" />
 
 </form>

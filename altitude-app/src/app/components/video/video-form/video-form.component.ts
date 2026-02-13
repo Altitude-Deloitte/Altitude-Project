@@ -42,16 +42,13 @@ import { InputTextModule } from 'primeng/inputtext';
 export class VideoFormComponent {
   taskForm!: FormGroup;
   socialwebsite!: FormGroup;
-  //csv
   csvData: { imageUrl: string; attributes: string }[] = [];
 
   contentTypes = ['social_media'];
-  //campaignData: any;
   imageSize = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
   ];
   uploadedImages: { file: File; preview: string }[] = [];
-  // @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   readonly reactiveKeywords = signal([
     'Business Enthusiasts',
     'Working Professionals',
@@ -101,7 +98,6 @@ export class VideoFormComponent {
   currentDate: any = new Date();
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
 
-  // Properties for upload drawer and image handling
   showUploadDrawer: boolean = false;
   showImageUrlInput: boolean = false;
   videoGenerationModel: string = 'frames-to-video';
@@ -112,7 +108,6 @@ export class VideoFormComponent {
 
   constructor(
     private fb: FormBuilder,
-
     private route: Router,
     private aiContentGenerationService: ContentGenerationService,
     public socketConnection: SocketConnectionService
@@ -120,7 +115,6 @@ export class VideoFormComponent {
 
   urlImage: any;
 
-  // Build the full prompt from user text + dropdown values (no hyphens, natural language)
   buildConstructedPrompt(userPrompt: string): string {
     let prompt = userPrompt?.trim() || '';
     const settings: string[] = [];
@@ -133,90 +127,53 @@ export class VideoFormComponent {
   }
 
   onCreateProject(): void {
-    //
     var formValues = { ...this.socialwebsite.getRawValue() };
 
     const { prompt } = formValues;
-    // const { url1 } = formValues;
 
     this.imageUrl = null;
 
     if (this.socialwebsite.valid) {
       var formValues = { ...this.socialwebsite.getRawValue() };
 
-      // Always rebuild the prompt from user text + dropdown values internally
       const constructedPrompt = this.buildConstructedPrompt(formValues.prompt);
-      console.log('Constructed prompt:', constructedPrompt);
 
-      // Enrich formValues with brand settings for review/client screens
       formValues.prompt = constructedPrompt;
       formValues.platform = this.selectedPlatform;
       formValues.aspectRatio = this.selectedAspectRatio;
       formValues.formatStyle = this.selectedFormatStyle;
       formValues.tone = this.selectedTone;
 
-      console.log('Form Values:', formValues);
-
-      // Set form data first so review screen can access it
       this.aiContentGenerationService.setData(formValues);
 
-      // Create FormData for multipart form data
       const videoFormData = new FormData();
 
-      // Generate session_id and connect socket BEFORE API call
       const sessionId = this.socketConnection.generateSessionId();
-      this.socketConnection.clearAgentData(); // Reset all tracking including completion signal
-      this.socketConnection.setSessionId(sessionId); // Connect socket with this session
-      console.log('🎯 Video form generated session_id:', sessionId);
+      this.socketConnection.clearAgentData();
+      this.socketConnection.setSessionId(sessionId);
 
       videoFormData.append('brief', constructedPrompt);
-      console.log('Brief added to FormData:', constructedPrompt);
 
-      // Append optional reference_image if file is uploaded
       if (this.referenceImageFile) {
         videoFormData.append('reference_image', this.referenceImageFile, this.referenceImageFile.name);
-        console.log('Reference image file added to payload:', this.referenceImageFile.name, 'Size:', this.referenceImageFile.size, 'Type:', this.referenceImageFile.type);
       }
 
-      // Append optional reference_image_url if URL is provided
       if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
         videoFormData.append('reference_image_url', this.referenceImageUrl);
-        console.log('Reference image URL added to payload:', this.referenceImageUrl);
       }
-
-      // Log FormData contents for debugging
-      console.log('FormData entries:');
-      videoFormData.forEach((value, key) => {
-        if (value instanceof File) {
-          console.log(`${key}:`, value.name, value.size, value.type);
-        } else {
-          console.log(`${key}:`, value);
-        }
-      });
 
       this.aiContentGenerationService
         .generateVoeVideo(videoFormData, sessionId, this.selectedAspectRatio)
         .subscribe(
           (response: any) => {
-            console.log('Response background animation response:', response);
             this.imageUrl = response?.video_url;
-            console.log('background image:', this.imageUrl);
             this.aiContentGenerationService.setImage(this.imageUrl);
-
-            // Navigate to review only after getting the response
-
           },
           (error) => {
-            console.error('Error:', error);
-            console.error('Error status:', error.status);
-            console.error('Error message:', error.message);
-            console.error('Error details:', error.error);
-            // Optionally show error message to user
           }
         );
       this.navigateToForm();
     } else {
-      console.log('Form is invalid');
     }
   }
 
@@ -225,8 +182,6 @@ export class VideoFormComponent {
   }
 
   onFloatingButtonClick(): void { }
-
-  // constructor(private fb: FormBuilder, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.socketConnection.dataSignal.set({});
@@ -251,9 +206,8 @@ export class VideoFormComponent {
   resetForm(): void {
     this.taskForm.reset({
       taskId: { value: '1111', disabled: true },
-      dueDate: new Date().toISOString().split('T')[0], // Reset date to current date
+      dueDate: new Date().toISOString().split('T')[0],
     });
-    // You may also want to manually reset other fields if needed
     this.taskForm.get('facebook')?.setValue(false);
     this.taskForm.get('instagram')?.setValue(false);
     this.taskForm.get('whatsapp')?.setValue(false);
@@ -296,7 +250,6 @@ export class VideoFormComponent {
     }
   }
 
-  // Trigger file upload from drawer
   triggerFileUpload(): void {
     this.showUploadDrawer = false;
     setTimeout(() => {
@@ -307,7 +260,6 @@ export class VideoFormComponent {
     }, 100);
   }
 
-  // Switch to image URL input mode
   switchToImageUrlInput(): void {
     this.showUploadDrawer = false;
     this.showImageUrlInput = true;
@@ -315,32 +267,26 @@ export class VideoFormComponent {
     this.referenceImageFile = null;
   }
 
-  // Handle image file selection
   onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       this.referenceImageFile = input.files[0];
-      console.log('Reference image file selected:', this.referenceImageFile.name);
 
-      // Create preview
       const reader = new FileReader();
       reader.onload = (e: any) => {
         this.uploadedImagePreview = e.target.result;
       };
       reader.readAsDataURL(this.referenceImageFile);
 
-      // Remove URL input mode and clear URL values when file is uploaded
       this.showImageUrlInput = false;
       this.referenceImageUrl = '';
       this.imagePreviewUrl = '';
     }
   }
 
-  // Handle image URL change
   onImageUrlChange(): void {
     if (this.referenceImageUrl && this.referenceImageUrl.trim() !== '') {
       this.imagePreviewUrl = this.referenceImageUrl;
-      // Clear uploaded file when URL is provided
       this.uploadedImagePreview = '';
       this.referenceImageFile = null;
     } else {
@@ -348,7 +294,6 @@ export class VideoFormComponent {
     }
   }
 
-  // Clear input
   clearInput(): void {
     this.showImageUrlInput = false;
     this.referenceImageUrl = '';
@@ -358,7 +303,6 @@ export class VideoFormComponent {
     this.socialwebsite.patchValue({ prompt: '' });
   }
 
-  // Remove reference image (both uploaded and URL)
   removeReferenceImage(): void {
     this.uploadedImagePreview = '';
     this.referenceImageFile = null;
@@ -366,7 +310,6 @@ export class VideoFormComponent {
     this.referenceImageUrl = '';
     this.showImageUrlInput = false;
 
-    // Reset file input to allow re-uploading the same file
     const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';

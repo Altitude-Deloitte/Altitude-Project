@@ -41,8 +41,7 @@ export class VideoReviewComponent {
   formData: any;
   contentDisabled = false;
   isVideoFormat = false;
-  loading = true; // Start as true to show loader immediately on navigation, will be set to false when content loads
-  //silder
+  loading = true;
   disabled = false;
   max = 100;
   min = 0;
@@ -55,13 +54,11 @@ export class VideoReviewComponent {
   currentsDate: any = this.currentDate.toISOString().split('T')[0];
   showAgenticWorkflow = false;
 
-  // Video regeneration properties
   imageFeedback: string = '';
   isRegeneratingImage: boolean = false;
   videoPayload: FormData | null = null;
   clientBack = false;
 
-  // Brand Creative Settings for regeneration
   aspectRatioOptions = [
     { label: '16:9', value: '16:9' },
     { label: '9:16', value: '9:16' }
@@ -92,7 +89,6 @@ export class VideoReviewComponent {
     private messageService: MessageService,
     private dialog: MatDialog
   ) {
-    // Watch for chat response
     effect(() => {
       const chatResponse = this.aiContentGenerationService.chatResponse();
       if (chatResponse?.result) {
@@ -100,7 +96,6 @@ export class VideoReviewComponent {
       }
     });
 
-    // Watch for socket completion signal
     effect(() => {
       const allCompleted = this.socketConnection.allAgentsCompleted();
 
@@ -113,27 +108,21 @@ export class VideoReviewComponent {
     });
   }
 
-  private sessionId: string = ''; // Unique session ID for this component instance
+  private sessionId: string = '';
 
   ngOnInit(): void {
     this.socketConnection.setWorkflowType('video');
-    console.log('ngOnInit - Initial loading state:', this.loading);
 
-    // Check isBack flag from service
     this.aiContentGenerationService.getIsBack().subscribe(isBack => {
       if (isBack) {
         this.clientBack = isBack;
-        console.log('� isBack flag is true - keeping loading false');
         this.loading = false;
         this.contentDisabled = false;
-        // Reset the flag after checking
 
 
-        // Get formData and reload existing content
         this.aiContentGenerationService.getData().subscribe((data) => {
           this.formData = data;
           if (this.clientBack) {
-            console.log('🔄 Returning from client - loading saved data instantly');
             this.loading = false;
           } else {
             this.loading = true;
@@ -147,10 +136,8 @@ export class VideoReviewComponent {
       }
     });
 
-    // Check if we already have existing video content (returning from client)
     const hasExistingContentInComponent = this.imageUrl && this.imageUrl.length > 0;
 
-    // Check if service has video data (for when component is recreated)
     let hasExistingContentInService = false;
     this.aiContentGenerationService.getImage().subscribe(data => {
       hasExistingContentInService = !!data;
@@ -159,15 +146,12 @@ export class VideoReviewComponent {
     const hasExistingContent = hasExistingContentInComponent || hasExistingContentInService;
 
     if (hasExistingContent) {
-      console.log('🔄 Returning from client screen - preserving state, NOT clearing data');
-      this.loading = false; // Ensure loading stays false
+      this.loading = false;
       this.contentDisabled = false;
 
-      // Still need to get formData for display purposes
       this.aiContentGenerationService.getData().subscribe((data) => {
         this.formData = data;
 
-        // Check isBack flag in getData as well
         this.aiContentGenerationService.getIsBack().subscribe(isBack => {
           if (isBack) {
             this.loading = false;
@@ -178,36 +162,19 @@ export class VideoReviewComponent {
         this.initializeVideoPayload();
       });
 
-      // Reload existing content from service
       this.reloadExistingVideoContent();
-      return; // Skip initialization to avoid clearing existing content
+      return;
     }
-
-    // NEW GENERATION - Only executed when coming from form
-    console.log('🆕 Starting NEW generation from form');
-
-    // Session ID already generated and set in form component - don't regenerate!
-    // this.sessionId = this.socketConnection.generateSessionId();
-    // this.socketConnection.setSessionId(this.sessionId);
-    console.log('🎯 Video review session started (from form)');
-
-    // Socket data already cleared in form component - don't clear again!
-    // this.socketConnection.clearAgentData();
 
     this.contentDisabled = true;
 
     this.aiContentGenerationService.getData().subscribe((data) => {
       this.formData = data;
-      console.log('Video form data received:', this.formData);
 
-      // Check isBack flag before setting loading to true
       this.aiContentGenerationService.getIsBack().subscribe(isBack => {
         if (!isBack && data && Object.keys(data).length > 0) {
-          console.log('🆕 Form data received - starting new generation, loading set to true');
           this.loading = true;
-
         } else if (isBack) {
-          console.log('🔄 isBack flag is true in getData - keeping loading false');
           this.loading = false;
           this.aiContentGenerationService.setIsBack(false);
         }
@@ -218,7 +185,6 @@ export class VideoReviewComponent {
 
     this.aiContentGenerationService.getImage().subscribe((data) => {
       if (data) {
-        console.log('Video URL received:', data);
         this.imageUrl = data;
         this.isVideoFormat = this.isMp4(data);
         this.contentDisabled = false;
@@ -230,8 +196,6 @@ export class VideoReviewComponent {
   }
 
   processChatResponse(result: any): void {
-    console.log('Processing chat response:', result);
-
     if (result.video_url || result.image_url) {
       this.imageUrl = result.video_url || result.image_url;
       this.isVideoFormat = this.isMp4(this.imageUrl);
@@ -241,9 +205,6 @@ export class VideoReviewComponent {
     this.contentDisabled = false;
     this.isImageRegenrateDisabled = false;
 
-    // Disconnect socket after content is loaded
-    // this.socketConnection.disconnect();
-
     setTimeout(() => {
       this.aiContentGenerationService.clearChatResponse();
     }, 300);
@@ -252,19 +213,14 @@ export class VideoReviewComponent {
   initializeVideoPayload(): void {
     if (!this.formData) return;
 
-    // For video generation, we only need the prompt/brief
     this.videoPayload = new FormData();
     this.videoPayload.append('brief', this.formData?.prompt || '');
 
-    // Initialize regeneration dropdowns from original form data
     this.selectedRegenAspectRatio = this.formData?.aspectRatio || '16:9';
     this.selectedRegenFormatStyle = this.formData?.formatStyle || '';
     this.selectedRegenTone = this.formData?.tone || '';
-
-    console.log('Video payload initialized with brief:', this.formData?.prompt);
   }
 
-  // Build regeneration prompt from feedback + dropdown values
   buildRegenerationPrompt(feedback: string): string {
     let prompt = feedback?.trim() || '';
     const settings: string[] = [];
@@ -287,21 +243,15 @@ export class VideoReviewComponent {
       return;
     }
 
-    // Use feedback + dropdown values as the brief
     const constructedBrief = this.buildRegenerationPrompt(this.imageFeedback);
-    console.log('Regenerating video with brief:', constructedBrief);
 
-    // Create FormData for multipart form data
     const videoFormData = new FormData();
     videoFormData.append('brief', constructedBrief);
 
     this.isRegeneratingImage = true;
-    // Don't set loading = true for regeneration (keep main loader hidden)
 
     this.aiContentGenerationService.generateVoeVideo(videoFormData, this.sessionId, this.selectedRegenAspectRatio).subscribe({
       next: (response: any) => {
-        console.log('Video regenerated:', response);
-
         if (response?.video_url) {
           this.imageUrl = response.video_url;
           this.isVideoFormat = this.isMp4(this.imageUrl);
@@ -316,11 +266,9 @@ export class VideoReviewComponent {
           styleClass: 'custom-toast-success'
         });
 
-        // Clear feedback input
         this.imageFeedback = '';
       },
       error: (error) => {
-        console.error('Error regenerating video:', error);
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -338,7 +286,7 @@ export class VideoReviewComponent {
     return url.toLowerCase().endsWith('.mp4');
   }
   keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
-    return 0; // Or implement custom sorting logic if needed
+    return 0;
   }
 
   downloadVideo(): void {
@@ -354,7 +302,6 @@ export class VideoReviewComponent {
 
     const link = document.createElement('a');
     link.href = this.imageUrl;
-    // Extract filename from URL or use timestamp
     const urlParts = this.imageUrl.split('/');
     const filename = urlParts[urlParts.length - 1] || `video_${Date.now()}.mp4`;
     link.download = filename.includes('.') ? filename : `${filename}.mp4`;
@@ -371,23 +318,15 @@ export class VideoReviewComponent {
     });
   }
 
-  // navigateToForm(): void {
-  //   this.route.navigateByUrl('video-client');
-  // }
-
-  // Workflow visualization methods
   getWorkflowAgents(): Array<{ name: string; status: string }> {
     const socketData = this.socketConnection.dataSignal();
 
-    // Define all agents in the correct order (video has only 2 agents)
     const agentOrder = [
       'prompt generation agent',
       'reviewer agent'
     ];
 
-    // Map agents with their current status from socket data or default to 'PENDING'
     return agentOrder.map(agentName => {
-      // Try case-insensitive matching to handle "Reviewer Agent" vs "reviewer agent"
       const normalizedName = agentName.toLowerCase();
       const matchingKey = Object.keys(socketData).find(key => key.toLowerCase() === normalizedName);
       const agentData = matchingKey ? socketData[matchingKey] : null;
@@ -400,15 +339,15 @@ export class VideoReviewComponent {
   } getLineColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
-        return '#22c55e'; // Green
+        return '#22c55e';
       case 'IN_PROGRESS':
       case 'STARTED':
-        return '#eab308'; // Yellow
+        return '#eab308';
       case 'FAILED':
-        return '#ef4444'; // Red
+        return '#ef4444';
       case 'PENDING':
       default:
-        return '#6b7280'; // Gray
+        return '#6b7280';
     }
   }
 
@@ -428,45 +367,45 @@ export class VideoReviewComponent {
   getNodeColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
-        return '#1e3a2e'; // Dark green
+        return '#1e3a2e';
       case 'IN_PROGRESS':
       case 'STARTED':
-        return '#3a2e1e'; // Dark yellow/orange
+        return '#3a2e1e';
       case 'FAILED':
-        return '#3a1e1e'; // Dark red
+        return '#3a1e1e';
       case 'PENDING':
       default:
-        return '#1e1e1e'; // Dark gray
+        return '#1e1e1e';
     }
   }
 
   getStatusIconColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
-        return '#22c55e'; // Green
+        return '#22c55e';
       case 'IN_PROGRESS':
       case 'STARTED':
-        return '#eab308'; // Yellow
+        return '#eab308';
       case 'FAILED':
-        return '#ef4444'; // Red
+        return '#ef4444';
       case 'PENDING':
       default:
-        return '#6b7280'; // Gray
+        return '#6b7280';
     }
   }
 
   getStatusTextColor(status: string): string {
     switch (status) {
       case 'COMPLETED':
-        return '#86efac'; // Light green
+        return '#86efac';
       case 'IN_PROGRESS':
       case 'STARTED':
-        return '#fde047'; // Light yellow
+        return '#fde047';
       case 'FAILED':
-        return '#fca5a5'; // Light red
+        return '#fca5a5';
       case 'PENDING':
       default:
-        return '#d1d5db'; // Light gray
+        return '#d1d5db';
     }
   }
 
@@ -480,87 +419,20 @@ export class VideoReviewComponent {
     }
   }
 
-  // generateVideo(): void {
-  //   if (!this.videoPrompt || this.videoPrompt.trim() === '') {
-  //     this.messageService.add({
-  //       severity: 'warn',
-  //       summary: 'Warning',
-  //       detail: 'Please enter a prompt to generate video',
-  //       life: 3000
-  //     });
-  //     return;
-  //   }
-
-  //   if (!this.videoPayload) {
-  //     this.initializeVideoPayload();
-  //   }
-
-  //   this.videoPayload?.append('prompt', this.videoPrompt);
-
-  //   this.isGeneratingVideo = true;
-  //   this.loading = true;
-
-  //   this.aiContentGenerationService.generateVoeVideo(this.videoPayload!).subscribe({
-  //     next: (data) => {
-  //       console.log('Video generated:', data);
-
-  //       if (data?.result?.video_url || data?.result?.image_url) {
-  //         this.imageUrl = data.result.video_url || data.result.image_url;
-  //         this.isVideoFormat = this.isMp4(this.imageUrl);
-  //       }
-
-  //       this.messageService.add({
-  //         severity: 'success',
-  //         summary: 'Success',
-  //         detail: 'Video generated successfully',
-  //         life: 3000,
-  //         styleClass: 'custom-toast-success'
-  //       });
-
-  //       this.videoPrompt = '';
-  //       this.initializeVideoPayload();
-  //     },
-  //     error: (error) => {
-  //       console.error('Error generating video:', error);
-  //       this.messageService.add({
-  //         severity: 'error',
-  //         summary: 'Error',
-  //         detail: 'Failed to generate video. Please try again.',
-  //         life: 3000
-  //       });
-  //     },
-  //     complete: () => {
-  //       this.isGeneratingVideo = false;
-  //       this.loading = false;
-  //     }
-  //   });
-  // }
-
-  // Reload existing content from service when returning from client
   reloadExistingVideoContent(): void {
-    console.log('🔄 Reloading existing video content from service...');
-
     this.aiContentGenerationService.getImage().subscribe((data) => {
       if (!data) {
-        console.log('⚠️ No existing video data found in service');
         return;
       }
-
-      console.log('📥 Reloading existing video data:', data);
 
       this.imageUrl = data;
       this.isVideoFormat = this.isMp4(data);
       this.contentDisabled = false;
-
-      console.log('✅ Video content reloaded successfully');
       this.loading = false;
     });
   }
 
   ngOnDestroy(): void {
-    // Clear session ID to stop receiving socket messages
     this.socketConnection.clearSessionId();
-    console.log('🧹 Video review session ended:', this.sessionId);
   }
 }
-
