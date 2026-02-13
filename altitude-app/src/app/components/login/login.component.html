@@ -49,9 +49,9 @@
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                         <i class="pi pi-envelope"></i>
                     </span>
-                    <input id="email" type="email"
-                        class="w-full pl-10 pr-3 py-2 border border-[#B66DFF] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B66DFF] transition"
-                        placeholder="johndoe@deloitte.com" />
+                    <input id="email" type="text" [(ngModel)]="email"
+                        class="w-full pl-10 pr-3 py-2 border border-[#B66DFF] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B66DFF] transition placeholder:text-gray-400 placeholder:opacity-60"
+                        placeholder="alex.rivera" (keyup.enter)="login()" />
                 </div>
             </div>
             <!-- Password Input -->
@@ -61,11 +61,17 @@
                     <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
                         <i class="pi pi-lock"></i>
                     </span>
-                    <input id="password" type="password"
-                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B66DFF] transition"
-                        placeholder="********" />
+                    <input id="password" type="password" [(ngModel)]="password"
+                        class="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B66DFF] transition placeholder:text-gray-400 placeholder:opacity-60"
+                        placeholder="********" (keyup.enter)="login()" />
                 </div>
             </div>
+            <!-- Error Message -->
+            @if (errorMessage) {
+            <div class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg text-sm">
+                {{ errorMessage }}
+            </div>
+            }
             <!-- Remember Me & Forgot Password -->
             <div class="flex items-center justify-between mb-6">
                 <label class="flex items-center text-sm">
@@ -75,10 +81,14 @@
                 <a href="#" class="text-[#B66DFF] text-sm font-medium hover:underline">Forgot Password?</a>
             </div>
             <!-- Login Button -->
-            <a routerLink="/home"
-                class="w-24 py-2 px-5 rounded-full cursor-pointer text-white text-lg font-medium shadow-lg transition bg-gradient-to-r from-[#A247FC] to-[#C63BEE] hover:from-[#9333ea] hover:to-[#b91c7c] no-underline">
-                Login
-            </a>
+            <button (click)="login()" [disabled]="isLoading"
+                class="py-2 px-5 rounded-full cursor-pointer text-white text-lg font-medium shadow-lg transition bg-gradient-to-r from-[#A247FC] to-[#C63BEE] hover:from-[#9333ea] hover:to-[#b91c7c] disabled:opacity-50 disabled:cursor-not-allowed">
+                @if (!isLoading) {
+                <span>Login</span>
+                } @else {
+                <span>Logging in...</span>
+                }
+            </button>
         </div>
     </div>
 </div>

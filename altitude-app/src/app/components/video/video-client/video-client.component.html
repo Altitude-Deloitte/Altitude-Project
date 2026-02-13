@@ -83,9 +83,35 @@
                                             {{ formData?.status || 'In-Progress' }}
                                         </span>
                                     </div>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Platform</span>
+                                        <span class="font-semibold">{{ formData?.platform || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Aspect Ratio</span>
+                                        <span class="font-semibold">{{ formData?.aspectRatio || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Format Style</span>
+                                        <span class="font-semibold">{{ formData?.formatStyle || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                        <span class="font-semibold">{{ formData?.tone || '-' }}</span>
+                                    </div>
+
                                     <div class="flex flex-col col-span-2">
                                         <span class="text-[#9b9b9b] text-sm">Due Date</span>
                                         <span class="font-semibold">{{ formData?.dueDate || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col col-span-2">
+                                        <span class="text-[#9b9b9b] text-sm">Prompt</span>
+                                        <span class="font-semibold">{{ formData?.prompt || '-' }}</span>
                                     </div>
 
 
@@ -100,8 +126,8 @@
         </div>
 
     </div>
-    <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
+    <!-- <div class="flex justify-end items-center absolute bottom-0 left-0 w-full gap-6 p-2"
         style="background-color:rgba(0, 0, 0, 0.5)">
         <button class="px-6 py-4 text-white bg-[#8D4BFF] rounded-full cursor-pointer">Send For Rework</button>
-    </div>
+    </div> -->
 </div>

@@ -65,6 +65,36 @@ export class VideoFormComponent {
 
   formatArray = ['Gif', 'Mp4'];
   fpsArray = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  aspectRatioOptions = [
+    { label: '16:9', value: '16:9' },
+    { label: '9:16', value: '9:16' }
+  ];
+  selectedAspectRatio: string = '16:9';
+
+  platformOptions = [
+    { label: 'Instagram Reels', value: 'Instagram Reels' },
+    { label: 'YouTube Shorts', value: 'YouTube Shorts' },
+    { label: 'LinkedIn', value: 'LinkedIn' },
+    { label: 'Multi-platform', value: 'Multi-platform' }
+  ];
+  selectedPlatform: string = '';
+
+  formatStyleOptions = [
+    { label: 'Cinematic', value: 'Cinematic' },
+    { label: 'Talking Head', value: 'Talking Head' },
+    { label: 'Motion Graphic', value: 'Motion Graphic' },
+    { label: 'Fast-cut Montage', value: 'Fast-cut Montage' }
+  ];
+  selectedFormatStyle: string = '';
+
+  toneOptions = [
+    { label: 'Bold', value: 'Bold' },
+    { label: 'Premium', value: 'Premium' },
+    { label: 'Playful', value: 'Playful' },
+    { label: 'Urgent', value: 'Urgent' },
+    { label: 'Informative', value: 'Informative' }
+  ];
+  selectedTone: string = '';
   selectedToppings: any;
   announcer = inject(LiveAnnouncer);
   imageUrl: null | undefined;
@@ -89,6 +119,19 @@ export class VideoFormComponent {
   ) { }
 
   urlImage: any;
+
+  // Build the full prompt from user text + dropdown values (no hyphens, natural language)
+  buildConstructedPrompt(userPrompt: string): string {
+    let prompt = userPrompt?.trim() || '';
+    const settings: string[] = [];
+    if (this.selectedTone) settings.push(`with ${this.selectedTone.toLowerCase()} tone`);
+    if (this.selectedFormatStyle) settings.push(`in ${this.selectedFormatStyle.toLowerCase()} format style`);
+    if (settings.length > 0) {
+      prompt = prompt ? `${prompt} ${settings.join(', ')}` : settings.join(', ');
+    }
+    return prompt;
+  }
+
   onCreateProject(): void {
     //
     var formValues = { ...this.socialwebsite.getRawValue() };
@@ -98,10 +141,20 @@ export class VideoFormComponent {
 
     this.imageUrl = null;
 
-    // dialogRef.afterClosed().subscribe((result) => {
-    // if (result) {
     if (this.socialwebsite.valid) {
       var formValues = { ...this.socialwebsite.getRawValue() };
+
+      // Always rebuild the prompt from user text + dropdown values internally
+      const constructedPrompt = this.buildConstructedPrompt(formValues.prompt);
+      console.log('Constructed prompt:', constructedPrompt);
+
+      // Enrich formValues with brand settings for review/client screens
+      formValues.prompt = constructedPrompt;
+      formValues.platform = this.selectedPlatform;
+      formValues.aspectRatio = this.selectedAspectRatio;
+      formValues.formatStyle = this.selectedFormatStyle;
+      formValues.tone = this.selectedTone;
+
       console.log('Form Values:', formValues);
 
       // Set form data first so review screen can access it
@@ -116,8 +169,8 @@ export class VideoFormComponent {
       this.socketConnection.setSessionId(sessionId); // Connect socket with this session
       console.log('🎯 Video form generated session_id:', sessionId);
 
-      videoFormData.append('brief', prompt);
-      console.log('Brief added to FormData:', prompt);
+      videoFormData.append('brief', constructedPrompt);
+      console.log('Brief added to FormData:', constructedPrompt);
 
       // Append optional reference_image if file is uploaded
       if (this.referenceImageFile) {
@@ -142,7 +195,7 @@ export class VideoFormComponent {
       });
 
       this.aiContentGenerationService
-        .generateVoeVideo(videoFormData, sessionId)
+        .generateVoeVideo(videoFormData, sessionId, this.selectedAspectRatio)
         .subscribe(
           (response: any) => {
             console.log('Response background animation response:', response);
@@ -165,10 +218,6 @@ export class VideoFormComponent {
     } else {
       console.log('Form is invalid');
     }
-    // } else {
-    //   console.log('Form submission cancelled');
-    // }
-    // });
   }
 
   navigateToForm(): void {

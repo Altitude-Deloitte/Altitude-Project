@@ -1,14 +1,43 @@
 <form [formGroup]="socialwebsite" (ngSubmit)="onCreateProject()" class="space-y-8">
-    <!-- Content Details -->
+    <!-- Brand Creative Settings -->
     <div>
-        <h2 class="text-lg text-white font-semibold mb-4 mt-6">Content Details</h2>
+        <h2 class="text-xl text-white font-semibold mb-6 mt-6 flex items-center gap-2">
+            <i class="pi pi-palette text-[#8D4BFF]"></i>
+            Brand Creative Settings
+        </h2>
 
-        <!-- Type in the prompt box to start -->
-        <div class="text-center text-gray-400 text-sm mb-4">
-            Type in the prompt box to start
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+            <!-- Brand Aspect Ratio -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-400 font-medium">Brand Aspect Ratio</label>
+                <p-select [options]="aspectRatioOptions" [(ngModel)]="selectedAspectRatio"
+                    [ngModelOptions]="{standalone: true}" optionLabel="label" optionValue="value"
+                    placeholder="Select Aspect Ratio" class="p-3"
+                    styleClass="w-full bg-[#2A2A2A] border border-[#4A4A4A] rounded-xl text-white">
+                </p-select>
+            </div>
+
+            <!-- Brand Format Style -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-400 font-medium">Brand Format Style</label>
+                <p-select [options]="formatStyleOptions" [(ngModel)]="selectedFormatStyle"
+                    [ngModelOptions]="{standalone: true}" optionLabel="label" optionValue="value"
+                    placeholder="Select Format Style" class="p-3"
+                    styleClass="w-full bg-[#2A2A2A] border border-[#4A4A4A] rounded-xl text-white">
+                </p-select>
+            </div>
+
+            <!-- Brand Tone -->
+            <div class="flex flex-col gap-2">
+                <label class="text-sm text-gray-400 font-medium">Brand Tone</label>
+                <p-select [options]="toneOptions" [(ngModel)]="selectedTone" [ngModelOptions]="{standalone: true}"
+                    optionLabel="label" optionValue="value" placeholder="Select Tone" class="p-3"
+                    styleClass="w-full bg-[#2A2A2A] border border-[#4A4A4A] rounded-xl text-white">
+                </p-select>
+            </div>
         </div>
 
-        <!-- Prompt Input Box (Google Veo style) -->
+        <!-- Prompt Input Box -->
         <div class="bg-[#1A1A1A] rounded-2xl border border-[#3A3A3A] mb-4">
             <!-- Textarea for prompt or Image URL input -->
             <div class="p-4">
@@ -36,7 +65,7 @@
                 <!-- Prompt textarea - always visible -->
                 <textarea formControlName="prompt"
                     class="w-full bg-transparent border-none text-white text-base placeholder-gray-400 focus:ring-0 focus:outline-none resize-none"
-                    rows="5" placeholder="Generate a video with text and frames..."></textarea>
+                    rows="5" placeholder="Add a prompt to generate a video..."></textarea>
             </div>
 
             <!-- Bottom action bar -->
@@ -58,9 +87,6 @@
                 </button>
             </div>
         </div>
-
-        <!-- Show uploaded image preview if file is selected -->
-        <!-- Removed - now shown inside prompt box -->
     </div>
 
     <!-- Upload Drawer -->

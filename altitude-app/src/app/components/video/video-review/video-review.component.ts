@@ -14,6 +14,7 @@ import { ToastModule } from 'primeng/toast';
 import { MessageService } from 'primeng/api';
 import { MatDialog } from '@angular/material/dialog';
 import { DrawerModule } from 'primeng/drawer';
+import { SelectModule } from 'primeng/select';
 
 @Component({
   selector: 'app-video-review',
@@ -29,6 +30,7 @@ import { DrawerModule } from 'primeng/drawer';
     InputTextModule,
     ToastModule,
     DrawerModule,
+    SelectModule,
   ],
   providers: [MessageService],
   templateUrl: './video-review.component.html',
@@ -58,6 +60,30 @@ export class VideoReviewComponent {
   isRegeneratingImage: boolean = false;
   videoPayload: FormData | null = null;
   clientBack = false;
+
+  // Brand Creative Settings for regeneration
+  aspectRatioOptions = [
+    { label: '16:9', value: '16:9' },
+    { label: '9:16', value: '9:16' }
+  ];
+  selectedRegenAspectRatio: string = '16:9';
+
+  formatStyleOptions = [
+    { label: 'Cinematic', value: 'Cinematic' },
+    { label: 'Talking Head', value: 'Talking Head' },
+    { label: 'Motion Graphic', value: 'Motion Graphic' },
+    { label: 'Fast-cut Montage', value: 'Fast-cut Montage' }
+  ];
+  selectedRegenFormatStyle: string = '';
+
+  toneOptions = [
+    { label: 'Bold', value: 'Bold' },
+    { label: 'Premium', value: 'Premium' },
+    { label: 'Playful', value: 'Playful' },
+    { label: 'Urgent', value: 'Urgent' },
+    { label: 'Informative', value: 'Informative' }
+  ];
+  selectedRegenTone: string = '';
 
   constructor(
     private route: Router,
@@ -230,7 +256,24 @@ export class VideoReviewComponent {
     this.videoPayload = new FormData();
     this.videoPayload.append('brief', this.formData?.prompt || '');
 
+    // Initialize regeneration dropdowns from original form data
+    this.selectedRegenAspectRatio = this.formData?.aspectRatio || '16:9';
+    this.selectedRegenFormatStyle = this.formData?.formatStyle || '';
+    this.selectedRegenTone = this.formData?.tone || '';
+
     console.log('Video payload initialized with brief:', this.formData?.prompt);
+  }
+
+  // Build regeneration prompt from feedback + dropdown values
+  buildRegenerationPrompt(feedback: string): string {
+    let prompt = feedback?.trim() || '';
+    const settings: string[] = [];
+    if (this.selectedRegenTone) settings.push(`with ${this.selectedRegenTone.toLowerCase()} tone`);
+    if (this.selectedRegenFormatStyle) settings.push(`in ${this.selectedRegenFormatStyle.toLowerCase()} format style`);
+    if (settings.length > 0) {
+      prompt = prompt ? `${prompt} ${settings.join(', ')}` : settings.join(', ');
+    }
+    return prompt;
   }
 
   regenerateVideo(): void {
@@ -244,17 +287,18 @@ export class VideoReviewComponent {
       return;
     }
 
-    // Use only the feedback as the brief (no combining with original prompt)
-    console.log('Regenerating video with brief:', this.imageFeedback);
+    // Use feedback + dropdown values as the brief
+    const constructedBrief = this.buildRegenerationPrompt(this.imageFeedback);
+    console.log('Regenerating video with brief:', constructedBrief);
 
     // Create FormData for multipart form data
     const videoFormData = new FormData();
-    videoFormData.append('brief', this.imageFeedback);
+    videoFormData.append('brief', constructedBrief);
 
     this.isRegeneratingImage = true;
     // Don't set loading = true for regeneration (keep main loader hidden)
 
-    this.aiContentGenerationService.generateVoeVideo(videoFormData, this.sessionId).subscribe({
+    this.aiContentGenerationService.generateVoeVideo(videoFormData, this.sessionId, this.selectedRegenAspectRatio).subscribe({
       next: (response: any) => {
         console.log('Video regenerated:', response);
 
@@ -296,9 +340,40 @@ export class VideoReviewComponent {
   keepOrder = (a: KeyValue<string, any>, b: KeyValue<string, any>): number => {
     return 0; // Or implement custom sorting logic if needed
   }
-  navigateToForm(): void {
-    this.route.navigateByUrl('video-client');
+
+  downloadVideo(): void {
+    if (!this.imageUrl) {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Warning',
+        detail: 'No video available to download',
+        life: 3000
+      });
+      return;
+    }
+
+    const link = document.createElement('a');
+    link.href = this.imageUrl;
+    // Extract filename from URL or use timestamp
+    const urlParts = this.imageUrl.split('/');
+    const filename = urlParts[urlParts.length - 1] || `video_${Date.now()}.mp4`;
+    link.download = filename.includes('.') ? filename : `${filename}.mp4`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Success',
+      detail: 'Video download started',
+      life: 3000
+    });
   }
+
+  // navigateToForm(): void {
+  //   this.route.navigateByUrl('video-client');
+  // }
 
   // Workflow visualization methods
   getWorkflowAgents(): Array<{ name: string; status: string }> {

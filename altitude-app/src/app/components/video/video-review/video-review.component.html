@@ -28,8 +28,8 @@
                     class="border border-2 border-[#BB93FF] text-[#BB93FF] px-5 py-3 rounded-full">
                     Agentic Workflow
                 </button>
-                <button class="border border-2 border-[#BB93FF] text-[#BB93FF] px-5 py-3 rounded-full">View All
-                    Comments</button>
+                <!-- <button class="border border-2 border-[#BB93FF] text-[#BB93FF] px-5 py-3 rounded-full">View All
+                    Comments</button> -->
             </div>
         </div>
 
@@ -107,9 +107,29 @@
                                         <span class="font-semibold">{{ formData?.topic || 'AI Video Creation' }}</span>
                                     </div>
 
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Aspect Ratio</span>
+                                        <span class="font-semibold">{{ formData?.aspectRatio || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Format Style</span>
+                                        <span class="font-semibold">{{ formData?.formatStyle || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col">
+                                        <span class="text-[#9b9b9b] text-sm">Tone</span>
+                                        <span class="font-semibold">{{ formData?.tone || '-' }}</span>
+                                    </div>
+
                                     <div class="flex flex-col col-span-2">
                                         <span class="text-[#9b9b9b] text-sm">Due Date</span>
                                         <span class="font-semibold">{{ formData?.dueDate || '-' }}</span>
+                                    </div>
+
+                                    <div class="flex flex-col col-span-2">
+                                        <span class="text-[#9b9b9b] text-sm">Prompt</span>
+                                        <span class="font-semibold">{{ formData?.prompt || '-' }}</span>
                                     </div>
 
 
@@ -177,6 +197,37 @@
                                 200 words</button>
                         </div> -->
 
+                        <!-- Brand Creative Settings for Regeneration -->
+                        <div class="w-full mt-8">
+                            <h3 class="text-lg text-white font-semibold mb-4 flex items-center gap-2">
+                                <i class="pi pi-palette text-[#8D4BFF]"></i>
+                                Brand Creative Settings
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-xs text-gray-400 font-medium">Aspect Ratio</label>
+                                    <p-select [options]="aspectRatioOptions" [(ngModel)]="selectedRegenAspectRatio"
+                                        optionLabel="label" optionValue="value" placeholder="Ratio" class="p-3"
+                                        styleClass="w-full bg-[#2A2A2A] border border-[#4A4A4A] rounded-xl text-white">
+                                    </p-select>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-xs text-gray-400 font-medium">Format Style</label>
+                                    <p-select [options]="formatStyleOptions" [(ngModel)]="selectedRegenFormatStyle"
+                                        optionLabel="label" optionValue="value" placeholder="Style" class="p-3"
+                                        styleClass="w-full bg-[#2A2A2A] border border-[#4A4A4A] rounded-xl text-white">
+                                    </p-select>
+                                </div>
+                                <div class="flex flex-col gap-1">
+                                    <label class="text-xs text-gray-400 font-medium">Tone</label>
+                                    <p-select [options]="toneOptions" [(ngModel)]="selectedRegenTone"
+                                        optionLabel="label" optionValue="value" placeholder="Tone" class="p-3"
+                                        styleClass="w-full bg-[#2A2A2A] border border-[#4A4A4A] rounded-xl text-white">
+                                    </p-select>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Video Regeneration Section -->
                         <div class="w-full mt-8 space-y-6">
                             <div class="regeneration-section">
@@ -207,8 +258,7 @@
 
     </div>
     <div class="flex justify-end mr-4 mb-8">
-        <p-button class="bg-[#8D4BFF] p-4 rounded-full" label="Send For Approval"
-            (onClick)="navigateToForm()"></p-button>
+        <p-button class="bg-[#8D4BFF] p-4 rounded-full" label="Download" (onClick)="downloadVideo()"></p-button>
     </div>
 </div>
 }

@@ -1,0 +1,36 @@
+{
+  "users": [
+    {
+      "username": "acdhingra",
+      "password": "Test@123"
+    },
+    {
+      "username": "maya.chen",
+      "password": "B1ueM00n$2024"
+    },
+    {
+      "username": "jordan.kumar",
+      "password": "Fr3sh@Wave!77"
+    },
+    {
+      "username": "sarah.thompson",
+      "password": "St@rL!ght2025"
+    },
+    {
+      "username": "carlos.mendez",
+      "password": "Th!nder#Bolt92"
+    },
+    {
+      "username": "emily.park",
+      "password": "Cr!mson$Sky84"
+    },
+    {
+      "username": "ryan.oconnor",
+      "password": "N3on@Dr3am!56"
+    },
+    {
+      "username": "priya.sharma",
+      "password": "V!0let#Rush88"
+    }
+  ]
+}

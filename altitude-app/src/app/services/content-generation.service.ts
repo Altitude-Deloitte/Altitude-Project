@@ -513,7 +513,7 @@ export class ContentGenerationService {
     }
     return this.http.post<any>(this.apiUrl, formFieldData, { headers });
   }
-  generateVoeVideo(formData: FormData, sessionId?: string) {
+  generateVoeVideo(formData: FormData, sessionId?: string, aspectRatio?: string) {
     const headers: any = {};
     if (sessionId) {
       headers['X-Session-ID'] = sessionId;
@@ -522,6 +522,11 @@ export class ContentGenerationService {
       console.log('📤 Request headers:', headers);
     } else {
       console.warn('⚠️ generateVoeVideo called without session_id');
+    }
+    // Append aspect_ratio to the request body
+    if (aspectRatio) {
+      formData.append('aspect_ratio', aspectRatio);
+      console.log('📐 Aspect ratio added to request body:', aspectRatio);
     }
     // Don't set Content-Type header - let the browser set it with the correct boundary
     return this.http.post(this.videoUrl, formData, { headers });
